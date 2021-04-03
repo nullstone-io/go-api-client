@@ -17,7 +17,7 @@ var (
 	TraceEnvVar    = "NULLSTONE_TRACE"
 )
 
-func NewConfig() Config {
+func DefaultConfig() Config {
 	cfg := Config{
 		BaseAddress: DefaultAddress,
 		ApiKey:      os.Getenv(ApiKeyEnvVar),

@@ -13,6 +13,10 @@ type Client struct {
 	Config Config
 }
 
+func (c *Client) Apps() Apps {
+	return Apps{Client: c}
+}
+
 func (c *Client) Workspaces() Workspaces {
 	return Workspaces{Client: c}
 }
