@@ -9,7 +9,6 @@ import (
 	"net/url"
 )
 
-
 type Client struct {
 	Config Config
 }
