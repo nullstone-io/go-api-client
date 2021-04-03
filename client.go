@@ -1,11 +1,14 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"net/http"
 	"net/url"
 )
+
 
 type Client struct {
 	Config Config
@@ -25,6 +28,25 @@ func (c *Client) Do(method string, relativePath string, query url.Values, body i
 		Transport: c.Config.CreateTransport(http.DefaultTransport),
 	}
 	return httpClient.Do(req)
+}
+
+func (c *Client) ReadJsonResponse(res *http.Response, obj interface{}) error {
+	defer res.Body.Close()
+
+	if res.StatusCode >= 400 {
+		raw, _ := ioutil.ReadAll(res.Body)
+		return &HttpError{
+			StatusCode: res.StatusCode,
+			Status:     res.Status,
+			Body:       string(raw),
+		}
+	}
+
+	decoder := json.NewDecoder(res.Body)
+	if err := decoder.Decode(obj); err != nil {
+		return fmt.Errorf("error decoding json body: %w", err)
+	}
+	return nil
 }
 
 func (c *Client) CreateRequest(method string, relativePath string, query url.Values, body io.Reader) (*http.Request, error) {
