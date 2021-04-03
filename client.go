@@ -11,6 +11,10 @@ type Client struct {
 	Config Config
 }
 
+func (c *Client) Workspaces() Workspaces {
+	return Workspaces{Client: c}
+}
+
 func (c *Client) Do(method string, relativePath string, query url.Values, body io.Reader) (*http.Response, error) {
 	req, err := c.CreateRequest(method, relativePath, query, body)
 	if err != nil {
