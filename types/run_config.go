@@ -1,6 +1,8 @@
-package api
+package types
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+)
 
 type RunConfig struct {
 	WorkspaceUid  uuid.UUID   `json:"workspaceUid"`

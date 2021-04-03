@@ -1,6 +1,8 @@
-package api
+package types
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 type Environment struct {
 	IdModel

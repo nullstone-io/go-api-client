@@ -1,4 +1,4 @@
-package api
+package types
 
 import (
 	"github.com/nullstone-io/module/config"

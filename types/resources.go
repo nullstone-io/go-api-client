@@ -1,3 +1,3 @@
-package api
+package types
 
 type Resources []string

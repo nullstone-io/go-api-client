@@ -1,4 +1,4 @@
-package api
+package types
 
 type Category struct {
 	Name        CategoryName `json:"name"`

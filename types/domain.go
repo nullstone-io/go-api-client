@@ -1,4 +1,4 @@
-package api
+package types
 
 type Domain struct {
 	IdModel

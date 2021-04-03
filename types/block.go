@@ -1,4 +1,4 @@
-package api
+package types
 
 type Block struct {
 	IdModel
