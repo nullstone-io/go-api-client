@@ -18,7 +18,8 @@ type Workspace struct {
 	Status    string    `json:"status"`
 	StatusAt  time.Time `json:"statusAt"`
 
-	ActiveRun         *Run              `json:"activeRun,omitempty" pg:"-"`
-	LastSuccessfulRun *Run              `json:"lastSuccessfulRun,omitempty" pg:"-"`
-	Dependencies      []WorkspaceTarget `json:"dependencies,omitempty" pg:"-"`
+	Module            *Module           `json:"module,omitempty"`
+	ActiveRun         *Run              `json:"activeRun,omitempty"`
+	LastSuccessfulRun *Run              `json:"lastSuccessfulRun,omitempty"`
+	Dependencies      []WorkspaceTarget `json:"dependencies,omitempty"`
 }
