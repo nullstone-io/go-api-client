@@ -13,7 +13,7 @@ type AutogenSubdomainsDelegation struct {
 }
 
 // GET /orgs/autogen_subdomains/:subdomainName/delegation
-func (d *AutogenSubdomainsDelegation) Get(subdomainName string) (*types.AutogenSubdomainDelegation, error) {
+func (d AutogenSubdomainsDelegation) Get(subdomainName string) (*types.AutogenSubdomainDelegation, error) {
 	res, err := d.Client.Do(http.MethodGet, path.Join("autogen_subdomains", subdomainName, "delegation"), nil, nil, nil)
 	if err != nil {
 		return nil, err
@@ -29,7 +29,7 @@ func (d *AutogenSubdomainsDelegation) Get(subdomainName string) (*types.AutogenS
 }
 
 // PUT /orgs/autogen_subdomains/:subdomainId/delegation ...
-func (d *AutogenSubdomainsDelegation) UpdateAutogenSubdomainDelegation(subdomainName string, delegation *types.AutogenSubdomainDelegation) (*types.AutogenSubdomainDelegation, error) {
+func (d AutogenSubdomainsDelegation) Update(subdomainName string, delegation *types.AutogenSubdomainDelegation) (*types.AutogenSubdomainDelegation, error) {
 	rawPayload, _ := json.Marshal(delegation)
 	endpoint := path.Join("autogen_subdomains", subdomainName, "delegation")
 	headers := map[string]string{"Content-Type": "application/json"}
@@ -46,7 +46,7 @@ func (d *AutogenSubdomainsDelegation) UpdateAutogenSubdomainDelegation(subdomain
 }
 
 // DELETE /orgs/autogen_subdomains/:subdomainId/delegation ...
-func (d *AutogenSubdomainsDelegation) DestroyAutogenSubdomainDelegation(subdomainName string) (found bool, err error) {
+func (d AutogenSubdomainsDelegation) Destroy(subdomainName string) (found bool, err error) {
 	res, err := d.Client.Do(http.MethodDelete, path.Join("autogen_subdomains", subdomainName, "delegation"), nil, nil, nil)
 	if err != nil {
 		return false, err

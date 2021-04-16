@@ -21,6 +21,10 @@ func (c *Client) Workspaces() Workspaces {
 	return Workspaces{Client: c}
 }
 
+func (c *Client) RunConfigs() RunConfigs {
+	return RunConfigs{Client: c}
+}
+
 func (c *Client) AutogenSubdomains() AutogenSubdomains {
 	return AutogenSubdomains{Client: c}
 }
