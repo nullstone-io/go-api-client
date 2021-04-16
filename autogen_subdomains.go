@@ -12,7 +12,7 @@ type AutogenSubdomains struct {
 
 // GET /orgs/:orgName/autogen_subdomains/:subdomainName
 func (a AutogenSubdomains) Get(subdomainName string) (*types.AutogenSubdomain, error) {
-	res, err := a.Client.Do(http.MethodGet, path.Join("autogen_subdomains", subdomainName), nil, nil)
+	res, err := a.Client.Do(http.MethodGet, path.Join("autogen_subdomains", subdomainName), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -28,7 +28,7 @@ func (a AutogenSubdomains) Get(subdomainName string) (*types.AutogenSubdomain, e
 
 // POST /orgs/:orgName/autogen_subdomains
 func (a AutogenSubdomains) Create() (*types.AutogenSubdomain, error) {
-	res, err := a.Client.Do(http.MethodPost, path.Join("autogen_subdomains"), nil, nil)
+	res, err := a.Client.Do(http.MethodPost, path.Join("autogen_subdomains"), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -44,7 +44,7 @@ func (a AutogenSubdomains) Create() (*types.AutogenSubdomain, error) {
 
 // DELETE /orgs/:orgName/autogen_subdomains
 func (a AutogenSubdomains) Destroy(subdomainName string) (bool, error) {
-	res, err := a.Client.Do(http.MethodDelete, path.Join("autogen_subdomains", subdomainName), nil, nil)
+	res, err := a.Client.Do(http.MethodDelete, path.Join("autogen_subdomains", subdomainName), nil, nil, nil)
 	if err != nil {
 		return false, err
 	}

@@ -14,7 +14,7 @@ type AutogenSubdomainsDelegation struct {
 
 // GET /orgs/autogen_subdomains/:subdomainName/delegation
 func (d *AutogenSubdomainsDelegation) Get(subdomainName string) (*types.AutogenSubdomainDelegation, error) {
-	res, err := d.Client.Do(http.MethodGet, path.Join("autogen_subdomains", subdomainName, "delegation"), nil, nil)
+	res, err := d.Client.Do(http.MethodGet, path.Join("autogen_subdomains", subdomainName, "delegation"), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -31,16 +31,9 @@ func (d *AutogenSubdomainsDelegation) Get(subdomainName string) (*types.AutogenS
 // PUT /orgs/autogen_subdomains/:subdomainId/delegation ...
 func (d *AutogenSubdomainsDelegation) UpdateAutogenSubdomainDelegation(subdomainName string, delegation *types.AutogenSubdomainDelegation) (*types.AutogenSubdomainDelegation, error) {
 	rawPayload, _ := json.Marshal(delegation)
-	req, err := d.Client.CreateRequest(http.MethodPut, path.Join("autogen_subdomains", subdomainName, "delegation"), nil, bytes.NewReader(rawPayload))
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Content-Type", "application/json")
-
-	httpClient := &http.Client{
-		Transport: d.Client.Config.CreateTransport(http.DefaultTransport),
-	}
-	res, err := httpClient.Do(req)
+	endpoint := path.Join("autogen_subdomains", subdomainName, "delegation")
+	headers := map[string]string{"Content-Type": "application/json"}
+	res, err := d.Client.Do(http.MethodPut, endpoint, nil, headers, bytes.NewReader(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -54,7 +47,7 @@ func (d *AutogenSubdomainsDelegation) UpdateAutogenSubdomainDelegation(subdomain
 
 // DELETE /orgs/autogen_subdomains/:subdomainId/delegation ...
 func (d *AutogenSubdomainsDelegation) DestroyAutogenSubdomainDelegation(subdomainName string) (found bool, err error) {
-	res, err := d.Client.Do(http.MethodDelete, path.Join("autogen_subdomains", subdomainName, "delegation"), nil, nil)
+	res, err := d.Client.Do(http.MethodDelete, path.Join("autogen_subdomains", subdomainName, "delegation"), nil, nil, nil)
 	if err != nil {
 		return false, err
 	}
