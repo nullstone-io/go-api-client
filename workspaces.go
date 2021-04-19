@@ -11,7 +11,7 @@ type Workspaces struct {
 }
 
 func (w Workspaces) Get(stackName, blockName, envName string) (*types.Workspace, error) {
-	res, err := w.Client.Do(http.MethodGet, path.Join("stacks", stackName, "blocks", blockName, "envs", envName), nil, nil)
+	res, err := w.Client.Do(http.MethodGet, path.Join("stacks", stackName, "blocks", blockName, "envs", envName), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}

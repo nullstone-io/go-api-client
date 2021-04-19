@@ -11,7 +11,7 @@ type Apps struct {
 }
 
 func (a Apps) Get(appName string) (*types.Application, error) {
-	res, err := a.Client.Do(http.MethodGet, path.Join("apps", appName), nil, nil)
+	res, err := a.Client.Do(http.MethodGet, path.Join("apps", appName), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}

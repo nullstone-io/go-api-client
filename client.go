@@ -21,10 +21,25 @@ func (c *Client) Workspaces() Workspaces {
 	return Workspaces{Client: c}
 }
 
-func (c *Client) Do(method string, relativePath string, query url.Values, body io.Reader) (*http.Response, error) {
+func (c *Client) RunConfigs() RunConfigs {
+	return RunConfigs{Client: c}
+}
+
+func (c *Client) AutogenSubdomains() AutogenSubdomains {
+	return AutogenSubdomains{Client: c}
+}
+
+func (c *Client) AutogenSubdomainsDelegation() AutogenSubdomainsDelegation {
+	return AutogenSubdomainsDelegation{Client: c}
+}
+
+func (c *Client) Do(method string, relativePath string, query url.Values, headers map[string]string, body io.Reader) (*http.Response, error) {
 	req, err := c.CreateRequest(method, relativePath, query, body)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
+	}
+	for k, v := range headers {
+		req.Header.Set(k, v)
 	}
 
 	httpClient := &http.Client{
@@ -48,6 +63,18 @@ func (c *Client) ReadJsonResponse(res *http.Response, obj interface{}) error {
 	decoder := json.NewDecoder(res.Body)
 	if err := decoder.Decode(obj); err != nil {
 		return fmt.Errorf("error decoding json body: %w", err)
+	}
+	return nil
+}
+
+func (c *Client) VerifyResponse(res *http.Response) error {
+	if res.StatusCode >= 400 {
+		raw, _ := ioutil.ReadAll(res.Body)
+		return &HttpError{
+			StatusCode: res.StatusCode,
+			Status:     res.Status,
+			Body:       string(raw),
+		}
 	}
 	return nil
 }
