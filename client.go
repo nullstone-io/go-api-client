@@ -50,6 +50,9 @@ func (c *Client) Do(method string, relativePath string, query url.Values, header
 	var bodyReader io.Reader
 	if jrm, ok := body.(json.RawMessage); ok {
 		bodyReader = bytes.NewReader(jrm)
+		if headers == nil {
+			headers = map[string]string{}
+		}
 		headers["Content-Type"] = "application/json"
 	}
 
