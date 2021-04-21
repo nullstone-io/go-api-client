@@ -11,13 +11,13 @@ type AppEnvs struct {
 	Client *Client
 }
 
-func (e AppEnvs) Get(appName, envName string) (*types.ApplicationEnvironment, error) {
+func (e AppEnvs) Get(appName, envName string) (*types.AppEnv, error) {
 	res, err := e.Client.Do(http.MethodGet, path.Join("apps", appName, "envs", envName), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	var appEnv types.ApplicationEnvironment
+	var appEnv types.AppEnv
 	if err := e.Client.ReadJsonResponse(res, &appEnv); IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
@@ -26,7 +26,7 @@ func (e AppEnvs) Get(appName, envName string) (*types.ApplicationEnvironment, er
 	return &appEnv, nil
 }
 
-func (e AppEnvs) Update(appName, envName string, version string) (*types.ApplicationEnvironment, error) {
+func (e AppEnvs) Update(appName, envName string, version string) (*types.AppEnv, error) {
 	rawPayload, _ := json.Marshal(map[string]interface{}{
 		"version": version,
 	})
@@ -35,7 +35,7 @@ func (e AppEnvs) Update(appName, envName string, version string) (*types.Applica
 		return nil, err
 	}
 
-	var updated types.ApplicationEnvironment
+	var updated types.AppEnv
 	if err := e.Client.ReadJsonResponse(res, &updated); IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {

@@ -1,6 +1,6 @@
 package types
 
-type ApplicationEnvironment struct {
+type AppEnv struct {
 	IdModel
 	AppId   int    `json:"appId"`
 	EnvId   int    `json:"envId"`
