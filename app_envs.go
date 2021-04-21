@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
 	"path"
@@ -25,8 +26,11 @@ func (e AppEnvs) Get(appName, envName string) (*types.ApplicationEnvironment, er
 	return &appEnv, nil
 }
 
-func (e AppEnvs) Update(appEnv types.ApplicationEnvironment) (*types.ApplicationEnvironment, error) {
-	res, err := e.Client.Do(http.MethodGet, path.Join("apps", appEnv.AppName, "envs", appEnv.EnvName), nil, nil, nil)
+func (e AppEnvs) Update(appName, envName string, version string) (*types.ApplicationEnvironment, error) {
+	rawPayload, _ := json.Marshal(map[string]interface{}{
+		"version": version,
+	})
+	res, err := e.Client.Do(http.MethodGet, path.Join("apps", appName, "envs", envName), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}

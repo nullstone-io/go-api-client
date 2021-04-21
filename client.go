@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -45,8 +46,14 @@ func (c *Client) Subdomains() Subdomains {
 	return Subdomains{Client: c}
 }
 
-func (c *Client) Do(method string, relativePath string, query url.Values, headers map[string]string, body io.Reader) (*http.Response, error) {
-	req, err := c.CreateRequest(method, relativePath, query, body)
+func (c *Client) Do(method string, relativePath string, query url.Values, headers map[string]string, body interface{}) (*http.Response, error) {
+	var bodyReader io.Reader
+	if jrm, ok := body.(json.RawMessage); ok {
+		bodyReader = bytes.NewReader(jrm)
+		headers["Content-Type"] = "application/json"
+	}
+
+	req, err := c.CreateRequest(method, relativePath, query, bodyReader)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
