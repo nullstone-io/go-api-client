@@ -2,12 +2,11 @@ package types
 
 type Subdomain struct {
 	IdModel
-	Name         string `json:"name"`
+	DnsName      string `json:"dnsName"`
 	OrgName      string `json:"orgName"`
 	StackName    string `json:"stackName"`
-	ModuleSource string `json:"moduleSource"`
 	Certificate  string `json:"certificate"`
-	DomainId     int    `json:"domainId"`
+	BlockId   	 int    `json:"blockId"`
 
-	Domain Domain `json:"domain,omitempty"`
+	Block 		 *Block `json:"block,omitempty"`
 }
