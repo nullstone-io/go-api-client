@@ -30,7 +30,7 @@ func (e AppEnvs) Update(appName, envName string, version string) (*types.Applica
 	rawPayload, _ := json.Marshal(map[string]interface{}{
 		"version": version,
 	})
-	res, err := e.Client.Do(http.MethodGet, path.Join("apps", appName, "envs", envName), nil, nil, json.RawMessage(rawPayload))
+	res, err := e.Client.Do(http.MethodPut, path.Join("apps", appName, "envs", envName), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
