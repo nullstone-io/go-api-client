@@ -33,6 +33,10 @@ func (c *Client) AutogenSubdomainsDelegation() AutogenSubdomainsDelegation {
 	return AutogenSubdomainsDelegation{Client: c}
 }
 
+func (c *Client) Subdomains() Subdomains {
+	return Subdomains{Client: c}
+}
+
 func (c *Client) Do(method string, relativePath string, query url.Values, headers map[string]string, body io.Reader) (*http.Response, error) {
 	req, err := c.CreateRequest(method, relativePath, query, body)
 	if err != nil {
