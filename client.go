@@ -33,6 +33,10 @@ func (c *Client) AutogenSubdomainsDelegation() AutogenSubdomainsDelegation {
 	return AutogenSubdomainsDelegation{Client: c}
 }
 
+func (c *Client) Domains() Domains {
+	return Domains{Client: c}
+}
+
 func (c *Client) Subdomains() Subdomains {
 	return Subdomains{Client: c}
 }
