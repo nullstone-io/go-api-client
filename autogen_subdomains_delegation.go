@@ -1,7 +1,6 @@
 package api
 
 import (
-	"bytes"
 	"encoding/json"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
@@ -32,8 +31,7 @@ func (d AutogenSubdomainsDelegation) Get(subdomainName string) (*types.AutogenSu
 func (d AutogenSubdomainsDelegation) Update(subdomainName string, delegation *types.AutogenSubdomainDelegation) (*types.AutogenSubdomainDelegation, error) {
 	rawPayload, _ := json.Marshal(delegation)
 	endpoint := path.Join("autogen_subdomains", subdomainName, "delegation")
-	headers := map[string]string{"Content-Type": "application/json"}
-	res, err := d.Client.Do(http.MethodPut, endpoint, nil, headers, bytes.NewReader(rawPayload))
+	res, err := d.Client.Do(http.MethodPut, endpoint, nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}

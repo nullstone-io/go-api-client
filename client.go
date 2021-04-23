@@ -1,6 +1,7 @@
 package api
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -15,6 +16,10 @@ type Client struct {
 
 func (c *Client) Apps() Apps {
 	return Apps{Client: c}
+}
+
+func (c *Client) AppEnvs() AppEnvs {
+	return AppEnvs{Client: c}
 }
 
 func (c *Client) Workspaces() Workspaces {
@@ -41,8 +46,17 @@ func (c *Client) Subdomains() Subdomains {
 	return Subdomains{Client: c}
 }
 
-func (c *Client) Do(method string, relativePath string, query url.Values, headers map[string]string, body io.Reader) (*http.Response, error) {
-	req, err := c.CreateRequest(method, relativePath, query, body)
+func (c *Client) Do(method string, relativePath string, query url.Values, headers map[string]string, body interface{}) (*http.Response, error) {
+	var bodyReader io.Reader
+	if jrm, ok := body.(json.RawMessage); ok {
+		bodyReader = bytes.NewReader(jrm)
+		if headers == nil {
+			headers = map[string]string{}
+		}
+		headers["Content-Type"] = "application/json"
+	}
+
+	req, err := c.CreateRequest(method, relativePath, query, bodyReader)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
