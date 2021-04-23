@@ -5,14 +5,15 @@ import (
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
 	"path"
+	"strconv"
 )
 
 type AppEnvs struct {
 	Client *Client
 }
 
-func (e AppEnvs) Get(appName, envName string) (*types.AppEnv, error) {
-	res, err := e.Client.Do(http.MethodGet, path.Join("apps", appName, "envs", envName), nil, nil, nil)
+func (e AppEnvs) Get(appId int, envName string) (*types.AppEnv, error) {
+	res, err := e.Client.Do(http.MethodGet, path.Join("apps", strconv.Itoa(appId), "envs", envName), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -26,11 +27,11 @@ func (e AppEnvs) Get(appName, envName string) (*types.AppEnv, error) {
 	return &appEnv, nil
 }
 
-func (e AppEnvs) Update(appName, envName string, version string) (*types.AppEnv, error) {
+func (e AppEnvs) Update(appId int, envName string, version string) (*types.AppEnv, error) {
 	rawPayload, _ := json.Marshal(map[string]interface{}{
 		"version": version,
 	})
-	res, err := e.Client.Do(http.MethodPut, path.Join("apps", appName, "envs", envName), nil, nil, json.RawMessage(rawPayload))
+	res, err := e.Client.Do(http.MethodPut, path.Join("apps", strconv.Itoa(appId), "envs", envName), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
