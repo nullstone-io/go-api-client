@@ -5,20 +5,21 @@ import (
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
 	"path"
+	"strconv"
 )
 
 type AutogenSubdomainsDelegation struct {
 	Client *Client
 }
 
-// GET /orgs/autogen_subdomains/:subdomainName/delegation
-func (d AutogenSubdomainsDelegation) Get(subdomainName string) (*types.AutogenSubdomainDelegation, error) {
-	res, err := d.Client.Do(http.MethodGet, path.Join("autogen_subdomains", subdomainName, "delegation"), nil, nil, nil)
+// GET /orgs/:orgName/subdomains/:subdomainId/envs/:envName/autogen_subdomain_delegation
+func (d AutogenSubdomainsDelegation) Get(subdomainId int, envName string) (*types.AutogenSubdomain, error) {
+	res, err := d.Client.Do(http.MethodGet, path.Join("subdomains", strconv.Itoa(subdomainId), "envs", envName, "autogen_subdomain_delegation"), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	var delegation types.AutogenSubdomainDelegation
+	var delegation types.AutogenSubdomain
 	if err := d.Client.ReadJsonResponse(res, &delegation); IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
@@ -27,16 +28,16 @@ func (d AutogenSubdomainsDelegation) Get(subdomainName string) (*types.AutogenSu
 	return &delegation, nil
 }
 
-// PUT /orgs/autogen_subdomains/:subdomainId/delegation ...
-func (d AutogenSubdomainsDelegation) Update(subdomainName string, delegation *types.AutogenSubdomainDelegation) (*types.AutogenSubdomainDelegation, error) {
+// PUT /orgs/:orgName/subdomains/:subdomainId/envs/:envName/autogen_subdomain_delegation
+func (d AutogenSubdomainsDelegation) Update(subdomainId int, envName string, delegation *types.AutogenSubdomain) (*types.AutogenSubdomain, error) {
 	rawPayload, _ := json.Marshal(delegation)
-	endpoint := path.Join("autogen_subdomains", subdomainName, "delegation")
+	endpoint := path.Join("subdomains", strconv.Itoa(subdomainId), "envs", envName, "autogen_subdomain_delegation")
 	res, err := d.Client.Do(http.MethodPut, endpoint, nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
 
-	var updatedDelegation types.AutogenSubdomainDelegation
+	var updatedDelegation types.AutogenSubdomain
 	if err := d.Client.ReadJsonResponse(res, &updatedDelegation); IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
@@ -45,9 +46,9 @@ func (d AutogenSubdomainsDelegation) Update(subdomainName string, delegation *ty
 	return &updatedDelegation, nil
 }
 
-// DELETE /orgs/autogen_subdomains/:subdomainId/delegation ...
-func (d AutogenSubdomainsDelegation) Destroy(subdomainName string) (found bool, err error) {
-	res, err := d.Client.Do(http.MethodDelete, path.Join("autogen_subdomains", subdomainName, "delegation"), nil, nil, nil)
+// DELETE /orgs/:orgName/subdomains/:subdomainId/envs/:envName/autogen_subdomain_delegation
+func (d AutogenSubdomainsDelegation) Destroy(subdomainId int, envName string) (found bool, err error) {
+	res, err := d.Client.Do(http.MethodDelete, path.Join("subdomains", strconv.Itoa(subdomainId), "envs", envName, "autogen_subdomain_delegation"), nil, nil, nil)
 	if err != nil {
 		return false, err
 	}

@@ -4,15 +4,16 @@ import (
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
 	"path"
+	"strconv"
 )
 
 type AutogenSubdomains struct {
 	Client *Client
 }
 
-// GET /orgs/:orgName/autogen_subdomains/:subdomainName
-func (a AutogenSubdomains) Get(subdomainName string) (*types.AutogenSubdomain, error) {
-	res, err := a.Client.Do(http.MethodGet, path.Join("autogen_subdomains", subdomainName), nil, nil, nil)
+// GET /orgs/:orgName/subdomains/:subdomainId/envs/:envName/autogen_subdomains
+func (a AutogenSubdomains) Get(subdomainId int, envName string) (*types.AutogenSubdomain, error) {
+	res, err := a.Client.Do(http.MethodGet, path.Join("subdomains", strconv.Itoa(subdomainId), "envs", envName, "autogen_subdomain"), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -26,9 +27,9 @@ func (a AutogenSubdomains) Get(subdomainName string) (*types.AutogenSubdomain, e
 	return &autogenSubdomain, nil
 }
 
-// POST /orgs/:orgName/autogen_subdomains
-func (a AutogenSubdomains) Create() (*types.AutogenSubdomain, error) {
-	res, err := a.Client.Do(http.MethodPost, path.Join("autogen_subdomains"), nil, nil, nil)
+// POST /orgs/:orgName/subdomains/:subdomainId/envs/:envName/autogen_subdomain
+func (a AutogenSubdomains) Create(subdomainId int, envName string) (*types.AutogenSubdomain, error) {
+	res, err := a.Client.Do(http.MethodPost, path.Join("subdomains", strconv.Itoa(subdomainId), "envs", envName, "autogen_subdomain"), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -42,9 +43,9 @@ func (a AutogenSubdomains) Create() (*types.AutogenSubdomain, error) {
 	return &autogenSubdomain, nil
 }
 
-// DELETE /orgs/:orgName/autogen_subdomains
-func (a AutogenSubdomains) Destroy(subdomainName string) (bool, error) {
-	res, err := a.Client.Do(http.MethodDelete, path.Join("autogen_subdomains", subdomainName), nil, nil, nil)
+// DELETE /orgs/:orgName/subdomains/:subdomainId/envs/:envName/autogen_subdomains
+func (a AutogenSubdomains) Destroy(subdomainId int, envName string) (bool, error) {
+	res, err := a.Client.Do(http.MethodDelete, path.Join("subdomains", strconv.Itoa(subdomainId), "envs", envName, "autogen_subdomain"), nil, nil, nil)
 	if err != nil {
 		return false, err
 	}
