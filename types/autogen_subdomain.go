@@ -2,9 +2,10 @@ package types
 
 type AutogenSubdomain struct {
 	IdModel
-	DnsName     string   `json:"dnsName"`
 	OrgName     string   `json:"orgName"`
+	DnsName     string   `json:"dnsName"`
 	DomainName  string   `json:"domainName"`
+	Fqdn		string	 `json:"fqdn"`
 	Certificate string   `json:"certificate"`
 	Nameservers []string `json:"nameservers"`
 }
