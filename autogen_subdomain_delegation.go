@@ -12,26 +12,10 @@ type AutogenSubdomainDelegation struct {
 	Client *Client
 }
 
-// GET /orgs/:orgName/subdomains/:subdomainId/envs/:envName/autogen_subdomain_delegation
-func (d AutogenSubdomainDelegation) Get(subdomainId int, envName string) (*types.AutogenSubdomain, error) {
-	res, err := d.Client.Do(http.MethodGet, path.Join("subdomains", strconv.Itoa(subdomainId), "envs", envName, "autogen_subdomain_delegation"), nil, nil, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	var delegation types.AutogenSubdomain
-	if err := d.Client.ReadJsonResponse(res, &delegation); IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &delegation, nil
-}
-
-// PUT /orgs/:orgName/subdomains/:subdomainId/envs/:envName/autogen_subdomain_delegation
+// PUT /orgs/:orgName/subdomains/:subdomainId/envs/:envName/autogen_subdomain/delegation
 func (d AutogenSubdomainDelegation) Update(subdomainId int, envName string, delegation *types.AutogenSubdomain) (*types.AutogenSubdomain, error) {
 	rawPayload, _ := json.Marshal(delegation)
-	endpoint := path.Join("subdomains", strconv.Itoa(subdomainId), "envs", envName, "autogen_subdomain_delegation")
+	endpoint := path.Join("subdomains", strconv.Itoa(subdomainId), "envs", envName, "autogen_subdomain", "delegation")
 	res, err := d.Client.Do(http.MethodPut, endpoint, nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
@@ -46,9 +30,9 @@ func (d AutogenSubdomainDelegation) Update(subdomainId int, envName string, dele
 	return &updatedDelegation, nil
 }
 
-// DELETE /orgs/:orgName/subdomains/:subdomainId/envs/:envName/autogen_subdomain_delegation
+// DELETE /orgs/:orgName/subdomains/:subdomainId/envs/:envName/autogen_subdomain/delegation
 func (d AutogenSubdomainDelegation) Destroy(subdomainId int, envName string) (found bool, err error) {
-	res, err := d.Client.Do(http.MethodDelete, path.Join("subdomains", strconv.Itoa(subdomainId), "envs", envName, "autogen_subdomain_delegation"), nil, nil, nil)
+	res, err := d.Client.Do(http.MethodDelete, path.Join("subdomains", strconv.Itoa(subdomainId), "envs", envName, "autogen_subdomain", "delegation"), nil, nil, nil)
 	if err != nil {
 		return false, err
 	}
