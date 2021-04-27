@@ -30,12 +30,12 @@ func (c *Client) RunConfigs() RunConfigs {
 	return RunConfigs{Client: c}
 }
 
-func (c *Client) AutogenSubdomains() AutogenSubdomains {
-	return AutogenSubdomains{Client: c}
+func (c *Client) AutogenSubdomain() AutogenSubdomain {
+	return AutogenSubdomain{Client: c}
 }
 
-func (c *Client) AutogenSubdomainsDelegation() AutogenSubdomainsDelegation {
-	return AutogenSubdomainsDelegation{Client: c}
+func (c *Client) AutogenSubdomainDelegation() AutogenSubdomainDelegation {
+	return AutogenSubdomainDelegation{Client: c}
 }
 
 func (c *Client) Domains() Domains {
