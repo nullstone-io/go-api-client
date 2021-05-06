@@ -46,6 +46,14 @@ func (c *Client) Subdomains() Subdomains {
 	return Subdomains{Client: c}
 }
 
+func (c *Client) Modules() Modules {
+	return Modules{Client: c}
+}
+
+func (c *Client) ModuleVersions() ModuleVersions {
+	return ModuleVersions{Client: c}
+}
+
 func (c *Client) Do(method string, relativePath string, query url.Values, headers map[string]string, body interface{}) (*http.Response, error) {
 	var bodyReader io.Reader
 	if jrm, ok := body.(json.RawMessage); ok {
@@ -53,7 +61,11 @@ func (c *Client) Do(method string, relativePath string, query url.Values, header
 		if headers == nil {
 			headers = map[string]string{}
 		}
-		headers["Content-Type"] = "application/json"
+		if headers["Content-Type"] == "" {
+			headers["Content-Type"] = "application/json"
+		}
+	} else {
+		bodyReader, _ = body.(io.Reader)
 	}
 
 	req, err := c.CreateRequest(method, relativePath, query, bodyReader)
@@ -85,6 +97,25 @@ func (c *Client) ReadJsonResponse(res *http.Response, obj interface{}) error {
 	decoder := json.NewDecoder(res.Body)
 	if err := decoder.Decode(obj); err != nil {
 		return fmt.Errorf("error decoding json body: %w", err)
+	}
+	return nil
+}
+
+func (c *Client) ReadFileResponse(res *http.Response, file io.Writer) error {
+	defer res.Body.Close()
+
+	if res.StatusCode >= 400 {
+		raw, _ := ioutil.ReadAll(res.Body)
+		return &HttpError{
+			StatusCode: res.StatusCode,
+			Status:		res.Status,
+			Body:		string(raw),
+		}
+	}
+
+	_, err := io.Copy(file, res.Body)
+	if err != nil {
+		return fmt.Errorf("error reading file body: %w", err)
 	}
 	return nil
 }
