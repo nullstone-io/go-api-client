@@ -28,6 +28,10 @@ func (c *Client) Providers() Providers {
 	return Providers{Client: c}
 }
 
+func (c *Client) ProviderCredentials() ProviderCredentials {
+	return ProviderCredentials{Client: c}
+}
+
 func (c *Client) Blocks() Blocks {
 	return Blocks{Client: c}
 }
