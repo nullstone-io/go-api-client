@@ -122,8 +122,8 @@ func (c *Client) ReadFileResponse(res *http.Response, file io.Writer) error {
 		raw, _ := ioutil.ReadAll(res.Body)
 		return &HttpError{
 			StatusCode: res.StatusCode,
-			Status:		res.Status,
-			Body:		string(raw),
+			Status:     res.Status,
+			Body:       string(raw),
 		}
 	}
 

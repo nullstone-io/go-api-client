@@ -28,7 +28,6 @@ func (a Apps) List() ([]types.Application, error) {
 	return apps, nil
 }
 
-
 // Get - GET /orgs/:orgName/apps/:id
 func (a Apps) Get(appId int) (*types.Application, error) {
 	res, err := a.Client.Do(http.MethodGet, path.Join("apps", strconv.Itoa(appId)), nil, nil, nil)
