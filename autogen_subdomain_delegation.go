@@ -12,7 +12,7 @@ type AutogenSubdomainDelegation struct {
 	Client *Client
 }
 
-// PUT /orgs/:orgName/subdomains/:subdomainId/envs/:envName/autogen_subdomain/delegation
+// Update - PUT /orgs/:orgName/subdomains/:subdomainId/envs/:envName/autogen_subdomain/delegation
 func (d AutogenSubdomainDelegation) Update(subdomainId int, envName string, delegation *types.AutogenSubdomain) (*types.AutogenSubdomain, error) {
 	rawPayload, _ := json.Marshal(delegation)
 	endpoint := path.Join("subdomains", strconv.Itoa(subdomainId), "envs", envName, "autogen_subdomain", "delegation")
@@ -30,7 +30,7 @@ func (d AutogenSubdomainDelegation) Update(subdomainId int, envName string, dele
 	return &updatedDelegation, nil
 }
 
-// DELETE /orgs/:orgName/subdomains/:subdomainId/envs/:envName/autogen_subdomain/delegation
+// Destroy - DELETE /orgs/:orgName/subdomains/:subdomainId/envs/:envName/autogen_subdomain/delegation
 func (d AutogenSubdomainDelegation) Destroy(subdomainId int, envName string) (found bool, err error) {
 	res, err := d.Client.Do(http.MethodDelete, path.Join("subdomains", strconv.Itoa(subdomainId), "envs", envName, "autogen_subdomain", "delegation"), nil, nil, nil)
 	if err != nil {

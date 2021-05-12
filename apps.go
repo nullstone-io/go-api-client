@@ -79,8 +79,8 @@ func (a Apps) Update(appId int, app *types.Application) (*types.Application, err
 	return &updatedApp, nil
 }
 
-// Delete - DELETE /orgs/:orgName/apps/:id
-func (a Apps) Delete(appId int) (bool, error) {
+// Destroy - DELETE /orgs/:orgName/apps/:id
+func (a Apps) Destroy(appId int) (bool, error) {
 	res, err := a.Client.Do(http.MethodDelete, path.Join("apps", strconv.Itoa(appId)), nil, nil, nil)
 	if err != nil {
 		return false, err

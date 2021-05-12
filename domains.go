@@ -95,8 +95,8 @@ func (s Domains) Update(domainId int, domain *types.Domain) (*types.Domain, erro
 	return &updatedDomain, nil
 }
 
-// Delete - DELETE /orgs/:orgName/domains/:id
-func (s Domains) Delete(domainId int) (bool, error) {
+// Destroy - DELETE /orgs/:orgName/domains/:id
+func (s Domains) Destroy(domainId int) (bool, error) {
 	res, err := s.Client.Do(http.MethodDelete, path.Join("domains", strconv.Itoa(domainId)), nil, nil, nil)
 	if err != nil {
 		return false, err
