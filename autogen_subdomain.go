@@ -11,7 +11,7 @@ type AutogenSubdomain struct {
 	Client *Client
 }
 
-// GET /orgs/:orgName/subdomains/:subdomainId/envs/:envName/autogen_subdomain
+// Get - GET /orgs/:orgName/subdomains/:subdomainId/envs/:envName/autogen_subdomain
 func (a AutogenSubdomain) Get(subdomainId int, envName string) (*types.AutogenSubdomain, error) {
 	res, err := a.Client.Do(http.MethodGet, path.Join("subdomains", strconv.Itoa(subdomainId), "envs", envName, "autogen_subdomain"), nil, nil, nil)
 	if err != nil {
@@ -27,7 +27,7 @@ func (a AutogenSubdomain) Get(subdomainId int, envName string) (*types.AutogenSu
 	return &autogenSubdomain, nil
 }
 
-// POST /orgs/:orgName/subdomains/:subdomainId/envs/:envName/autogen_subdomain
+// Create - POST /orgs/:orgName/subdomains/:subdomainId/envs/:envName/autogen_subdomain
 func (a AutogenSubdomain) Create(subdomainId int, envName string) (*types.AutogenSubdomain, error) {
 	res, err := a.Client.Do(http.MethodPost, path.Join("subdomains", strconv.Itoa(subdomainId), "envs", envName, "autogen_subdomain"), nil, nil, nil)
 	if err != nil {
@@ -43,7 +43,7 @@ func (a AutogenSubdomain) Create(subdomainId int, envName string) (*types.Autoge
 	return &autogenSubdomain, nil
 }
 
-// DELETE /orgs/:orgName/subdomains/:subdomainId/envs/:envName/autogen_subdomain
+// Destroy - DELETE /orgs/:orgName/subdomains/:subdomainId/envs/:envName/autogen_subdomain
 func (a AutogenSubdomain) Destroy(subdomainId int, envName string) (bool, error) {
 	res, err := a.Client.Do(http.MethodDelete, path.Join("subdomains", strconv.Itoa(subdomainId), "envs", envName, "autogen_subdomain"), nil, nil, nil)
 	if err != nil {
