@@ -14,6 +14,12 @@ type Client struct {
 	Config Config
 }
 
+func (c *Client) Org(orgName string) *Client {
+	cfg := c.Config
+	cfg.OrgName = orgName
+	return &Client{Config: cfg}
+}
+
 func (c *Client) Environments() Environments {
 	return Environments{Client: c}
 }
