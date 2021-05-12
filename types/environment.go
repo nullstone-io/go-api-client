@@ -3,8 +3,9 @@ package types
 type Environment struct {
 	IdModel
 	Name           string         `json:"name"`
+	Reference      string         `json:"reference"`
 	OrgName        string         `json:"orgName"`
 	StackName      string         `json:"stackName"`
-	PipelineOrder  int            `json:"pipelineOrder"`
 	ProviderConfig ProviderConfig `json:"providerConfig"`
+	PipelineOrder  int            `json:"pipelineOrder"`
 }
