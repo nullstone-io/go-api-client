@@ -18,6 +18,10 @@ func (c *Client) Environments() Environments {
 	return Environments{Client: c}
 }
 
+func (c *Client) Blocks() Blocks {
+	return Blocks{Client: c}
+}
+
 func (c *Client) Apps() Apps {
 	return Apps{Client: c}
 }

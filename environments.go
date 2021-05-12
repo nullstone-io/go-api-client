@@ -10,6 +10,7 @@ type Environments struct {
 	Client *Client
 }
 
+// List - GET /orgs/:orgName/stacks/:stackName/envs
 func (s Environments) List(stackName string) ([]*types.Environment, error) {
 	res, err := s.Client.Do(http.MethodGet, path.Join("stacks", stackName, "envs"), nil, nil, nil)
 	if err != nil {
