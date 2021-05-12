@@ -25,3 +25,21 @@ func (s ProviderCredentials) Get(providerName string) (*json.RawMessage, error) 
 	}
 	return &creds, nil
 }
+
+// Update - PUT /orgs/:orgName/providers/:name/credentials
+func (s ProviderCredentials) Update(providerName string, credentials interface{}) (*json.RawMessage, error) {
+	rawPayload, _ := json.Marshal(credentials)
+	endpoint := path.Join("providers", providerName, "credentials")
+	res, err := s.Client.Do(http.MethodPut, endpoint, nil, nil, json.RawMessage(rawPayload))
+	if err != nil {
+		return nil, err
+	}
+
+	var updatedCreds json.RawMessage
+	if err := s.Client.ReadJsonResponse(res, &updatedCreds); IsNotFoundError(err) {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &updatedCreds, nil
+}
