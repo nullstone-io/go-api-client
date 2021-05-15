@@ -14,6 +14,32 @@ type Client struct {
 	Config Config
 }
 
+func (c *Client) Org(orgName string) *Client {
+	cfg := c.Config
+	cfg.OrgName = orgName
+	return &Client{Config: cfg}
+}
+
+func (c *Client) Stacks() Stacks {
+	return Stacks{Client: c}
+}
+
+func (c *Client) Environments() Environments {
+	return Environments{Client: c}
+}
+
+func (c *Client) Providers() Providers {
+	return Providers{Client: c}
+}
+
+func (c *Client) ProviderCredentials() ProviderCredentials {
+	return ProviderCredentials{Client: c}
+}
+
+func (c *Client) Blocks() Blocks {
+	return Blocks{Client: c}
+}
+
 func (c *Client) Apps() Apps {
 	return Apps{Client: c}
 }
@@ -108,8 +134,8 @@ func (c *Client) ReadFileResponse(res *http.Response, file io.Writer) error {
 		raw, _ := ioutil.ReadAll(res.Body)
 		return &HttpError{
 			StatusCode: res.StatusCode,
-			Status:		res.Status,
-			Body:		string(raw),
+			Status:     res.Status,
+			Body:       string(raw),
 		}
 	}
 

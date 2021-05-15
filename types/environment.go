@@ -1,14 +1,11 @@
 package types
 
-import (
-	"encoding/json"
-)
-
 type Environment struct {
 	IdModel
-	Name           string          `json:"name"`
-	OrgName        string          `json:"orgName"`
-	StackName      string          `json:"stackName"`
-	PipelineOrder  int             `json:"pipelineOrder"`
-	ProviderConfig json.RawMessage `json:"providerConfig"`
+	Name           string         `json:"name"`
+	Reference      string         `json:"reference"`
+	OrgName        string         `json:"orgName"`
+	StackName      string         `json:"stackName"`
+	ProviderConfig ProviderConfig `json:"providerConfig"`
+	PipelineOrder  int            `json:"pipelineOrder"`
 }

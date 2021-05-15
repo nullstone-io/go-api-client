@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"path"
+	"strconv"
 )
 
 type ModuleVersions struct {
@@ -28,6 +29,40 @@ func (mv ModuleVersions) List(moduleName string) ([]types.ModuleVersion, error) 
 		return nil, err
 	}
 	return moduleVersions, nil
+}
+
+func (mv ModuleVersions) GetDownloadInfo(moduleName string, versionName string) (*types.ModuleDownloadInfo, error) {
+	endpoint, err := mv.Client.Config.ConstructUrl(path.Join("modules", moduleName, "versions", versionName, "download"), nil)
+	if err != nil {
+		return nil, err
+	}
+	res, err := http.Head(endpoint.String())
+	if err != nil {
+		return nil, err
+	}
+
+	resErr := res.Header.Get("X-Error")
+	if resErr != "" {
+		return nil, fmt.Errorf("error getting artifact info: %s", resErr)
+	}
+
+	ext := res.Header.Get("X-File-Extension")
+	if ext == "" {
+		return nil, fmt.Errorf("missing 'X-File-Extension' header")
+	}
+	rawDataLength := res.Header.Get("X-Data-Length")
+	if rawDataLength == "" {
+		return nil, fmt.Errorf("missing 'X-Data-Length' header")
+	}
+
+	info := &types.ModuleDownloadInfo{
+		FileExtension: ext,
+		DownloadUrl:   *endpoint,
+	}
+	if info.DataLength, err = strconv.Atoi(rawDataLength); err != nil {
+		return info, fmt.Errorf("invalid 'X-Data-Length' header: %w", err)
+	}
+	return info, nil
 }
 
 func (mv ModuleVersions) Download(moduleName string, versionName string, file io.Writer) error {

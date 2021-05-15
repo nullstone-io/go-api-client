@@ -2,13 +2,12 @@ package types
 
 type Block struct {
 	IdModel
-	Name                string            `json:"name"`
+	Type                string            `json:"type"`
 	OrgName             string            `json:"orgName"`
 	StackName           string            `json:"stackName"`
-	Layer               string            `json:"layer"`
+	Reference           string            `json:"reference"`
+	Name                string            `json:"name"`
 	ModuleSource        string            `json:"moduleSource"`
 	ModuleSourceVersion string            `json:"moduleSourceVersion"`
 	ParentBlocks        map[string]string `json:"parentBlocks"`
-
-	Application *Application `json:"application,omitempty"`
 }
