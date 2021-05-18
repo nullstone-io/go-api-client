@@ -12,8 +12,24 @@ type Environments struct {
 	Client *Client
 }
 
-// List - GET /orgs/:orgName/stacks/:stackName/envs
-func (s Environments) List(stackName string) ([]*types.Environment, error) {
+// List - GET /orgs/:orgName/stacks/:stackId/envs
+func (s Environments) List(stackId int64) ([]*types.Environment, error) {
+	res, err := s.Client.Do(http.MethodGet, path.Join("stacks", strconv.FormatInt(stackId, 10), "envs"), nil, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var envs []*types.Environment
+	if err := s.Client.ReadJsonResponse(res, &envs); IsNotFoundError(err) {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return envs, nil
+}
+
+// ListByName - GET /orgs/:orgName/stacks/:stackName/envs
+func (s Environments) ListByName(stackName string) ([]*types.Environment, error) {
 	res, err := s.Client.Do(http.MethodGet, path.Join("stacks", stackName, "envs"), nil, nil, nil)
 	if err != nil {
 		return nil, err
@@ -28,9 +44,9 @@ func (s Environments) List(stackName string) ([]*types.Environment, error) {
 	return envs, nil
 }
 
-// Get - GET /orgs/:orgName/stacks/:stackName/envs/:name
-func (s Environments) Get(stackName, envName string) (*types.Environment, error) {
-	res, err := s.Client.Do(http.MethodGet, path.Join("stacks", stackName, "envs", envName), nil, nil, nil)
+// Get - GET /orgs/:orgName/envs/:id
+func (s Environments) Get(envId int64) (*types.Environment, error) {
+	res, err := s.Client.Do(http.MethodGet, path.Join("envs", strconv.FormatInt(envId, 10)), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
