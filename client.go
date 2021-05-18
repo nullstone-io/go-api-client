@@ -44,6 +44,10 @@ func (c *Client) Blocks() Blocks {
 	return Blocks{Client: c}
 }
 
+func (c *Client) BlocksByName() BlocksByName {
+	return BlocksByName{Client: c}
+}
+
 func (c *Client) Apps() Apps {
 	return Apps{Client: c}
 }
