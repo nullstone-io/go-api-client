@@ -28,8 +28,24 @@ func (s Stacks) List() ([]*types.Stack, error) {
 	return stacks, nil
 }
 
-// Get - GET /orgs/:orgName/stacks/:name
-func (s Stacks) Get(stackName string) (*types.Stack, error) {
+// Get - GET /orgs/:orgName/stacks_by_id/:id
+func (s Stacks) Get(stackId int64) (*types.Stack, error) {
+	res, err := s.Client.Do(http.MethodGet, path.Join("stacks_by_id", strconv.FormatInt(stackId, 10)), nil, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var stack types.Stack
+	if err := s.Client.ReadJsonResponse(res, &stack); IsNotFoundError(err) {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &stack, nil
+}
+
+// GetByName - GET /orgs/:orgName/stacks/:name
+func (s Stacks) GetByName(stackName string) (*types.Stack, error) {
 	res, err := s.Client.Do(http.MethodGet, path.Join("stacks", stackName), nil, nil, nil)
 	if err != nil {
 		return nil, err
