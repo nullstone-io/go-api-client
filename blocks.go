@@ -28,6 +28,22 @@ func (s Blocks) List(stackName string) ([]types.Block, error) {
 	return blocks, nil
 }
 
+// Get - GET /orgs/:orgName/blocks/:id
+func (s Blocks) Get(blockId int64) (*types.Block, error) {
+	res, err := s.Client.Do(http.MethodGet, path.Join("blocks", strconv.FormatInt(blockId, 10)), nil, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var block types.Block
+	if err := s.Client.ReadJsonResponse(res, &block); IsNotFoundError(err) {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &block, nil
+}
+
 // GetByName - GET /orgs/:orgName/stacks/:stackName/blocks/:name
 func (s Blocks) GetByName(stackName, blockName string) (*types.Block, error) {
 	res, err := s.Client.Do(http.MethodGet, path.Join("stacks", stackName, "blocks", blockName), nil, nil, nil)
