@@ -44,22 +44,6 @@ func (s Stacks) Get(stackId int64) (*types.Stack, error) {
 	return &stack, nil
 }
 
-// GetByName - GET /orgs/:orgName/stacks/:name
-func (s Stacks) GetByName(stackName string) (*types.Stack, error) {
-	res, err := s.Client.Do(http.MethodGet, path.Join("stacks", stackName), nil, nil, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	var stack types.Stack
-	if err := s.Client.ReadJsonResponse(res, &stack); IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &stack, nil
-}
-
 // Create - POST /orgs/:orgName/stacks
 func (s Stacks) Create(stack *types.Stack) (*types.Stack, error) {
 	rawPayload, _ := json.Marshal(stack)

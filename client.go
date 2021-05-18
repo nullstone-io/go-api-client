@@ -24,6 +24,10 @@ func (c *Client) Stacks() Stacks {
 	return Stacks{Client: c}
 }
 
+func (c *Client) StacksByName() StacksByName {
+	return StacksByName{Client: c}
+}
+
 func (c *Client) Environments() Environments {
 	return Environments{Client: c}
 }
