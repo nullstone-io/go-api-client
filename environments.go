@@ -85,23 +85,6 @@ func (s Environments) Update(stackId, envId int64, env *types.Environment) (*typ
 	return &updatedEnv, nil
 }
 
-// Upsert - PUT/PATCH /orgs/:orgName/stacks_by_id/:stack_id/envs/:id
-func (s Environments) Upsert(stackId, envId int64, env *types.Environment) (*types.Environment, error) {
-	rawPayload, _ := json.Marshal(env)
-	res, err := s.Client.Do(http.MethodPut, s.envPath(stackId, envId), nil, nil, json.RawMessage(rawPayload))
-	if err != nil {
-		return nil, err
-	}
-
-	var updatedEnv types.Environment
-	if err := s.Client.ReadJsonResponse(res, &updatedEnv); IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &updatedEnv, nil
-}
-
 // Destroy - DELETE /orgs/:orgName/stacks_by_id/:stack_id/envs/:id
 func (s Environments) Destroy(stackId, envId int64) (bool, error) {
 	res, err := s.Client.Do(http.MethodDelete, s.envPath(stackId, envId), nil, nil, nil)
