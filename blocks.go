@@ -2,19 +2,26 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
-	"path"
-	"strconv"
 )
 
 type Blocks struct {
 	Client *Client
 }
 
-// List - GET /orgs/:orgName/stacks/:stackName/blocks
-func (s Blocks) List(stackName string) ([]types.Block, error) {
-	res, err := s.Client.Do(http.MethodGet, path.Join("stacks", stackName, "blocks"), nil, nil, nil)
+func (s Blocks) basePath(stackId int64) string {
+	return fmt.Sprintf("stacks_by_id/%d/blocks", stackId)
+}
+
+func (s Blocks) blockPath(stackId, blockId int64) string {
+	return fmt.Sprintf("stacks_by_id/%d/blocks/%d", stackId, blockId)
+}
+
+// List - GET /orgs/:orgName/stacks_by_id/:stack_id/blocks
+func (s Blocks) List(stackId int64) ([]types.Block, error) {
+	res, err := s.Client.Do(http.MethodGet, s.basePath(stackId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -28,9 +35,9 @@ func (s Blocks) List(stackName string) ([]types.Block, error) {
 	return blocks, nil
 }
 
-// GetByName - GET /orgs/:orgName/stacks/:stackName/blocks/:name
-func (s Blocks) GetByName(stackName, blockName string) (*types.Block, error) {
-	res, err := s.Client.Do(http.MethodGet, path.Join("stacks", stackName, "blocks", blockName), nil, nil, nil)
+// Get - GET /orgs/:orgName/stacks_by_id/:stack_id/blocks/:id
+func (s Blocks) Get(stackId, blockId int64) (*types.Block, error) {
+	res, err := s.Client.Do(http.MethodGet, s.blockPath(stackId, blockId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -44,10 +51,10 @@ func (s Blocks) GetByName(stackName, blockName string) (*types.Block, error) {
 	return &block, nil
 }
 
-// Create - POST /orgs/:orgName/stacks/:stackName/blocks
-func (s Blocks) Create(stackName string, block *types.Block) (*types.Block, error) {
+// Create - POST /orgs/:orgName/stacks_by_id/:stack_id/blocks
+func (s Blocks) Create(stackId int64, block *types.Block) (*types.Block, error) {
 	rawPayload, _ := json.Marshal(block)
-	res, err := s.Client.Do(http.MethodPost, path.Join("stacks", stackName, "blocks"), nil, nil, json.RawMessage(rawPayload))
+	res, err := s.Client.Do(http.MethodPost, s.basePath(stackId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -61,11 +68,10 @@ func (s Blocks) Create(stackName string, block *types.Block) (*types.Block, erro
 	return &updatedBlock, nil
 }
 
-// Update - PUT/PATCH /orgs/:orgName/blocks/:id
-func (s Blocks) Update(blockId int, block *types.Block) (*types.Block, error) {
+// Update - PUT/PATCH /orgs/:orgName/stacks_by_id/:stack_id/blocks/:id
+func (s Blocks) Update(stackId, blockId int64, block *types.Block) (*types.Block, error) {
 	rawPayload, _ := json.Marshal(block)
-	endpoint := path.Join("blocks", strconv.Itoa(blockId))
-	res, err := s.Client.Do(http.MethodPut, endpoint, nil, nil, json.RawMessage(rawPayload))
+	res, err := s.Client.Do(http.MethodPut, s.blockPath(stackId, blockId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -79,9 +85,9 @@ func (s Blocks) Update(blockId int, block *types.Block) (*types.Block, error) {
 	return &updatedBlock, nil
 }
 
-// Destroy - DELETE /orgs/:orgName/stacks/:stackName/blocks/:name
-func (s Blocks) Destroy(stackName, blockName string) (bool, error) {
-	res, err := s.Client.Do(http.MethodDelete, path.Join("stacks", stackName, "blocks", blockName), nil, nil, nil)
+// Destroy - DELETE /orgs/:orgName/stacks_by_id/:stack_id/blocks/:name
+func (s Blocks) Destroy(stackId, blockId int64) (bool, error) {
+	res, err := s.Client.Do(http.MethodDelete, s.blockPath(stackId, blockId), nil, nil, nil)
 	if err != nil {
 		return false, err
 	}

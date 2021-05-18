@@ -11,15 +11,22 @@ const (
 
 type Workspace struct {
 	UidCreatedModel
-	OrgName   string    `json:"orgName"`
-	StackName string    `json:"stackName"`
-	BlockName string    `json:"blockName"`
-	EnvName   string    `json:"envName"`
-	Status    string    `json:"status"`
-	StatusAt  time.Time `json:"statusAt"`
+	OrgName  string    `json:"orgName"`
+	StackId  int64     `json:"stackId"`
+	BlockId  int64     `json:"blockId"`
+	EnvId    int64     `json:"envId"`
+	Status   string    `json:"status"`
+	StatusAt time.Time `json:"statusAt"`
 
 	Module            *Module           `json:"module,omitempty"`
 	ActiveRun         *Run              `json:"activeRun,omitempty"`
 	LastSuccessfulRun *Run              `json:"lastSuccessfulRun,omitempty"`
 	Dependencies      []WorkspaceTarget `json:"dependencies,omitempty"`
+
+	// Deprecated
+	StackName string `json:"stackName"`
+	// Deprecated
+	BlockName string `json:"blockName"`
+	// Deprecated
+	EnvName string `json:"envName"`
 }

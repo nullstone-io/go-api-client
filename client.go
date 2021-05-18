@@ -24,8 +24,16 @@ func (c *Client) Stacks() Stacks {
 	return Stacks{Client: c}
 }
 
+func (c *Client) StacksByName() StacksByName {
+	return StacksByName{Client: c}
+}
+
 func (c *Client) Environments() Environments {
 	return Environments{Client: c}
+}
+
+func (c *Client) EnvironmentsByName() EnvironmentsByName {
+	return EnvironmentsByName{Client: c}
 }
 
 func (c *Client) Providers() Providers {
@@ -38,6 +46,10 @@ func (c *Client) ProviderCredentials() ProviderCredentials {
 
 func (c *Client) Blocks() Blocks {
 	return Blocks{Client: c}
+}
+
+func (c *Client) BlocksByName() BlocksByName {
+	return BlocksByName{Client: c}
 }
 
 func (c *Client) Apps() Apps {
