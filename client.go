@@ -28,6 +28,10 @@ func (c *Client) Environments() Environments {
 	return Environments{Client: c}
 }
 
+func (c *Client) EnvironmentsByName() EnvironmentsByName {
+	return EnvironmentsByName{Client: c}
+}
+
 func (c *Client) Providers() Providers {
 	return Providers{Client: c}
 }
