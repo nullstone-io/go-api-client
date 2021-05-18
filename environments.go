@@ -51,7 +51,7 @@ func (s Environments) Get(stackId, envId int64) (*types.Environment, error) {
 	return &env, nil
 }
 
-// Create - POST /orgs/:orgName/stacks_by_id/:stack_id/envs/:id
+// Create - POST /orgs/:orgName/stacks_by_id/:stack_id/envs
 func (s Environments) Create(stackId int64, env *types.Environment) (*types.Environment, error) {
 	rawPayload, _ := json.Marshal(env)
 	res, err := s.Client.Do(http.MethodPost, s.basePath(stackId), nil, nil, json.RawMessage(rawPayload))
