@@ -60,6 +60,22 @@ func (s Environments) Get(envId int64) (*types.Environment, error) {
 	return &env, nil
 }
 
+// GetByName - GET /orgs/:orgName/stacks/:stack_name/envs/:name
+func (s Environments) GetByName(stackName, envName string) (*types.Environment, error) {
+	res, err := s.Client.Do(http.MethodGet, path.Join("stacks", stackName, "envs", envName), nil, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var env types.Environment
+	if err := s.Client.ReadJsonResponse(res, &env); IsNotFoundError(err) {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &env, nil
+}
+
 // Create - POST /orgs/:orgName/stacks/:stackName/envs
 func (s Environments) Create(stackName string, env *types.Environment) (*types.Environment, error) {
 	rawPayload, _ := json.Marshal(env)
