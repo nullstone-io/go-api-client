@@ -84,6 +84,10 @@ func (c *Client) Subdomains() Subdomains {
 	return Subdomains{Client: c}
 }
 
+func (c *Client) SubdomainsByName() SubdomainsByName {
+	return SubdomainsByName{Client: c}
+}
+
 func (c *Client) Modules() Modules {
 	return Modules{Client: c}
 }
