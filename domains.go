@@ -2,19 +2,26 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
-	"path"
-	"strconv"
 )
 
 type Domains struct {
 	Client *Client
 }
 
+func (s Domains) basePath() string {
+	return fmt.Sprintf("domains")
+}
+
+func (s Domains) domainPath(domainId int64) string {
+	return fmt.Sprintf("domains/%d", domainId)
+}
+
 // List - GET /orgs/:orgName/domains
 func (s Domains) List() ([]types.Domain, error) {
-	res, err := s.Client.Do(http.MethodGet, path.Join("domains"), nil, nil, nil)
+	res, err := s.Client.Do(http.MethodGet, s.basePath(), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -29,24 +36,8 @@ func (s Domains) List() ([]types.Domain, error) {
 }
 
 // Get - GET /orgs/:orgName/domains/:id
-func (s Domains) Get(domainId int) (*types.Domain, error) {
-	res, err := s.Client.Do(http.MethodGet, path.Join("domains", strconv.Itoa(domainId)), nil, nil, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	var domain types.Domain
-	if err := s.Client.ReadJsonResponse(res, &domain); IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &domain, nil
-}
-
-// GetByName - GET /orgs/:orgName/stacks/:stackName/domains/:name
-func (s Domains) GetByName(stackName, domainName string) (*types.Domain, error) {
-	res, err := s.Client.Do(http.MethodGet, path.Join("stacks", stackName, "domains", domainName), nil, nil, nil)
+func (s Domains) Get(domainId int64) (*types.Domain, error) {
+	res, err := s.Client.Do(http.MethodGet, s.domainPath(domainId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +54,7 @@ func (s Domains) GetByName(stackName, domainName string) (*types.Domain, error) 
 // Create - POST /orgs/:orgName/domains
 func (s Domains) Create(domain *types.Domain) (*types.Domain, error) {
 	rawPayload, _ := json.Marshal(domain)
-	res, err := s.Client.Do(http.MethodPost, path.Join("domains"), nil, nil, json.RawMessage(rawPayload))
+	res, err := s.Client.Do(http.MethodPost, s.basePath(), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -78,10 +69,9 @@ func (s Domains) Create(domain *types.Domain) (*types.Domain, error) {
 }
 
 // Update - PUT/PATCH /orgs/:orgName/domains/:id
-func (s Domains) Update(domainId int, domain *types.Domain) (*types.Domain, error) {
+func (s Domains) Update(domainId int64, domain *types.Domain) (*types.Domain, error) {
 	rawPayload, _ := json.Marshal(domain)
-	endpoint := path.Join("domains", strconv.Itoa(domainId))
-	res, err := s.Client.Do(http.MethodPut, endpoint, nil, nil, json.RawMessage(rawPayload))
+	res, err := s.Client.Do(http.MethodPut, s.domainPath(domainId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -96,8 +86,8 @@ func (s Domains) Update(domainId int, domain *types.Domain) (*types.Domain, erro
 }
 
 // Destroy - DELETE /orgs/:orgName/domains/:id
-func (s Domains) Destroy(domainId int) (bool, error) {
-	res, err := s.Client.Do(http.MethodDelete, path.Join("domains", strconv.Itoa(domainId)), nil, nil, nil)
+func (s Domains) Destroy(domainId int64) (bool, error) {
+	res, err := s.Client.Do(http.MethodDelete, s.domainPath(domainId), nil, nil, nil)
 	if err != nil {
 		return false, err
 	}
