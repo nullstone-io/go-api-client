@@ -1,18 +1,19 @@
 package api
 
 import (
+	"fmt"
 	"github.com/google/uuid"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
-	"path"
 )
 
 type RunConfigs struct {
 	Client *Client
 }
 
-func (c RunConfigs) GetLatest(stackName string, workspaceUid uuid.UUID) (*types.RunConfig, error) {
-	res, err := c.Client.Do(http.MethodGet, path.Join("stacks", stackName, "workspaces", workspaceUid.String(), "run-configs", "latest"), nil, nil, nil)
+func (c RunConfigs) GetLatest(stackId int64, workspaceUid uuid.UUID) (*types.RunConfig, error) {
+	endpoint := fmt.Sprintf("stacks/%d/workspaces/%s/run-configs/latest", stackId, workspaceUid)
+	res, err := c.Client.Do(http.MethodGet, endpoint, nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
