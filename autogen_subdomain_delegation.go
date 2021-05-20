@@ -2,21 +2,23 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
-	"path"
-	"strconv"
 )
 
 type AutogenSubdomainDelegation struct {
 	Client *Client
 }
 
+func (d AutogenSubdomainDelegation) path(subdomainId int64, envName string) string {
+	return fmt.Sprintf("subdomains/%d/envs/%s/autogen_subdomain/delegation", subdomainId, envName)
+}
+
 // Update - PUT /orgs/:orgName/subdomains/:subdomainId/envs/:envName/autogen_subdomain/delegation
-func (d AutogenSubdomainDelegation) Update(subdomainId int, envName string, delegation *types.AutogenSubdomain) (*types.AutogenSubdomain, error) {
+func (d AutogenSubdomainDelegation) Update(subdomainId int64, envName string, delegation *types.AutogenSubdomain) (*types.AutogenSubdomain, error) {
 	rawPayload, _ := json.Marshal(delegation)
-	endpoint := path.Join("subdomains", strconv.Itoa(subdomainId), "envs", envName, "autogen_subdomain", "delegation")
-	res, err := d.Client.Do(http.MethodPut, endpoint, nil, nil, json.RawMessage(rawPayload))
+	res, err := d.Client.Do(http.MethodPut, d.path(subdomainId, envName), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -31,8 +33,8 @@ func (d AutogenSubdomainDelegation) Update(subdomainId int, envName string, dele
 }
 
 // Destroy - DELETE /orgs/:orgName/subdomains/:subdomainId/envs/:envName/autogen_subdomain/delegation
-func (d AutogenSubdomainDelegation) Destroy(subdomainId int, envName string) (found bool, err error) {
-	res, err := d.Client.Do(http.MethodDelete, path.Join("subdomains", strconv.Itoa(subdomainId), "envs", envName, "autogen_subdomain", "delegation"), nil, nil, nil)
+func (d AutogenSubdomainDelegation) Destroy(subdomainId int64, envName string) (found bool, err error) {
+	res, err := d.Client.Do(http.MethodDelete, d.path(subdomainId, envName), nil, nil, nil)
 	if err != nil {
 		return false, err
 	}

@@ -2,44 +2,28 @@ package types
 
 import (
 	"fmt"
-	"strings"
 )
 
 type WorkspaceTarget struct {
-	OrgName   string `json:"orgName"`
-	StackName string `json:"stackName"`
-	BlockName string `json:"blockName"`
-	EnvName   string `json:"envName"`
+	StackId int64 `json:"stackId"`
+	BlockId int64 `json:"blockId"`
+	EnvId   int64 `json:"envId"`
 }
 
 // Id is a string representation of the workspace target
 func (t WorkspaceTarget) Id() string {
-	return fmt.Sprintf("%s/%s/%s/%s", t.OrgName, t.StackName, t.BlockName, t.EnvName)
+	return fmt.Sprintf("%d/%d/%d", t.StackId, t.BlockId, t.EnvId)
 }
 
 // FindRelativeConnection returns the PromotionResolveTarget based on the connection target
-// The connection target can be defined as <stack>.<env>.<block>, <env>.<block>, or <block>
-// If stack or env are not specified in the target value, these are pulled from the source target
-func (t WorkspaceTarget) FindRelativeConnection(connection string) WorkspaceTarget {
-	result := WorkspaceTarget{
-		OrgName:   t.OrgName,
-		StackName: t.StackName,
-		BlockName: t.BlockName,
-		EnvName:   t.EnvName,
+func (t WorkspaceTarget) FindRelativeConnection(connection BlockConnection) WorkspaceTarget {
+	ref := WorkspaceTarget{
+		StackId: connection.StackId,
+		BlockId: connection.BlockId,
+		EnvId:   t.EnvId,
 	}
-
-	tokens := strings.SplitN(connection, ".", 3)
-	switch len(tokens) {
-	case 3:
-		result.StackName = tokens[0]
-		result.EnvName = tokens[1]
-		result.BlockName = tokens[2]
-	case 2:
-		result.EnvName = tokens[0]
-		result.BlockName = tokens[1]
-	case 1:
-		result.BlockName = connection
+	if connection.EnvId != nil {
+		ref.EnvId = *connection.EnvId
 	}
-
-	return result
+	return ref
 }

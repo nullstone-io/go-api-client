@@ -1,19 +1,22 @@
 package api
 
 import (
+	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
-	"path"
-	"strconv"
 )
 
 type AutogenSubdomain struct {
 	Client *Client
 }
 
+func (d AutogenSubdomain) path(subdomainId int64, envName string) string {
+	return fmt.Sprintf("subdomains/%d/envs/%s/autogen_subdomain", subdomainId, envName)
+}
+
 // Get - GET /orgs/:orgName/subdomains/:subdomainId/envs/:envName/autogen_subdomain
-func (a AutogenSubdomain) Get(subdomainId int, envName string) (*types.AutogenSubdomain, error) {
-	res, err := a.Client.Do(http.MethodGet, path.Join("subdomains", strconv.Itoa(subdomainId), "envs", envName, "autogen_subdomain"), nil, nil, nil)
+func (a AutogenSubdomain) Get(subdomainId int64, envName string) (*types.AutogenSubdomain, error) {
+	res, err := a.Client.Do(http.MethodGet, a.path(subdomainId, envName), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -28,8 +31,8 @@ func (a AutogenSubdomain) Get(subdomainId int, envName string) (*types.AutogenSu
 }
 
 // Create - POST /orgs/:orgName/subdomains/:subdomainId/envs/:envName/autogen_subdomain
-func (a AutogenSubdomain) Create(subdomainId int, envName string) (*types.AutogenSubdomain, error) {
-	res, err := a.Client.Do(http.MethodPost, path.Join("subdomains", strconv.Itoa(subdomainId), "envs", envName, "autogen_subdomain"), nil, nil, nil)
+func (a AutogenSubdomain) Create(subdomainId int64, envName string) (*types.AutogenSubdomain, error) {
+	res, err := a.Client.Do(http.MethodPost, a.path(subdomainId, envName), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -44,8 +47,8 @@ func (a AutogenSubdomain) Create(subdomainId int, envName string) (*types.Autoge
 }
 
 // Destroy - DELETE /orgs/:orgName/subdomains/:subdomainId/envs/:envName/autogen_subdomain
-func (a AutogenSubdomain) Destroy(subdomainId int, envName string) (bool, error) {
-	res, err := a.Client.Do(http.MethodDelete, path.Join("subdomains", strconv.Itoa(subdomainId), "envs", envName, "autogen_subdomain"), nil, nil, nil)
+func (a AutogenSubdomain) Destroy(subdomainId int64, envName string) (bool, error) {
+	res, err := a.Client.Do(http.MethodDelete, a.path(subdomainId, envName), nil, nil, nil)
 	if err != nil {
 		return false, err
 	}
