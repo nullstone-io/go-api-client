@@ -20,7 +20,7 @@ type Workspace struct {
 
 	Module            *Module           `json:"module,omitempty"`
 	ActiveRun         *Run              `json:"activeRun,omitempty"`
-	LastSuccessfulRun *Run              `json:"lastSuccessfulRun,omitempty"`
+	LastFinishedRun *Run              `json:"lastFinishedRun,omitempty"`
 	Dependencies      []WorkspaceTarget `json:"dependencies,omitempty"`
 
 	// Deprecated
