@@ -12,14 +12,14 @@ type Stacks struct {
 }
 
 func (s Stacks) basePath() string {
-	return "stacks_by_id"
+	return "stacks"
 }
 
 func (s Stacks) stackPath(stackId int64) string {
-	return fmt.Sprintf("stacks_by_id/%d", stackId)
+	return fmt.Sprintf("stacks/%d", stackId)
 }
 
-// List - GET /orgs/:orgName/stacks_by_id
+// List - GET /orgs/:orgName/stacks
 func (s Stacks) List() ([]*types.Stack, error) {
 	res, err := s.Client.Do(http.MethodGet, s.basePath(), nil, nil, nil)
 	if err != nil {
@@ -35,7 +35,7 @@ func (s Stacks) List() ([]*types.Stack, error) {
 	return stacks, nil
 }
 
-// Get - GET /orgs/:orgName/stacks_by_id/:id
+// Get - GET /orgs/:orgName/stacks/:id
 func (s Stacks) Get(stackId int64) (*types.Stack, error) {
 	res, err := s.Client.Do(http.MethodGet, s.stackPath(stackId), nil, nil, nil)
 	if err != nil {
@@ -51,7 +51,7 @@ func (s Stacks) Get(stackId int64) (*types.Stack, error) {
 	return &stack, nil
 }
 
-// Create - POST /orgs/:orgName/stacks_by_id
+// Create - POST /orgs/:orgName/stacks
 func (s Stacks) Create(stack *types.Stack) (*types.Stack, error) {
 	rawPayload, _ := json.Marshal(stack)
 	res, err := s.Client.Do(http.MethodPost, s.basePath(), nil, nil, json.RawMessage(rawPayload))
@@ -68,7 +68,7 @@ func (s Stacks) Create(stack *types.Stack) (*types.Stack, error) {
 	return &updatedStack, nil
 }
 
-// Update - PUT/PATCH /orgs/:orgName/stacks_by_id/:id
+// Update - PUT/PATCH /orgs/:orgName/stacks/:id
 func (s Stacks) Update(stackId int64, stack *types.Stack) (*types.Stack, error) {
 	rawPayload, _ := json.Marshal(stack)
 	res, err := s.Client.Do(http.MethodPut, s.stackPath(stackId), nil, nil, json.RawMessage(rawPayload))
@@ -85,7 +85,7 @@ func (s Stacks) Update(stackId int64, stack *types.Stack) (*types.Stack, error) 
 	return &updatedStack, nil
 }
 
-// Destroy - DELETE /orgs/:orgName/stacks_by_id/:name
+// Destroy - DELETE /orgs/:orgName/stacks/:id
 func (s Stacks) Destroy(stackId int64) (bool, error) {
 	res, err := s.Client.Do(http.MethodDelete, s.stackPath(stackId), nil, nil, nil)
 	if err != nil {

@@ -12,14 +12,14 @@ type Environments struct {
 }
 
 func (s Environments) basePath(stackId int64) string {
-	return fmt.Sprintf("stacks_by_id/%d/envs", stackId)
+	return fmt.Sprintf("stacks/%d/envs", stackId)
 }
 
 func (s Environments) envPath(stackId, envId int64) string {
-	return fmt.Sprintf("stacks_by_id/%d/envs/%d", stackId, envId)
+	return fmt.Sprintf("stacks/%d/envs/%d", stackId, envId)
 }
 
-// List - GET /orgs/:orgName/stacks_by_id/:stackId/envs
+// List - GET /orgs/:orgName/stacks/:stackId/envs
 func (s Environments) List(stackId int64) ([]*types.Environment, error) {
 	res, err := s.Client.Do(http.MethodGet, s.basePath(stackId), nil, nil, nil)
 	if err != nil {
@@ -35,7 +35,7 @@ func (s Environments) List(stackId int64) ([]*types.Environment, error) {
 	return envs, nil
 }
 
-// Get - GET /orgs/:orgName/stacks_by_id/:stack_id/envs/:id
+// Get - GET /orgs/:orgName/stacks/:stack_id/envs/:id
 func (s Environments) Get(stackId, envId int64) (*types.Environment, error) {
 	res, err := s.Client.Do(http.MethodGet, s.envPath(stackId, envId), nil, nil, nil)
 	if err != nil {
@@ -51,7 +51,7 @@ func (s Environments) Get(stackId, envId int64) (*types.Environment, error) {
 	return &env, nil
 }
 
-// Create - POST /orgs/:orgName/stacks_by_id/:stack_id/envs
+// Create - POST /orgs/:orgName/stacks/:stack_id/envs
 func (s Environments) Create(stackId int64, env *types.Environment) (*types.Environment, error) {
 	rawPayload, _ := json.Marshal(env)
 	res, err := s.Client.Do(http.MethodPost, s.basePath(stackId), nil, nil, json.RawMessage(rawPayload))
@@ -68,7 +68,7 @@ func (s Environments) Create(stackId int64, env *types.Environment) (*types.Envi
 	return &updatedEnv, nil
 }
 
-// Update - PUT/PATCH /orgs/:orgName/stacks_by_id/:stack_id/envs/:id
+// Update - PUT/PATCH /orgs/:orgName/stacks/:stack_id/envs/:id
 func (s Environments) Update(stackId, envId int64, env *types.Environment) (*types.Environment, error) {
 	rawPayload, _ := json.Marshal(env)
 	res, err := s.Client.Do(http.MethodPut, s.envPath(stackId, envId), nil, nil, json.RawMessage(rawPayload))
@@ -85,7 +85,7 @@ func (s Environments) Update(stackId, envId int64, env *types.Environment) (*typ
 	return &updatedEnv, nil
 }
 
-// Destroy - DELETE /orgs/:orgName/stacks_by_id/:stack_id/envs/:id
+// Destroy - DELETE /orgs/:orgName/stacks/:stack_id/envs/:id
 func (s Environments) Destroy(stackId, envId int64) (bool, error) {
 	res, err := s.Client.Do(http.MethodDelete, s.envPath(stackId, envId), nil, nil, nil)
 	if err != nil {
