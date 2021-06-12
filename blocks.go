@@ -12,14 +12,14 @@ type Blocks struct {
 }
 
 func (s Blocks) basePath(stackId int64) string {
-	return fmt.Sprintf("stacks_by_id/%d/blocks", stackId)
+	return fmt.Sprintf("stacks/%d/blocks", stackId)
 }
 
 func (s Blocks) blockPath(stackId, blockId int64) string {
-	return fmt.Sprintf("stacks_by_id/%d/blocks/%d", stackId, blockId)
+	return fmt.Sprintf("stacks/%d/blocks/%d", stackId, blockId)
 }
 
-// List - GET /orgs/:orgName/stacks_by_id/:stack_id/blocks
+// List - GET /orgs/:orgName/stacks/:stack_id/blocks
 func (s Blocks) List(stackId int64) ([]types.Block, error) {
 	res, err := s.Client.Do(http.MethodGet, s.basePath(stackId), nil, nil, nil)
 	if err != nil {
@@ -35,7 +35,7 @@ func (s Blocks) List(stackId int64) ([]types.Block, error) {
 	return blocks, nil
 }
 
-// Get - GET /orgs/:orgName/stacks_by_id/:stack_id/blocks/:id
+// Get - GET /orgs/:orgName/stacks/:stack_id/blocks/:id
 func (s Blocks) Get(stackId, blockId int64) (*types.Block, error) {
 	res, err := s.Client.Do(http.MethodGet, s.blockPath(stackId, blockId), nil, nil, nil)
 	if err != nil {
@@ -51,7 +51,7 @@ func (s Blocks) Get(stackId, blockId int64) (*types.Block, error) {
 	return &block, nil
 }
 
-// Create - POST /orgs/:orgName/stacks_by_id/:stack_id/blocks
+// Create - POST /orgs/:orgName/stacks/:stack_id/blocks
 func (s Blocks) Create(stackId int64, block *types.Block) (*types.Block, error) {
 	rawPayload, _ := json.Marshal(block)
 	res, err := s.Client.Do(http.MethodPost, s.basePath(stackId), nil, nil, json.RawMessage(rawPayload))
@@ -68,7 +68,7 @@ func (s Blocks) Create(stackId int64, block *types.Block) (*types.Block, error) 
 	return &updatedBlock, nil
 }
 
-// Update - PUT/PATCH /orgs/:orgName/stacks_by_id/:stack_id/blocks/:id
+// Update - PUT/PATCH /orgs/:orgName/stacks/:stack_id/blocks/:id
 func (s Blocks) Update(stackId, blockId int64, block *types.Block) (*types.Block, error) {
 	rawPayload, _ := json.Marshal(block)
 	res, err := s.Client.Do(http.MethodPut, s.blockPath(stackId, blockId), nil, nil, json.RawMessage(rawPayload))
@@ -85,7 +85,7 @@ func (s Blocks) Update(stackId, blockId int64, block *types.Block) (*types.Block
 	return &updatedBlock, nil
 }
 
-// Destroy - DELETE /orgs/:orgName/stacks_by_id/:stack_id/blocks/:name
+// Destroy - DELETE /orgs/:orgName/stacks/:stack_id/blocks/:id
 func (s Blocks) Destroy(stackId, blockId int64) (bool, error) {
 	res, err := s.Client.Do(http.MethodDelete, s.blockPath(stackId, blockId), nil, nil, nil)
 	if err != nil {
