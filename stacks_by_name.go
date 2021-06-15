@@ -10,6 +10,21 @@ import (
 type StacksByName struct {
 	Client *Client
 }
+// Get - GET /orgs/:orgName/stacks_by_name/:name
+func (s StacksByName) Get(stackName string) (*types.Environment, error) {
+	res, err := s.Client.Do(http.MethodGet, path.Join("stacks_by_name", stackName), nil, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var env types.Environment
+	if err := s.Client.ReadJsonResponse(res, &env); IsNotFoundError(err) {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &env, nil
+}
 
 // Upsert - PUT/PATCH /orgs/:orgName/stacks_by_name/:name
 func (s StacksByName) Upsert(stackName string, stack *types.Stack) (*types.Stack, error) {
