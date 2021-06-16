@@ -10,13 +10,13 @@ type AutogenSubdomain struct {
 	Client *Client
 }
 
-func (d AutogenSubdomain) path(subdomainId int64, envName string) string {
-	return fmt.Sprintf("subdomains/%d/envs/%s/autogen_subdomain", subdomainId, envName)
+func (AutogenSubdomain) path(subdomainId, envId int64) string {
+	return fmt.Sprintf("subdomains/%d/envs/%d/autogen_subdomain", subdomainId, envId)
 }
 
-// Get - GET /orgs/:orgName/subdomains/:subdomainId/envs/:envName/autogen_subdomain
-func (a AutogenSubdomain) Get(subdomainId int64, envName string) (*types.AutogenSubdomain, error) {
-	res, err := a.Client.Do(http.MethodGet, a.path(subdomainId, envName), nil, nil, nil)
+// Get - GET /orgs/:orgName/subdomains/:subdomainId/envs/:envId/autogen_subdomain
+func (a AutogenSubdomain) Get(subdomainId, envId int64) (*types.AutogenSubdomain, error) {
+	res, err := a.Client.Do(http.MethodGet, a.path(subdomainId, envId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -30,9 +30,9 @@ func (a AutogenSubdomain) Get(subdomainId int64, envName string) (*types.Autogen
 	return &autogenSubdomain, nil
 }
 
-// Create - POST /orgs/:orgName/subdomains/:subdomainId/envs/:envName/autogen_subdomain
-func (a AutogenSubdomain) Create(subdomainId int64, envName string) (*types.AutogenSubdomain, error) {
-	res, err := a.Client.Do(http.MethodPost, a.path(subdomainId, envName), nil, nil, nil)
+// Create - POST /orgs/:orgName/subdomains/:subdomainId/envs/:envId/autogen_subdomain
+func (a AutogenSubdomain) Create(subdomainId, envId int64) (*types.AutogenSubdomain, error) {
+	res, err := a.Client.Do(http.MethodPost, a.path(subdomainId, envId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -46,9 +46,9 @@ func (a AutogenSubdomain) Create(subdomainId int64, envName string) (*types.Auto
 	return &autogenSubdomain, nil
 }
 
-// Destroy - DELETE /orgs/:orgName/subdomains/:subdomainId/envs/:envName/autogen_subdomain
-func (a AutogenSubdomain) Destroy(subdomainId int64, envName string) (bool, error) {
-	res, err := a.Client.Do(http.MethodDelete, a.path(subdomainId, envName), nil, nil, nil)
+// Destroy - DELETE /orgs/:orgName/subdomains/:subdomainId/envs/:envId/autogen_subdomain
+func (a AutogenSubdomain) Destroy(subdomainId, envId int64) (bool, error) {
+	res, err := a.Client.Do(http.MethodDelete, a.path(subdomainId, envId), nil, nil, nil)
 	if err != nil {
 		return false, err
 	}
