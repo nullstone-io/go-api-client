@@ -10,6 +10,7 @@ import (
 type StacksByName struct {
 	Client *Client
 }
+
 // Get - GET /orgs/:orgName/stacks_by_name/:name
 func (s StacksByName) Get(stackName string) (*types.Environment, error) {
 	res, err := s.Client.Do(http.MethodGet, path.Join("stacks_by_name", stackName), nil, nil, nil)
