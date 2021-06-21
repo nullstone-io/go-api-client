@@ -18,10 +18,10 @@ type Workspace struct {
 	Status   string    `json:"status"`
 	StatusAt time.Time `json:"statusAt"`
 
-	Module            *Module           `json:"module,omitempty"`
-	ActiveRun         *Run              `json:"activeRun,omitempty"`
+	Module          *Module           `json:"module,omitempty"`
+	ActiveRun       *Run              `json:"activeRun,omitempty"`
 	LastFinishedRun *Run              `json:"lastFinishedRun,omitempty"`
-	Dependencies      []WorkspaceTarget `json:"dependencies,omitempty"`
+	Dependencies    []WorkspaceTarget `json:"dependencies,omitempty"`
 
 	// Deprecated
 	StackName string `json:"stackName"`
