@@ -52,6 +52,10 @@ func (c *Client) Apps() Apps {
 	return Apps{Client: c}
 }
 
+func (c *Client) AppCapabilities() AppCapabilities {
+	return AppCapabilities{Client: c}
+}
+
 func (c *Client) AppEnvs() AppEnvs {
 	return AppEnvs{Client: c}
 }
