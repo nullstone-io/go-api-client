@@ -16,7 +16,7 @@ type Connection struct {
 
 	// Reference refers to the block that fulfills the connection
 	// TODO: Rename to Target once Target is deprecated
-	Reference *BlockConnection `json:"reference"`
+	Reference *ConnectionTarget `json:"reference"`
 
 	// Unused signals that the connection is not used by the current module version
 	// During promotion of a module into a new workspace, it's possible that the new version removes connections
