@@ -16,7 +16,7 @@ func (t WorkspaceTarget) Id() string {
 }
 
 // FindRelativeConnection returns the PromotionResolveTarget based on the connection target
-func (t WorkspaceTarget) FindRelativeConnection(connection BlockConnection) WorkspaceTarget {
+func (t WorkspaceTarget) FindRelativeConnection(connection ConnectionTarget) WorkspaceTarget {
 	ref := WorkspaceTarget{
 		StackId: connection.StackId,
 		BlockId: connection.BlockId,
