@@ -1,12 +1,9 @@
 package types
 
-type Block struct {
+type Capability struct {
 	IdModel
-	Type                string                      `json:"type"`
 	OrgName             string                      `json:"orgName"`
-	StackId             int64                       `json:"stackId"`
-	StackName           string                      `json:"stackName"`
-	Reference           string                      `json:"reference"`
+	AppId               int64                       `json:"appId"`
 	Name                string                      `json:"name"`
 	ModuleSource        string                      `json:"moduleSource"`
 	ModuleSourceVersion string                      `json:"moduleSourceVersion"`
