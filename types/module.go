@@ -12,6 +12,7 @@ type Module struct {
 	Category      CategoryName  `json:"category"`
 	Type          string        `json:"type"`
 	ProviderTypes ProviderTypes `json:"providerTypes"`
+	Status        ModuleStatus  `json:"status"`
 
 	Versions []ModuleVersion `json:"versions,omitempty"`
 }
