@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
 )
@@ -27,7 +28,7 @@ func (s Domains) List() ([]types.Domain, error) {
 	}
 
 	var domains []types.Domain
-	if err := s.Client.ReadJsonResponse(res, &domains); IsNotFoundError(err) {
+	if err := s.Client.ReadJsonResponse(res, &domains); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -43,7 +44,7 @@ func (s Domains) Get(domainId int64) (*types.Domain, error) {
 	}
 
 	var domain types.Domain
-	if err := s.Client.ReadJsonResponse(res, &domain); IsNotFoundError(err) {
+	if err := s.Client.ReadJsonResponse(res, &domain); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -60,7 +61,7 @@ func (s Domains) Create(domain *types.Domain) (*types.Domain, error) {
 	}
 
 	var updatedDomain types.Domain
-	if err := s.Client.ReadJsonResponse(res, &updatedDomain); IsNotFoundError(err) {
+	if err := s.Client.ReadJsonResponse(res, &updatedDomain); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -77,7 +78,7 @@ func (s Domains) Update(domainId int64, domain *types.Domain) (*types.Domain, er
 	}
 
 	var updatedDomain types.Domain
-	if err := s.Client.ReadJsonResponse(res, &updatedDomain); IsNotFoundError(err) {
+	if err := s.Client.ReadJsonResponse(res, &updatedDomain); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -91,7 +92,7 @@ func (s Domains) Destroy(domainId int64) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	if err := s.Client.VerifyResponse(res); IsNotFoundError(err) {
+	if err := response.Verify(res); response.IsNotFoundError(err) {
 		return false, nil
 	} else if err != nil {
 		return false, err

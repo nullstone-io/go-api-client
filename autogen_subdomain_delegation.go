@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
 )
@@ -24,7 +25,7 @@ func (d AutogenSubdomainDelegation) Update(subdomainId, envId int64, delegation 
 	}
 
 	var updatedDelegation types.AutogenSubdomain
-	if err := d.Client.ReadJsonResponse(res, &updatedDelegation); IsNotFoundError(err) {
+	if err := d.Client.ReadJsonResponse(res, &updatedDelegation); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -38,7 +39,7 @@ func (d AutogenSubdomainDelegation) Destroy(subdomainId, envId int64) (found boo
 	if err != nil {
 		return false, err
 	}
-	if err := d.Client.VerifyResponse(res); IsNotFoundError(err) {
+	if err := response.Verify(res); response.IsNotFoundError(err) {
 		return false, nil
 	} else if err != nil {
 		return false, err

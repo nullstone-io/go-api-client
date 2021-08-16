@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"github.com/google/uuid"
+	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
 )
@@ -19,7 +20,7 @@ func (c RunConfigs) GetLatest(stackId int64, workspaceUid uuid.UUID) (*types.Run
 	}
 
 	var runConfig types.RunConfig
-	if err := c.Client.ReadJsonResponse(res, &runConfig); IsNotFoundError(err) {
+	if err := c.Client.ReadJsonResponse(res, &runConfig); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err

@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
 )
@@ -18,7 +19,7 @@ func (w Workspaces) Get(stackId, blockId, envId int64) (*types.Workspace, error)
 	}
 
 	var workspace types.Workspace
-	if err := w.Client.ReadJsonResponse(res, &workspace); IsNotFoundError(err) {
+	if err := w.Client.ReadJsonResponse(res, &workspace); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err

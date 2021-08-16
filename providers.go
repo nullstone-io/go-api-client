@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
 	"path"
@@ -19,7 +20,7 @@ func (s Providers) List() ([]*types.Provider, error) {
 	}
 
 	var providers []*types.Provider
-	if err := s.Client.ReadJsonResponse(res, &providers); IsNotFoundError(err) {
+	if err := s.Client.ReadJsonResponse(res, &providers); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -35,7 +36,7 @@ func (s Providers) Get(providerName string) (*types.Provider, error) {
 	}
 
 	var provider types.Provider
-	if err := s.Client.ReadJsonResponse(res, &provider); IsNotFoundError(err) {
+	if err := s.Client.ReadJsonResponse(res, &provider); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -52,7 +53,7 @@ func (s Providers) Create(provider *types.Provider) (*types.Provider, error) {
 	}
 
 	var updatedProvider types.Provider
-	if err := s.Client.ReadJsonResponse(res, &updatedProvider); IsNotFoundError(err) {
+	if err := s.Client.ReadJsonResponse(res, &updatedProvider); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -70,7 +71,7 @@ func (s Providers) Update(providerName string, provider *types.Provider) (*types
 	}
 
 	var updatedProvider types.Provider
-	if err := s.Client.ReadJsonResponse(res, &updatedProvider); IsNotFoundError(err) {
+	if err := s.Client.ReadJsonResponse(res, &updatedProvider); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -84,7 +85,7 @@ func (s Providers) Destroy(providerName string) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	if err := s.Client.VerifyResponse(res); IsNotFoundError(err) {
+	if err := response.Verify(res); response.IsNotFoundError(err) {
 		return false, nil
 	} else if err != nil {
 		return false, err

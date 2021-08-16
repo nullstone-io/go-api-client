@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
 )
@@ -27,7 +28,7 @@ func (s Blocks) List(stackId int64) ([]types.Block, error) {
 	}
 
 	var blocks []types.Block
-	if err := s.Client.ReadJsonResponse(res, &blocks); IsNotFoundError(err) {
+	if err := s.Client.ReadJsonResponse(res, &blocks); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -43,7 +44,7 @@ func (s Blocks) Get(stackId, blockId int64) (*types.Block, error) {
 	}
 
 	var block types.Block
-	if err := s.Client.ReadJsonResponse(res, &block); IsNotFoundError(err) {
+	if err := s.Client.ReadJsonResponse(res, &block); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -60,7 +61,7 @@ func (s Blocks) Create(stackId int64, block *types.Block) (*types.Block, error) 
 	}
 
 	var updatedBlock types.Block
-	if err := s.Client.ReadJsonResponse(res, &updatedBlock); IsNotFoundError(err) {
+	if err := s.Client.ReadJsonResponse(res, &updatedBlock); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -77,7 +78,7 @@ func (s Blocks) Update(stackId, blockId int64, block *types.Block) (*types.Block
 	}
 
 	var updatedBlock types.Block
-	if err := s.Client.ReadJsonResponse(res, &updatedBlock); IsNotFoundError(err) {
+	if err := s.Client.ReadJsonResponse(res, &updatedBlock); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -91,7 +92,7 @@ func (s Blocks) Destroy(stackId, blockId int64) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	if err := s.Client.VerifyResponse(res); IsNotFoundError(err) {
+	if err := response.Verify(res); response.IsNotFoundError(err) {
 		return false, nil
 	} else if err != nil {
 		return false, err

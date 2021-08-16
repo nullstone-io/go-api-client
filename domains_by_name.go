@@ -1,6 +1,7 @@
 package api
 
 import (
+	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
 	"path"
@@ -18,7 +19,7 @@ func (s DomainsByName) Get(stackName string, domainName string) (*types.Domain, 
 	}
 
 	var domain types.Domain
-	if err := s.Client.ReadJsonResponse(res, &domain); IsNotFoundError(err) {
+	if err := s.Client.ReadJsonResponse(res, &domain); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err

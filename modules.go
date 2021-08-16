@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
 	"path"
@@ -18,7 +19,7 @@ func (m Modules) List() ([]types.Module, error) {
 	}
 
 	var modules []types.Module
-	if err := m.Client.ReadJsonResponse(res, &modules); IsNotFoundError(err) {
+	if err := m.Client.ReadJsonResponse(res, &modules); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -33,7 +34,7 @@ func (m Modules) Get(moduleName string) (*types.Module, error) {
 	}
 
 	var module types.Module
-	if err := m.Client.ReadJsonResponse(res, &module); IsNotFoundError(err) {
+	if err := m.Client.ReadJsonResponse(res, &module); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -48,5 +49,5 @@ func (m Modules) Create(module *types.Module) error {
 		return err
 	}
 
-	return m.Client.VerifyResponse(res)
+	return response.Verify(res)
 }
