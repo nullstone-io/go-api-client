@@ -4,8 +4,8 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 )
@@ -129,17 +129,11 @@ func (c *Client) Do(method string, relativePath string, query url.Values, header
 }
 
 func (c *Client) ReadJsonResponse(res *http.Response, obj interface{}) error {
-	defer res.Body.Close()
-
-	if res.StatusCode >= 400 {
-		raw, _ := ioutil.ReadAll(res.Body)
-		return &HttpError{
-			StatusCode: res.StatusCode,
-			Status:     res.Status,
-			Body:       string(raw),
-		}
+	if err := response.Verify(res); err != nil {
+		return err
 	}
 
+	defer res.Body.Close()
 	decoder := json.NewDecoder(res.Body)
 	if err := decoder.Decode(obj); err != nil {
 		return fmt.Errorf("error decoding json body: %w", err)
@@ -148,32 +142,14 @@ func (c *Client) ReadJsonResponse(res *http.Response, obj interface{}) error {
 }
 
 func (c *Client) ReadFileResponse(res *http.Response, file io.Writer) error {
-	defer res.Body.Close()
-
-	if res.StatusCode >= 400 {
-		raw, _ := ioutil.ReadAll(res.Body)
-		return &HttpError{
-			StatusCode: res.StatusCode,
-			Status:     res.Status,
-			Body:       string(raw),
-		}
+	if err := response.Verify(res); err != nil {
+		return err
 	}
 
+	defer res.Body.Close()
 	_, err := io.Copy(file, res.Body)
 	if err != nil {
 		return fmt.Errorf("error reading file body: %w", err)
-	}
-	return nil
-}
-
-func (c *Client) VerifyResponse(res *http.Response) error {
-	if res.StatusCode >= 400 {
-		raw, _ := ioutil.ReadAll(res.Body)
-		return &HttpError{
-			StatusCode: res.StatusCode,
-			Status:     res.Status,
-			Body:       string(raw),
-		}
 	}
 	return nil
 }
