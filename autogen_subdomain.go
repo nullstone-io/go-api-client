@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
 )
@@ -22,7 +23,7 @@ func (a AutogenSubdomain) Get(subdomainId, envId int64) (*types.AutogenSubdomain
 	}
 
 	var autogenSubdomain types.AutogenSubdomain
-	if err := a.Client.ReadJsonResponse(res, &autogenSubdomain); IsNotFoundError(err) {
+	if err := a.Client.ReadJsonResponse(res, &autogenSubdomain); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -38,7 +39,7 @@ func (a AutogenSubdomain) Create(subdomainId, envId int64) (*types.AutogenSubdom
 	}
 
 	var autogenSubdomain types.AutogenSubdomain
-	if err := a.Client.ReadJsonResponse(res, &autogenSubdomain); IsNotFoundError(err) {
+	if err := a.Client.ReadJsonResponse(res, &autogenSubdomain); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -52,7 +53,7 @@ func (a AutogenSubdomain) Destroy(subdomainId, envId int64) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	if err := a.Client.VerifyResponse(res); IsNotFoundError(err) {
+	if err := response.Verify(res); response.IsNotFoundError(err) {
 		return false, nil
 	} else if err != nil {
 		return false, err

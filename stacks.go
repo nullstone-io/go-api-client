@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
 )
@@ -27,7 +28,7 @@ func (s Stacks) List() ([]*types.Stack, error) {
 	}
 
 	var stacks []*types.Stack
-	if err := s.Client.ReadJsonResponse(res, &stacks); IsNotFoundError(err) {
+	if err := s.Client.ReadJsonResponse(res, &stacks); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -43,7 +44,7 @@ func (s Stacks) Get(stackId int64) (*types.Stack, error) {
 	}
 
 	var stack types.Stack
-	if err := s.Client.ReadJsonResponse(res, &stack); IsNotFoundError(err) {
+	if err := s.Client.ReadJsonResponse(res, &stack); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -60,7 +61,7 @@ func (s Stacks) Create(stack *types.Stack) (*types.Stack, error) {
 	}
 
 	var updatedStack types.Stack
-	if err := s.Client.ReadJsonResponse(res, &updatedStack); IsNotFoundError(err) {
+	if err := s.Client.ReadJsonResponse(res, &updatedStack); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -77,7 +78,7 @@ func (s Stacks) Update(stackId int64, stack *types.Stack) (*types.Stack, error) 
 	}
 
 	var updatedStack types.Stack
-	if err := s.Client.ReadJsonResponse(res, &updatedStack); IsNotFoundError(err) {
+	if err := s.Client.ReadJsonResponse(res, &updatedStack); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -91,7 +92,7 @@ func (s Stacks) Destroy(stackId int64) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	if err := s.Client.VerifyResponse(res); IsNotFoundError(err) {
+	if err := response.Verify(res); response.IsNotFoundError(err) {
 		return false, nil
 	} else if err != nil {
 		return false, err

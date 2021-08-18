@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
 )
@@ -22,7 +23,7 @@ func (e AppEnvs) Get(appId int64, envName string) (*types.AppEnv, error) {
 	}
 
 	var appEnv types.AppEnv
-	if err := e.Client.ReadJsonResponse(res, &appEnv); IsNotFoundError(err) {
+	if err := e.Client.ReadJsonResponse(res, &appEnv); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -40,7 +41,7 @@ func (e AppEnvs) Update(appId int64, envName string, version string) (*types.App
 	}
 
 	var updated types.AppEnv
-	if err := e.Client.ReadJsonResponse(res, &updated); IsNotFoundError(err) {
+	if err := e.Client.ReadJsonResponse(res, &updated); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err

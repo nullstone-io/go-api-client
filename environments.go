@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
 )
@@ -27,7 +28,7 @@ func (s Environments) List(stackId int64) ([]*types.Environment, error) {
 	}
 
 	var envs []*types.Environment
-	if err := s.Client.ReadJsonResponse(res, &envs); IsNotFoundError(err) {
+	if err := s.Client.ReadJsonResponse(res, &envs); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -43,7 +44,7 @@ func (s Environments) Get(stackId, envId int64) (*types.Environment, error) {
 	}
 
 	var env types.Environment
-	if err := s.Client.ReadJsonResponse(res, &env); IsNotFoundError(err) {
+	if err := s.Client.ReadJsonResponse(res, &env); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -60,7 +61,7 @@ func (s Environments) Create(stackId int64, env *types.Environment) (*types.Envi
 	}
 
 	var updatedEnv types.Environment
-	if err := s.Client.ReadJsonResponse(res, &updatedEnv); IsNotFoundError(err) {
+	if err := s.Client.ReadJsonResponse(res, &updatedEnv); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -77,7 +78,7 @@ func (s Environments) Update(stackId, envId int64, env *types.Environment) (*typ
 	}
 
 	var updatedEnv types.Environment
-	if err := s.Client.ReadJsonResponse(res, &updatedEnv); IsNotFoundError(err) {
+	if err := s.Client.ReadJsonResponse(res, &updatedEnv); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -91,7 +92,7 @@ func (s Environments) Destroy(stackId, envId int64) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	if err := s.Client.VerifyResponse(res); IsNotFoundError(err) {
+	if err := response.Verify(res); response.IsNotFoundError(err) {
 		return false, nil
 	} else if err != nil {
 		return false, err

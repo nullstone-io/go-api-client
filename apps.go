@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
 	"path"
@@ -20,7 +21,7 @@ func (a Apps) List() ([]types.Application, error) {
 	}
 
 	var apps []types.Application
-	if err := a.Client.ReadJsonResponse(res, &apps); IsNotFoundError(err) {
+	if err := a.Client.ReadJsonResponse(res, &apps); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -36,7 +37,7 @@ func (a Apps) Get(appId int) (*types.Application, error) {
 	}
 
 	var app types.Application
-	if err := a.Client.ReadJsonResponse(res, &app); IsNotFoundError(err) {
+	if err := a.Client.ReadJsonResponse(res, &app); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -53,7 +54,7 @@ func (a Apps) Create(app *types.Application) (*types.Application, error) {
 	}
 
 	var updatedApp types.Application
-	if err := a.Client.ReadJsonResponse(res, &updatedApp); IsNotFoundError(err) {
+	if err := a.Client.ReadJsonResponse(res, &updatedApp); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -71,7 +72,7 @@ func (a Apps) Update(appId int, app *types.Application) (*types.Application, err
 	}
 
 	var updatedApp types.Application
-	if err := a.Client.ReadJsonResponse(res, &updatedApp); IsNotFoundError(err) {
+	if err := a.Client.ReadJsonResponse(res, &updatedApp); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -85,7 +86,7 @@ func (a Apps) Destroy(appId int) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	if err := a.Client.VerifyResponse(res); IsNotFoundError(err) {
+	if err := response.Verify(res); response.IsNotFoundError(err) {
 		return false, nil
 	} else if err != nil {
 		return false, err

@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
 )
@@ -27,7 +28,7 @@ func (s Subdomains) List() ([]types.Subdomain, error) {
 	}
 
 	var subdomains []types.Subdomain
-	if err := s.Client.ReadJsonResponse(res, &subdomains); IsNotFoundError(err) {
+	if err := s.Client.ReadJsonResponse(res, &subdomains); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -43,7 +44,7 @@ func (s Subdomains) Get(subdomainId int64) (*types.Subdomain, error) {
 	}
 
 	var subdomain types.Subdomain
-	if err := s.Client.ReadJsonResponse(res, &subdomain); IsNotFoundError(err) {
+	if err := s.Client.ReadJsonResponse(res, &subdomain); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -60,7 +61,7 @@ func (s Subdomains) Create(subdomain *types.Subdomain) (*types.Subdomain, error)
 	}
 
 	var updatedDomain types.Subdomain
-	if err := s.Client.ReadJsonResponse(res, &updatedDomain); IsNotFoundError(err) {
+	if err := s.Client.ReadJsonResponse(res, &updatedDomain); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -77,7 +78,7 @@ func (s Subdomains) Update(subdomainId int64, subdomain *types.Subdomain) (*type
 	}
 
 	var updatedDomain types.Subdomain
-	if err := s.Client.ReadJsonResponse(res, &updatedDomain); IsNotFoundError(err) {
+	if err := s.Client.ReadJsonResponse(res, &updatedDomain); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -91,7 +92,7 @@ func (s Subdomains) Destroy(subdomainId int64) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	if err := s.Client.VerifyResponse(res); IsNotFoundError(err) {
+	if err := response.Verify(res); response.IsNotFoundError(err) {
 		return false, nil
 	} else if err != nil {
 		return false, err

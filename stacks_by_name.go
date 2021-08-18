@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
 	"path"
@@ -19,7 +20,7 @@ func (s StacksByName) Get(stackName string) (*types.Stack, error) {
 	}
 
 	var stack types.Stack
-	if err := s.Client.ReadJsonResponse(res, &stack); IsNotFoundError(err) {
+	if err := s.Client.ReadJsonResponse(res, &stack); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -37,7 +38,7 @@ func (s StacksByName) Upsert(stackName string, stack *types.Stack) (*types.Stack
 	}
 
 	var updatedStack types.Stack
-	if err := s.Client.ReadJsonResponse(res, &updatedStack); IsNotFoundError(err) {
+	if err := s.Client.ReadJsonResponse(res, &updatedStack); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err

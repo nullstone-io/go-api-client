@@ -2,6 +2,7 @@ package api
 
 import (
 	"encoding/json"
+	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
 	"path"
@@ -19,7 +20,7 @@ func (s EnvironmentsByName) Get(stackName, envName string) (*types.Environment, 
 	}
 
 	var env types.Environment
-	if err := s.Client.ReadJsonResponse(res, &env); IsNotFoundError(err) {
+	if err := s.Client.ReadJsonResponse(res, &env); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -36,7 +37,7 @@ func (s EnvironmentsByName) Upsert(stackName, envName string, env *types.Environ
 	}
 
 	var updatedEnv types.Environment
-	if err := s.Client.ReadJsonResponse(res, &updatedEnv); IsNotFoundError(err) {
+	if err := s.Client.ReadJsonResponse(res, &updatedEnv); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err

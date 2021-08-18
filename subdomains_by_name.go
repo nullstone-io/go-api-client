@@ -1,6 +1,7 @@
 package api
 
 import (
+	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
 	"path"
@@ -18,7 +19,7 @@ func (s SubdomainsByName) Get(stackName string, subdomainName string) (*types.Su
 	}
 
 	var subdomain types.Subdomain
-	if err := s.Client.ReadJsonResponse(res, &subdomain); IsNotFoundError(err) {
+	if err := s.Client.ReadJsonResponse(res, &subdomain); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err

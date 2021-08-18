@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
 )
@@ -27,7 +28,7 @@ func (e AppCapabilities) List(appId int64) ([]types.Capability, error) {
 	}
 
 	var appCaps []types.Capability
-	if err := e.Client.ReadJsonResponse(res, &appCaps); IsNotFoundError(err) {
+	if err := e.Client.ReadJsonResponse(res, &appCaps); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -43,7 +44,7 @@ func (e AppCapabilities) Get(appId, capId int64) (*types.Capability, error) {
 	}
 
 	var appCap types.Capability
-	if err := e.Client.ReadJsonResponse(res, &appCap); IsNotFoundError(err) {
+	if err := e.Client.ReadJsonResponse(res, &appCap); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -60,7 +61,7 @@ func (e AppCapabilities) Create(appId int64, capability *types.Capability) (*typ
 	}
 
 	var updatedCap types.Capability
-	if err := e.Client.ReadJsonResponse(res, &updatedCap); IsNotFoundError(err) {
+	if err := e.Client.ReadJsonResponse(res, &updatedCap); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -77,7 +78,7 @@ func (e AppCapabilities) Update(appId, capId int64, capability *types.Capability
 	}
 
 	var updatedCap types.Capability
-	if err := e.Client.ReadJsonResponse(res, &updatedCap); IsNotFoundError(err) {
+	if err := e.Client.ReadJsonResponse(res, &updatedCap); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -91,7 +92,7 @@ func (e AppCapabilities) Destroy(appId, capId int64) (bool, error) {
 	if err != nil {
 		return false, err
 	}
-	if err := e.Client.VerifyResponse(res); IsNotFoundError(err) {
+	if err := response.Verify(res); response.IsNotFoundError(err) {
 		return false, nil
 	} else if err != nil {
 		return false, err
