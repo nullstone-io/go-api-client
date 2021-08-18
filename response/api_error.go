@@ -19,14 +19,18 @@ func (e ApiError) Error() string {
 	return fmt.Sprintf("[%s][%s] http error (%d): %s", e.Url, e.RequestId, e.Status, e.Message)
 }
 
+func BaseApiErrorFromResponse(res *http.Response) ApiError {
+	return ApiError{
+		Url:       res.Request.RequestURI,
+		Status:    res.StatusCode,
+		RequestId: res.Header.Get("X-Request-Id"),
+	}
+}
+
 func ApiErrorFromResponse(res *http.Response) ApiError {
 	defer res.Body.Close()
 	decoder := json.NewDecoder(res.Body)
-	body := ApiError{}
-	decoder.Decode(&body)
-	// The body doesn't contain url, status code, or request id
-	body.Url = res.Request.RequestURI
-	body.Status = res.StatusCode
-	body.RequestId = res.Header.Get("X-Request-Id")
-	return body
+	ae := BaseApiErrorFromResponse(res)
+	decoder.Decode(&ae)
+	return ae
 }

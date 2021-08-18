@@ -7,12 +7,12 @@ import (
 	"net/http"
 )
 
-type ApiBadRequestError struct {
+type BadRequestError struct {
 	ApiError
 	Details map[string]string `json:"details"`
 }
 
-func (e ApiBadRequestError) Error() string {
+func (e BadRequestError) Error() string {
 	buf := bytes.NewBufferString("")
 	fmt.Fprintf(buf, "[%s][%s] bad request:", e.Url, e.RequestId)
 	for key, value := range e.Details {
@@ -21,10 +21,10 @@ func (e ApiBadRequestError) Error() string {
 	return buf.String()
 }
 
-func parseBadRequestDetails(res *http.Response) map[string]string {
+func BadRequestErrorFromResponse(res *http.Response) BadRequestError {
 	defer res.Body.Close()
 	decoder := json.NewDecoder(res.Body)
-	bre := ApiBadRequestError{}
+	bre := BadRequestError{ApiError: BaseApiErrorFromResponse(res)}
 	decoder.Decode(&bre)
-	return bre.Details
+	return bre
 }

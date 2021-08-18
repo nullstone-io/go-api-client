@@ -7,12 +7,12 @@ import (
 	"net/http"
 )
 
-type ApiValidationError struct {
+type InvalidRequestError struct {
 	ApiError
 	ValidationErrors map[string][]string `json:"validation_errors"`
 }
 
-func (e ApiValidationError) Error() string {
+func (e InvalidRequestError) Error() string {
 	buf := bytes.NewBufferString("")
 	fmt.Fprintf(buf, "[%s][%s] invalid request:", e.Url, e.RequestId)
 	for field, errs := range e.ValidationErrors {
@@ -23,10 +23,10 @@ func (e ApiValidationError) Error() string {
 	return buf.String()
 }
 
-func parseApiValidationErrors(res *http.Response) map[string][]string {
+func InvalidRequestErrorFromResponse(res *http.Response) InvalidRequestError {
 	defer res.Body.Close()
 	decoder := json.NewDecoder(res.Body)
-	ave := ApiValidationError{}
-	decoder.Decode(&ave)
-	return ave.ValidationErrors
+	ire := InvalidRequestError{ApiError: BaseApiErrorFromResponse(res)}
+	decoder.Decode(&ire)
+	return ire
 }
