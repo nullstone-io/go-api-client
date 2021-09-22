@@ -12,4 +12,5 @@ type RunConfig struct {
 	Connections   Connections       `json:"connections"`
 	Capabilities  CapabilityConfigs `json:"capabilities"`
 	Providers     Providers         `json:"providers"`
+	Targets       RunTargets        `json:"targets"`
 }
