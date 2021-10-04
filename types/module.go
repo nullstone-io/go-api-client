@@ -6,10 +6,11 @@ type Module struct {
 	UidCreatedModel
 	OrgName       string        `json:"orgName"`
 	Name          string        `json:"name"`
+	FriendlyName  string        `json:"friendlyName"`
 	Description   string        `json:"description"`
 	IsPublic      bool          `json:"isPublic"`
-	Layer         Layer         `json:"layer"`
 	Category      CategoryName  `json:"category"`
+	Layer         Layer         `json:"layer"`
 	Type          string        `json:"type"`
 	ProviderTypes ProviderTypes `json:"providerTypes"`
 	Status        ModuleStatus  `json:"status"`
