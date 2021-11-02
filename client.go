@@ -64,6 +64,10 @@ func (c *Client) Workspaces() Workspaces {
 	return Workspaces{Client: c}
 }
 
+func (c *Client) WorkspaceOutputs() WorkspaceOutputs {
+	return WorkspaceOutputs{Client: c}
+}
+
 func (c *Client) RunConfigs() RunConfigs {
 	return RunConfigs{Client: c}
 }
