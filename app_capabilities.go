@@ -27,13 +27,14 @@ func (e AppCapabilities) List(appId int64) ([]types.Capability, error) {
 		return nil, err
 	}
 
-	var appCaps []types.Capability
-	if err := e.Client.ReadJsonResponse(res, &appCaps); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return appCaps, nil
+	return ReadJsonResponse[[]types.Capability](res)
+	//var appCaps []types.Capability
+	//if err := e.Client.ReadJsonResponse(res, &appCaps); response.IsNotFoundError(err) {
+	//	return nil, nil
+	//} else if err != nil {
+	//	return nil, err
+	//}
+	//return appCaps, nil
 }
 
 // Get - GET /orgs/:orgName/apps/:app_id/capabilities/:id
