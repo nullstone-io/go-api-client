@@ -19,14 +19,7 @@ func (a Apps) List() ([]types.Application, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	var apps []types.Application
-	if err := a.Client.ReadJsonResponse(res, &apps); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return apps, nil
+	return response.JsonArray[types.Application](res)
 }
 
 // Get - GET /orgs/:orgName/apps/:id
@@ -35,14 +28,7 @@ func (a Apps) Get(appId int) (*types.Application, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	var app types.Application
-	if err := a.Client.ReadJsonResponse(res, &app); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &app, nil
+	return response.Json[types.Application](res)
 }
 
 // Create - POST /orgs/:orgName/apps
@@ -52,14 +38,7 @@ func (a Apps) Create(app *types.Application) (*types.Application, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	var updatedApp types.Application
-	if err := a.Client.ReadJsonResponse(res, &updatedApp); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &updatedApp, nil
+	return response.Json[types.Application](res)
 }
 
 // Update - PUT/PATCH /orgs/:orgName/apps/:id
@@ -70,14 +49,7 @@ func (a Apps) Update(appId int, app *types.Application) (*types.Application, err
 	if err != nil {
 		return nil, err
 	}
-
-	var updatedApp types.Application
-	if err := a.Client.ReadJsonResponse(res, &updatedApp); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &updatedApp, nil
+	return response.Json[types.Application](res)
 }
 
 // Destroy - DELETE /orgs/:orgName/apps/:id

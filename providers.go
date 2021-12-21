@@ -18,14 +18,7 @@ func (s Providers) List() ([]*types.Provider, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	var providers []*types.Provider
-	if err := s.Client.ReadJsonResponse(res, &providers); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return providers, nil
+	return response.JsonArray[*types.Provider](res)
 }
 
 // Get - GET /orgs/:orgName/providers/:name
@@ -34,14 +27,7 @@ func (s Providers) Get(providerName string) (*types.Provider, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	var provider types.Provider
-	if err := s.Client.ReadJsonResponse(res, &provider); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &provider, nil
+	return response.Json[types.Provider](res)
 }
 
 // Create - POST /orgs/:orgName/providers
@@ -51,14 +37,7 @@ func (s Providers) Create(provider *types.Provider) (*types.Provider, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	var updatedProvider types.Provider
-	if err := s.Client.ReadJsonResponse(res, &updatedProvider); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &updatedProvider, nil
+	return response.Json[types.Provider](res)
 }
 
 // Update - PUT/PATCH /orgs/:orgName/providers/:name
@@ -69,14 +48,7 @@ func (s Providers) Update(providerName string, provider *types.Provider) (*types
 	if err != nil {
 		return nil, err
 	}
-
-	var updatedProvider types.Provider
-	if err := s.Client.ReadJsonResponse(res, &updatedProvider); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &updatedProvider, nil
+	return response.Json[types.Provider](res)
 }
 
 // Destroy - DELETE /orgs/:orgName/providers/:name

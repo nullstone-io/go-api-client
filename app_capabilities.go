@@ -26,15 +26,7 @@ func (e AppCapabilities) List(appId int64) ([]types.Capability, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	return ReadJsonResponse[[]types.Capability](res)
-	//var appCaps []types.Capability
-	//if err := e.Client.ReadJsonResponse(res, &appCaps); response.IsNotFoundError(err) {
-	//	return nil, nil
-	//} else if err != nil {
-	//	return nil, err
-	//}
-	//return appCaps, nil
+	return response.JsonArray[types.Capability](res)
 }
 
 // Get - GET /orgs/:orgName/apps/:app_id/capabilities/:id
@@ -43,14 +35,7 @@ func (e AppCapabilities) Get(appId, capId int64) (*types.Capability, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	var appCap types.Capability
-	if err := e.Client.ReadJsonResponse(res, &appCap); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &appCap, nil
+	return response.Json[types.Capability](res)
 }
 
 // Create - POST /orgs/:orgName/apps/:app_id/capabilities
@@ -60,14 +45,7 @@ func (e AppCapabilities) Create(appId int64, capability *types.Capability) (*typ
 	if err != nil {
 		return nil, err
 	}
-
-	var updatedCap types.Capability
-	if err := e.Client.ReadJsonResponse(res, &updatedCap); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &updatedCap, nil
+	return response.Json[types.Capability](res)
 }
 
 // Update - PUT/PATCH /orgs/:orgName/apps/:app_id/capabilities/:id
@@ -77,14 +55,7 @@ func (e AppCapabilities) Update(appId, capId int64, capability *types.Capability
 	if err != nil {
 		return nil, err
 	}
-
-	var updatedCap types.Capability
-	if err := e.Client.ReadJsonResponse(res, &updatedCap); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &updatedCap, nil
+	return response.Json[types.Capability](res)
 }
 
 // Destroy - DELETE /orgs/:orgName/apps/:app_id/capabilities/:id

@@ -1,14 +1,13 @@
-package api
+package response
 
 import (
 	"fmt"
-	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"io"
 	"net/http"
 )
 
-func (c *Client) ReadFileResponse(res *http.Response, file io.Writer) error {
-	if err := response.Verify(res); err != nil {
+func File(res *http.Response, file io.Writer) error {
+	if err := Verify(res); err != nil {
 		return err
 	}
 

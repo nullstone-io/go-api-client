@@ -26,14 +26,7 @@ func (s Blocks) List(stackId int64) ([]types.Block, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	var blocks []types.Block
-	if err := s.Client.ReadJsonResponse(res, &blocks); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return blocks, nil
+	return response.JsonArray[types.Block](res)
 }
 
 // Get - GET /orgs/:orgName/stacks/:stack_id/blocks/:id
@@ -42,14 +35,7 @@ func (s Blocks) Get(stackId, blockId int64) (*types.Block, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	var block types.Block
-	if err := s.Client.ReadJsonResponse(res, &block); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &block, nil
+	return response.Json[types.Block](res)
 }
 
 // Create - POST /orgs/:orgName/stacks/:stack_id/blocks
@@ -59,14 +45,7 @@ func (s Blocks) Create(stackId int64, block *types.Block) (*types.Block, error) 
 	if err != nil {
 		return nil, err
 	}
-
-	var updatedBlock types.Block
-	if err := s.Client.ReadJsonResponse(res, &updatedBlock); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &updatedBlock, nil
+	return response.Json[types.Block](res)
 }
 
 // Update - PUT/PATCH /orgs/:orgName/stacks/:stack_id/blocks/:id
@@ -76,14 +55,7 @@ func (s Blocks) Update(stackId, blockId int64, block *types.Block) (*types.Block
 	if err != nil {
 		return nil, err
 	}
-
-	var updatedBlock types.Block
-	if err := s.Client.ReadJsonResponse(res, &updatedBlock); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &updatedBlock, nil
+	return response.Json[types.Block](res)
 }
 
 // Destroy - DELETE /orgs/:orgName/stacks/:stack_id/blocks/:id

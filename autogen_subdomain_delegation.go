@@ -23,14 +23,7 @@ func (d AutogenSubdomainDelegation) Update(subdomainId, envId int64, delegation 
 	if err != nil {
 		return nil, err
 	}
-
-	var updatedDelegation types.AutogenSubdomain
-	if err := d.Client.ReadJsonResponse(res, &updatedDelegation); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &updatedDelegation, nil
+	return response.Json[types.AutogenSubdomain](res)
 }
 
 // Destroy - DELETE /orgs/:orgName/subdomains/:subdomainId/envs/:envId/autogen_subdomain/delegation

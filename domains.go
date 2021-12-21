@@ -26,14 +26,7 @@ func (s Domains) List() ([]types.Domain, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	var domains []types.Domain
-	if err := s.Client.ReadJsonResponse(res, &domains); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return domains, nil
+	return response.JsonArray[types.Domain](res)
 }
 
 // Get - GET /orgs/:orgName/domains/:id
@@ -42,14 +35,7 @@ func (s Domains) Get(domainId int64) (*types.Domain, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	var domain types.Domain
-	if err := s.Client.ReadJsonResponse(res, &domain); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &domain, nil
+	return response.Json[types.Domain](res)
 }
 
 // Create - POST /orgs/:orgName/domains
@@ -59,14 +45,7 @@ func (s Domains) Create(domain *types.Domain) (*types.Domain, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	var updatedDomain types.Domain
-	if err := s.Client.ReadJsonResponse(res, &updatedDomain); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &updatedDomain, nil
+	return response.Json[types.Domain](res)
 }
 
 // Update - PUT/PATCH /orgs/:orgName/domains/:id
@@ -76,14 +55,7 @@ func (s Domains) Update(domainId int64, domain *types.Domain) (*types.Domain, er
 	if err != nil {
 		return nil, err
 	}
-
-	var updatedDomain types.Domain
-	if err := s.Client.ReadJsonResponse(res, &updatedDomain); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &updatedDomain, nil
+	return response.Json[types.Domain](res)
 }
 
 // Destroy - DELETE /orgs/:orgName/domains/:id

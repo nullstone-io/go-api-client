@@ -26,14 +26,7 @@ func (s Environments) List(stackId int64) ([]*types.Environment, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	var envs []*types.Environment
-	if err := s.Client.ReadJsonResponse(res, &envs); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return envs, nil
+	return response.JsonArray[*types.Environment](res)
 }
 
 // Get - GET /orgs/:orgName/stacks/:stack_id/envs/:id
@@ -42,14 +35,7 @@ func (s Environments) Get(stackId, envId int64) (*types.Environment, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	var env types.Environment
-	if err := s.Client.ReadJsonResponse(res, &env); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &env, nil
+	return response.Json[types.Environment](res)
 }
 
 // Create - POST /orgs/:orgName/stacks/:stack_id/envs
@@ -59,14 +45,7 @@ func (s Environments) Create(stackId int64, env *types.Environment) (*types.Envi
 	if err != nil {
 		return nil, err
 	}
-
-	var updatedEnv types.Environment
-	if err := s.Client.ReadJsonResponse(res, &updatedEnv); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &updatedEnv, nil
+	return response.Json[types.Environment](res)
 }
 
 // Update - PUT/PATCH /orgs/:orgName/stacks/:stack_id/envs/:id
@@ -76,14 +55,7 @@ func (s Environments) Update(stackId, envId int64, env *types.Environment) (*typ
 	if err != nil {
 		return nil, err
 	}
-
-	var updatedEnv types.Environment
-	if err := s.Client.ReadJsonResponse(res, &updatedEnv); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &updatedEnv, nil
+	return response.Json[types.Environment](res)
 }
 
 // Destroy - DELETE /orgs/:orgName/stacks/:stack_id/envs/:id

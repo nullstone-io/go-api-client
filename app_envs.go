@@ -21,14 +21,7 @@ func (e AppEnvs) Get(appId int64, envName string) (*types.AppEnv, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	var appEnv types.AppEnv
-	if err := e.Client.ReadJsonResponse(res, &appEnv); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &appEnv, nil
+	return response.Json[types.AppEnv](res)
 }
 
 func (e AppEnvs) Update(appId int64, envName string, version string) (*types.AppEnv, error) {
@@ -39,12 +32,5 @@ func (e AppEnvs) Update(appId int64, envName string, version string) (*types.App
 	if err != nil {
 		return nil, err
 	}
-
-	var updated types.AppEnv
-	if err := e.Client.ReadJsonResponse(res, &updated); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &updated, nil
+	return response.Json[types.AppEnv](res)
 }

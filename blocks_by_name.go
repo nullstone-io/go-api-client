@@ -17,12 +17,5 @@ func (s BlocksByName) Get(stackName, blockName string) (*types.Block, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	var env types.Block
-	if err := s.Client.ReadJsonResponse(res, &env); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &env, nil
+	return response.Json[types.Block](res)
 }

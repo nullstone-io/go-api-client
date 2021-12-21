@@ -17,12 +17,5 @@ func (w WorkspaceOutputs) GetLatest(stackId, blockId, envId int64) (*types.Outpu
 	if err != nil {
 		return nil, err
 	}
-
-	var outputs types.Outputs
-	if err := w.Client.ReadJsonResponse(res, &outputs); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &outputs, nil
+	return response.Json[types.Outputs](res)
 }

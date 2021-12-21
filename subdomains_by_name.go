@@ -17,12 +17,5 @@ func (s SubdomainsByName) Get(stackName string, subdomainName string) (*types.Su
 	if err != nil {
 		return nil, err
 	}
-
-	var subdomain types.Subdomain
-	if err := s.Client.ReadJsonResponse(res, &subdomain); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &subdomain, nil
+	return response.Json[types.Subdomain](res)
 }

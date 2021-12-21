@@ -17,12 +17,5 @@ func (s DomainsByName) Get(stackName string, domainName string) (*types.Domain, 
 	if err != nil {
 		return nil, err
 	}
-
-	var domain types.Domain
-	if err := s.Client.ReadJsonResponse(res, &domain); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &domain, nil
+	return response.Json[types.Domain](res)
 }

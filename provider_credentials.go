@@ -17,14 +17,7 @@ func (s ProviderCredentials) Get(providerName string) (*json.RawMessage, error) 
 	if err != nil {
 		return nil, err
 	}
-
-	var creds json.RawMessage
-	if err := s.Client.ReadJsonResponse(res, &creds); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &creds, nil
+	return response.Json[json.RawMessage](res)
 }
 
 // Update - PUT /orgs/:orgName/providers/:name/credentials
@@ -35,12 +28,5 @@ func (s ProviderCredentials) Update(providerName string, credentials interface{}
 	if err != nil {
 		return nil, err
 	}
-
-	var updatedCreds json.RawMessage
-	if err := s.Client.ReadJsonResponse(res, &updatedCreds); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &updatedCreds, nil
+	return response.Json[json.RawMessage](res)
 }

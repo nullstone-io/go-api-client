@@ -26,14 +26,7 @@ func (s Subdomains) List() ([]types.Subdomain, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	var subdomains []types.Subdomain
-	if err := s.Client.ReadJsonResponse(res, &subdomains); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return subdomains, nil
+	return response.JsonArray[types.Subdomain](res)
 }
 
 // Get - GET /orgs/:orgName/subdomains/:id
@@ -42,14 +35,7 @@ func (s Subdomains) Get(subdomainId int64) (*types.Subdomain, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	var subdomain types.Subdomain
-	if err := s.Client.ReadJsonResponse(res, &subdomain); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &subdomain, nil
+	return response.Json[types.Subdomain](res)
 }
 
 // Create - POST /orgs/:orgName/subdomains
@@ -59,14 +45,7 @@ func (s Subdomains) Create(subdomain *types.Subdomain) (*types.Subdomain, error)
 	if err != nil {
 		return nil, err
 	}
-
-	var updatedDomain types.Subdomain
-	if err := s.Client.ReadJsonResponse(res, &updatedDomain); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &updatedDomain, nil
+	return response.Json[types.Subdomain](res)
 }
 
 // Update - PUT/PATCH /orgs/:orgName/subdomains/:id
@@ -76,14 +55,7 @@ func (s Subdomains) Update(subdomainId int64, subdomain *types.Subdomain) (*type
 	if err != nil {
 		return nil, err
 	}
-
-	var updatedDomain types.Subdomain
-	if err := s.Client.ReadJsonResponse(res, &updatedDomain); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &updatedDomain, nil
+	return response.Json[types.Subdomain](res)
 }
 
 // Destroy - DELETE /orgs/:orgName/subdomains/:id

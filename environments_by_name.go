@@ -18,14 +18,7 @@ func (s EnvironmentsByName) Get(stackName, envName string) (*types.Environment, 
 	if err != nil {
 		return nil, err
 	}
-
-	var env types.Environment
-	if err := s.Client.ReadJsonResponse(res, &env); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &env, nil
+	return response.Json[types.Environment](res)
 }
 
 // Upsert - PUT/PATCH /orgs/:orgName/stacks_by_name/:stack_name/envs/:name
@@ -35,12 +28,5 @@ func (s EnvironmentsByName) Upsert(stackName, envName string, env *types.Environ
 	if err != nil {
 		return nil, err
 	}
-
-	var updatedEnv types.Environment
-	if err := s.Client.ReadJsonResponse(res, &updatedEnv); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &updatedEnv, nil
+	return response.Json[types.Environment](res)
 }

@@ -21,14 +21,7 @@ func (a AutogenSubdomain) Get(subdomainId, envId int64) (*types.AutogenSubdomain
 	if err != nil {
 		return nil, err
 	}
-
-	var autogenSubdomain types.AutogenSubdomain
-	if err := a.Client.ReadJsonResponse(res, &autogenSubdomain); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &autogenSubdomain, nil
+	return response.Json[types.AutogenSubdomain](res)
 }
 
 // Create - POST /orgs/:orgName/subdomains/:subdomainId/envs/:envId/autogen_subdomain
@@ -37,14 +30,7 @@ func (a AutogenSubdomain) Create(subdomainId, envId int64) (*types.AutogenSubdom
 	if err != nil {
 		return nil, err
 	}
-
-	var autogenSubdomain types.AutogenSubdomain
-	if err := a.Client.ReadJsonResponse(res, &autogenSubdomain); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &autogenSubdomain, nil
+	return response.Json[types.AutogenSubdomain](res)
 }
 
 // Destroy - DELETE /orgs/:orgName/subdomains/:subdomainId/envs/:envId/autogen_subdomain

@@ -26,14 +26,7 @@ func (s Stacks) List() ([]*types.Stack, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	var stacks []*types.Stack
-	if err := s.Client.ReadJsonResponse(res, &stacks); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return stacks, nil
+	return response.JsonArray[*types.Stack](res)
 }
 
 // Get - GET /orgs/:orgName/stacks/:id
@@ -42,14 +35,7 @@ func (s Stacks) Get(stackId int64) (*types.Stack, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	var stack types.Stack
-	if err := s.Client.ReadJsonResponse(res, &stack); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &stack, nil
+	return response.Json[types.Stack](res)
 }
 
 // Create - POST /orgs/:orgName/stacks
@@ -59,14 +45,7 @@ func (s Stacks) Create(stack *types.Stack) (*types.Stack, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	var updatedStack types.Stack
-	if err := s.Client.ReadJsonResponse(res, &updatedStack); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &updatedStack, nil
+	return response.Json[types.Stack](res)
 }
 
 // Update - PUT/PATCH /orgs/:orgName/stacks/:id
@@ -76,14 +55,7 @@ func (s Stacks) Update(stackId int64, stack *types.Stack) (*types.Stack, error) 
 	if err != nil {
 		return nil, err
 	}
-
-	var updatedStack types.Stack
-	if err := s.Client.ReadJsonResponse(res, &updatedStack); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &updatedStack, nil
+	return response.Json[types.Stack](res)
 }
 
 // Destroy - DELETE /orgs/:orgName/stacks/:id
