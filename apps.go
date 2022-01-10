@@ -2,20 +2,27 @@ package api
 
 import (
 	"encoding/json"
+	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
-	"path"
-	"strconv"
 )
 
 type Apps struct {
 	Client *Client
 }
 
+func (a Apps) basePath() string {
+	return fmt.Sprintf("apps")
+}
+
+func (a Apps) appPath(appId int64) string {
+	return fmt.Sprintf("apps/%d", appId)
+}
+
 // List - GET /orgs/:orgName/apps
 func (a Apps) List() ([]types.Application, error) {
-	res, err := a.Client.Do(http.MethodGet, path.Join("apps"), nil, nil, nil)
+	res, err := a.Client.Do(http.MethodGet, a.basePath(), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -30,8 +37,8 @@ func (a Apps) List() ([]types.Application, error) {
 }
 
 // Get - GET /orgs/:orgName/apps/:id
-func (a Apps) Get(appId int) (*types.Application, error) {
-	res, err := a.Client.Do(http.MethodGet, path.Join("apps", strconv.Itoa(appId)), nil, nil, nil)
+func (a Apps) Get(appId int64) (*types.Application, error) {
+	res, err := a.Client.Do(http.MethodGet, a.appPath(appId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -48,7 +55,7 @@ func (a Apps) Get(appId int) (*types.Application, error) {
 // Create - POST /orgs/:orgName/apps
 func (a Apps) Create(app *types.Application) (*types.Application, error) {
 	rawPayload, _ := json.Marshal(app)
-	res, err := a.Client.Do(http.MethodPost, path.Join("apps"), nil, nil, json.RawMessage(rawPayload))
+	res, err := a.Client.Do(http.MethodPost, a.basePath(), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -63,10 +70,9 @@ func (a Apps) Create(app *types.Application) (*types.Application, error) {
 }
 
 // Update - PUT/PATCH /orgs/:orgName/apps/:id
-func (a Apps) Update(appId int, app *types.Application) (*types.Application, error) {
+func (a Apps) Update(appId int64, app *types.Application) (*types.Application, error) {
 	rawPayload, _ := json.Marshal(app)
-	endpoint := path.Join("apps", strconv.Itoa(appId))
-	res, err := a.Client.Do(http.MethodPut, endpoint, nil, nil, json.RawMessage(rawPayload))
+	res, err := a.Client.Do(http.MethodPut, a.appPath(appId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -81,11 +87,12 @@ func (a Apps) Update(appId int, app *types.Application) (*types.Application, err
 }
 
 // Destroy - DELETE /orgs/:orgName/apps/:id
-func (a Apps) Destroy(appId int) (bool, error) {
-	res, err := a.Client.Do(http.MethodDelete, path.Join("apps", strconv.Itoa(appId)), nil, nil, nil)
+func (a Apps) Destroy(appId int64) (bool, error) {
+	res, err := a.Client.Do(http.MethodDelete, a.appPath(appId), nil, nil, nil)
 	if err != nil {
 		return false, err
 	}
+
 	if err := response.Verify(res); response.IsNotFoundError(err) {
 		return false, nil
 	} else if err != nil {
