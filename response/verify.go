@@ -12,6 +12,10 @@ func Verify(res *http.Response) error {
 	switch res.StatusCode {
 	case http.StatusBadRequest: // 400
 		return BadRequestErrorFromResponse(res)
+	case http.StatusUnauthorized: // 401
+		return UnauthenticatedErrorFromResponse(res)
+	case http.StatusForbidden: // 403
+		return UnauthorizedErrorFromResponse(res)
 	case http.StatusNotFound: // 404
 		return NotFoundErrorFromResponse(res)
 	case http.StatusUnprocessableEntity: // 422
