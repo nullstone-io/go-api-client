@@ -11,6 +11,21 @@ type PublicModules struct {
 	Client *Client
 }
 
+func (m PublicModules) List() ([]types.Module, error) {
+	res, err := m.Client.Do(http.MethodGet, path.Join("public-modules"), nil, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var modules []types.Module
+	if err := m.Client.ReadJsonResponse(res, &modules); response.IsNotFoundError(err) {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return modules, nil
+}
+
 func (m PublicModules) Get(moduleName string) (*types.Module, error) {
 	res, err := m.Client.Do(http.MethodGet, path.Join("public-modules", moduleName), nil, nil, nil)
 	if err != nil {

@@ -115,6 +115,10 @@ func (c *Client) PublicModules() PublicModules {
 	return PublicModules{Client: c}
 }
 
+func (c *Client) PublicModuleVersions() PublicModuleVersions {
+	return PublicModuleVersions{Client: c}
+}
+
 func (c *Client) Do(method string, relativePath string, query url.Values, headers map[string]string, body interface{}) (*http.Response, error) {
 	var bodyReader io.Reader
 	if jrm, ok := body.(json.RawMessage); ok {
