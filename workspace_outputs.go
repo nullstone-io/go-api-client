@@ -11,15 +11,18 @@ type WorkspaceOutputs struct {
 	Client *Client
 }
 
+func (w WorkspaceOutputs) workspaceOutputsPath(stackId, blockId, envId int64) string {
+	return fmt.Sprintf("orgs/%s/stacks/%d/blocks/%d/envs/%d/outputs/latest", w.Client.Config.OrgName, stackId, blockId, envId)
+}
+
 func (w WorkspaceOutputs) GetLatest(stackId, blockId, envId int64) (*types.Outputs, error) {
-	endpoint := fmt.Sprintf("stacks/%d/blocks/%d/envs/%d/outputs/latest", stackId, blockId, envId)
-	res, err := w.Client.Do(http.MethodGet, endpoint, nil, nil, nil)
+	res, err := w.Client.Do(http.MethodGet, w.workspaceOutputsPath(stackId, blockId, envId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
 
 	var outputs types.Outputs
-	if err := w.Client.ReadJsonResponse(res, &outputs); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &outputs); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err

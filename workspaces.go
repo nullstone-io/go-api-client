@@ -11,15 +11,19 @@ type Workspaces struct {
 	Client *Client
 }
 
+func (w Workspaces) workspacePath(stackId, blockId, envId int64) string {
+	return fmt.Sprintf("orgs/%s/stacks/%d/blocks/%d/envs/%d", w.Client.Config.OrgName, stackId, blockId, envId)
+}
+
+// Get - GET /orgs/:orgName/stacks/:stackId/blocks/:blockId/envs/:envId
 func (w Workspaces) Get(stackId, blockId, envId int64) (*types.Workspace, error) {
-	endpoint := fmt.Sprintf("stacks/%d/blocks/%d/envs/%d", stackId, blockId, envId)
-	res, err := w.Client.Do(http.MethodGet, endpoint, nil, nil, nil)
+	res, err := w.Client.Do(http.MethodGet, w.workspacePath(stackId, blockId, envId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
 
 	var workspace types.Workspace
-	if err := w.Client.ReadJsonResponse(res, &workspace); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &workspace); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err

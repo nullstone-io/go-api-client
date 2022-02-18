@@ -9,13 +9,13 @@ import (
 var (
 	ErrStackDoesNotExist = errors.New("stack does not exist")
 	ErrBlockDoesNotExist = errors.New("block does not exist")
-	ErrEnvDoesNotExist = errors.New("env does not exist")
+	ErrEnvDoesNotExist   = errors.New("env does not exist")
 )
 
 type StackBlockEnv struct {
-	Block     types.Block
-	Stack     types.Stack
-	Env       types.Environment
+	Block types.Block
+	Stack types.Stack
+	Env   types.Environment
 }
 
 // StackBlockEnvByName looks for a workspace by stackName, blockName, and envName

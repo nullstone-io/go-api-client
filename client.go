@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"io"
 	"net/http"
 	"net/url"
@@ -25,6 +24,10 @@ func (c *Client) Org(orgName string) *Client {
 	cfg := c.Config
 	cfg.OrgName = orgName
 	return &Client{Config: cfg}
+}
+
+func (c *Client) Organizations() Organizations {
+	return Organizations{Client: c}
 }
 
 func (c *Client) Stacks() Stacks {
@@ -145,32 +148,6 @@ func (c *Client) Do(method string, relativePath string, query url.Values, header
 		Transport: c.Config.CreateTransport(http.DefaultTransport),
 	}
 	return httpClient.Do(req)
-}
-
-func (c *Client) ReadJsonResponse(res *http.Response, obj interface{}) error {
-	if err := response.Verify(res); err != nil {
-		return err
-	}
-
-	defer res.Body.Close()
-	decoder := json.NewDecoder(res.Body)
-	if err := decoder.Decode(obj); err != nil {
-		return fmt.Errorf("error decoding json body: %w", err)
-	}
-	return nil
-}
-
-func (c *Client) ReadFileResponse(res *http.Response, file io.Writer) error {
-	if err := response.Verify(res); err != nil {
-		return err
-	}
-
-	defer res.Body.Close()
-	_, err := io.Copy(file, res.Body)
-	if err != nil {
-		return fmt.Errorf("error reading file body: %w", err)
-	}
-	return nil
 }
 
 func (c *Client) CreateRequest(method string, relativePath string, query url.Values, body io.Reader) (*http.Request, error) {

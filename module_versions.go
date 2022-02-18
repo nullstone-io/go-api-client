@@ -17,14 +17,22 @@ type ModuleVersions struct {
 	Client *Client
 }
 
+func (mv ModuleVersions) path(moduleName string) string {
+	return path.Join("modules", moduleName, "versions")
+}
+
+func (mv ModuleVersions) downloadPath(moduleName, versionName string) string {
+	return path.Join("modules", moduleName, "versions", versionName, "download")
+}
+
 func (mv ModuleVersions) List(moduleName string) ([]types.ModuleVersion, error) {
-	res, err := mv.Client.Do(http.MethodGet, path.Join("modules", moduleName, "versions"), nil, nil, nil)
+	res, err := mv.Client.Do(http.MethodGet, mv.path(moduleName), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
 
 	var moduleVersions []types.ModuleVersion
-	if err := mv.Client.ReadJsonResponse(res, &moduleVersions); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &moduleVersions); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -33,7 +41,7 @@ func (mv ModuleVersions) List(moduleName string) ([]types.ModuleVersion, error) 
 }
 
 func (mv ModuleVersions) GetDownloadInfo(moduleName string, versionName string) (*types.ModuleDownloadInfo, error) {
-	endpoint, err := mv.Client.Config.ConstructUrl(path.Join("modules", moduleName, "versions", versionName, "download"), nil)
+	endpoint, err := mv.Client.Config.ConstructUrl(mv.downloadPath(moduleName, versionName), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -67,13 +75,12 @@ func (mv ModuleVersions) GetDownloadInfo(moduleName string, versionName string) 
 }
 
 func (mv ModuleVersions) Download(moduleName string, versionName string, file io.Writer) error {
-	endpoint := path.Join("modules", moduleName, "versions", versionName, "download")
-	res, err := mv.Client.Do(http.MethodGet, endpoint, nil, nil, nil)
+	res, err := mv.Client.Do(http.MethodGet, mv.downloadPath(moduleName, versionName), nil, nil, nil)
 	if err != nil {
 		return err
 	}
 
-	if err := mv.Client.ReadFileResponse(res, file); response.IsNotFoundError(err) {
+	if err := response.ReadFile(res, file); response.IsNotFoundError(err) {
 		return nil
 	} else if err != nil {
 		return err
@@ -82,8 +89,6 @@ func (mv ModuleVersions) Download(moduleName string, versionName string, file io
 }
 
 func (mv ModuleVersions) Create(moduleName string, versionName string, file io.Reader) error {
-	endpoint := path.Join("modules", moduleName, "versions")
-
 	query := url.Values{}
 	query.Set("version", versionName)
 
@@ -104,7 +109,7 @@ func (mv ModuleVersions) Create(moduleName string, versionName string, file io.R
 
 	var headers = map[string]string{}
 	headers["Content-Type"] = writer.FormDataContentType()
-	res, err := mv.Client.Do(http.MethodPost, endpoint, query, headers, body)
+	res, err := mv.Client.Do(http.MethodPost, mv.path(moduleName), query, headers, body)
 	if err != nil {
 		return err
 	}

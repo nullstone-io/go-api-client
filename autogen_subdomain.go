@@ -11,8 +11,8 @@ type AutogenSubdomain struct {
 	Client *Client
 }
 
-func (AutogenSubdomain) path(subdomainId, envId int64) string {
-	return fmt.Sprintf("subdomains/%d/envs/%d/autogen_subdomain", subdomainId, envId)
+func (a AutogenSubdomain) path(subdomainId, envId int64) string {
+	return fmt.Sprintf("orgs/%s/subdomains/%d/envs/%d/autogen_subdomain", a.Client.Config.OrgName, subdomainId, envId)
 }
 
 // Get - GET /orgs/:orgName/subdomains/:subdomainId/envs/:envId/autogen_subdomain
@@ -23,7 +23,7 @@ func (a AutogenSubdomain) Get(subdomainId, envId int64) (*types.AutogenSubdomain
 	}
 
 	var autogenSubdomain types.AutogenSubdomain
-	if err := a.Client.ReadJsonResponse(res, &autogenSubdomain); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &autogenSubdomain); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -39,7 +39,7 @@ func (a AutogenSubdomain) Create(subdomainId, envId int64) (*types.AutogenSubdom
 	}
 
 	var autogenSubdomain types.AutogenSubdomain
-	if err := a.Client.ReadJsonResponse(res, &autogenSubdomain); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &autogenSubdomain); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err

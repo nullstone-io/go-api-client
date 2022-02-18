@@ -13,11 +13,11 @@ type Blocks struct {
 }
 
 func (s Blocks) basePath(stackId int64) string {
-	return fmt.Sprintf("stacks/%d/blocks", stackId)
+	return fmt.Sprintf("orgs/%s/stacks/%d/blocks", s.Client.Config.OrgName, stackId)
 }
 
 func (s Blocks) blockPath(stackId, blockId int64) string {
-	return fmt.Sprintf("stacks/%d/blocks/%d", stackId, blockId)
+	return fmt.Sprintf("orgs/%s/stacks/%d/blocks/%d", s.Client.Config.OrgName, stackId, blockId)
 }
 
 // List - GET /orgs/:orgName/stacks/:stack_id/blocks
@@ -28,7 +28,7 @@ func (s Blocks) List(stackId int64) ([]types.Block, error) {
 	}
 
 	var blocks []types.Block
-	if err := s.Client.ReadJsonResponse(res, &blocks); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &blocks); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -44,7 +44,7 @@ func (s Blocks) Get(stackId, blockId int64) (*types.Block, error) {
 	}
 
 	var block types.Block
-	if err := s.Client.ReadJsonResponse(res, &block); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &block); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -61,7 +61,7 @@ func (s Blocks) Create(stackId int64, block *types.Block) (*types.Block, error) 
 	}
 
 	var updatedBlock types.Block
-	if err := s.Client.ReadJsonResponse(res, &updatedBlock); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &updatedBlock); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -78,7 +78,7 @@ func (s Blocks) Update(stackId, blockId int64, block *types.Block) (*types.Block
 	}
 
 	var updatedBlock types.Block
-	if err := s.Client.ReadJsonResponse(res, &updatedBlock); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &updatedBlock); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err

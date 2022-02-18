@@ -43,7 +43,7 @@ func (c *Config) ConstructUrl(relativePath string, query url.Values) (*url.URL, 
 	if err != nil {
 		return nil, fmt.Errorf("invalid nullstone API base address (%s): %w", c.BaseAddress, err)
 	}
-	u.Path = path.Join(u.Path, "orgs", c.OrgName, relativePath)
+	u.Path = path.Join(u.Path, relativePath)
 	if query != nil {
 		u.RawQuery = query.Encode()
 	}

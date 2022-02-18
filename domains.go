@@ -13,11 +13,11 @@ type Domains struct {
 }
 
 func (s Domains) basePath() string {
-	return fmt.Sprintf("domains")
+	return fmt.Sprintf("orgs/%s/domains", s.Client.Config.OrgName)
 }
 
 func (s Domains) domainPath(domainId int64) string {
-	return fmt.Sprintf("domains/%d", domainId)
+	return fmt.Sprintf("orgs/%s/domains/%d", s.Client.Config.OrgName, domainId)
 }
 
 // List - GET /orgs/:orgName/domains
@@ -28,7 +28,7 @@ func (s Domains) List() ([]types.Domain, error) {
 	}
 
 	var domains []types.Domain
-	if err := s.Client.ReadJsonResponse(res, &domains); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &domains); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -44,7 +44,7 @@ func (s Domains) Get(domainId int64) (*types.Domain, error) {
 	}
 
 	var domain types.Domain
-	if err := s.Client.ReadJsonResponse(res, &domain); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &domain); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -61,7 +61,7 @@ func (s Domains) Create(domain *types.Domain) (*types.Domain, error) {
 	}
 
 	var updatedDomain types.Domain
-	if err := s.Client.ReadJsonResponse(res, &updatedDomain); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &updatedDomain); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -78,7 +78,7 @@ func (s Domains) Update(domainId int64, domain *types.Domain) (*types.Domain, er
 	}
 
 	var updatedDomain types.Domain
-	if err := s.Client.ReadJsonResponse(res, &updatedDomain); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &updatedDomain); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err

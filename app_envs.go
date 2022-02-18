@@ -13,7 +13,7 @@ type AppEnvs struct {
 }
 
 func (e AppEnvs) basePath(appId int64, envName string) string {
-	return fmt.Sprintf("apps/%d/envs/%s", appId, envName)
+	return fmt.Sprintf("orgs/%s/apps/%d/envs/%s", e.Client.Config.OrgName, appId, envName)
 }
 
 func (e AppEnvs) Get(appId int64, envName string) (*types.AppEnv, error) {
@@ -23,7 +23,7 @@ func (e AppEnvs) Get(appId int64, envName string) (*types.AppEnv, error) {
 	}
 
 	var appEnv types.AppEnv
-	if err := e.Client.ReadJsonResponse(res, &appEnv); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &appEnv); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -41,7 +41,7 @@ func (e AppEnvs) Update(appId int64, envName string, version string) (*types.App
 	}
 
 	var updated types.AppEnv
-	if err := e.Client.ReadJsonResponse(res, &updated); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &updated); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err

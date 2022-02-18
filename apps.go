@@ -13,11 +13,11 @@ type Apps struct {
 }
 
 func (a Apps) basePath() string {
-	return fmt.Sprintf("apps")
+	return fmt.Sprintf("orgs/%s/apps", a.Client.Config.OrgName)
 }
 
 func (a Apps) appPath(appId int64) string {
-	return fmt.Sprintf("apps/%d", appId)
+	return fmt.Sprintf("orgs/%s/apps/%d", a.Client.Config.OrgName, appId)
 }
 
 // List - GET /orgs/:orgName/apps
@@ -28,7 +28,7 @@ func (a Apps) List() ([]types.Application, error) {
 	}
 
 	var apps []types.Application
-	if err := a.Client.ReadJsonResponse(res, &apps); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &apps); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -44,7 +44,7 @@ func (a Apps) Get(appId int64) (*types.Application, error) {
 	}
 
 	var app types.Application
-	if err := a.Client.ReadJsonResponse(res, &app); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &app); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -61,7 +61,7 @@ func (a Apps) Create(app *types.Application) (*types.Application, error) {
 	}
 
 	var updatedApp types.Application
-	if err := a.Client.ReadJsonResponse(res, &updatedApp); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &updatedApp); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -78,7 +78,7 @@ func (a Apps) Update(appId int64, app *types.Application) (*types.Application, e
 	}
 
 	var updatedApp types.Application
-	if err := a.Client.ReadJsonResponse(res, &updatedApp); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &updatedApp); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
