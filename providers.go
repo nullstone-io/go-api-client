@@ -20,7 +20,7 @@ func (s Providers) List() ([]*types.Provider, error) {
 	}
 
 	var providers []*types.Provider
-	if err := s.Client.ReadJsonResponse(res, &providers); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &providers); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -36,7 +36,7 @@ func (s Providers) Get(providerName string) (*types.Provider, error) {
 	}
 
 	var provider types.Provider
-	if err := s.Client.ReadJsonResponse(res, &provider); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &provider); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -53,7 +53,7 @@ func (s Providers) Create(provider *types.Provider) (*types.Provider, error) {
 	}
 
 	var updatedProvider types.Provider
-	if err := s.Client.ReadJsonResponse(res, &updatedProvider); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &updatedProvider); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -71,7 +71,7 @@ func (s Providers) Update(providerName string, provider *types.Provider) (*types
 	}
 
 	var updatedProvider types.Provider
-	if err := s.Client.ReadJsonResponse(res, &updatedProvider); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &updatedProvider); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err

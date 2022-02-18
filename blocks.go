@@ -28,7 +28,7 @@ func (s Blocks) List(stackId int64) ([]types.Block, error) {
 	}
 
 	var blocks []types.Block
-	if err := s.Client.ReadJsonResponse(res, &blocks); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &blocks); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -44,7 +44,7 @@ func (s Blocks) Get(stackId, blockId int64) (*types.Block, error) {
 	}
 
 	var block types.Block
-	if err := s.Client.ReadJsonResponse(res, &block); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &block); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -61,7 +61,7 @@ func (s Blocks) Create(stackId int64, block *types.Block) (*types.Block, error) 
 	}
 
 	var updatedBlock types.Block
-	if err := s.Client.ReadJsonResponse(res, &updatedBlock); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &updatedBlock); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -78,7 +78,7 @@ func (s Blocks) Update(stackId, blockId int64, block *types.Block) (*types.Block
 	}
 
 	var updatedBlock types.Block
-	if err := s.Client.ReadJsonResponse(res, &updatedBlock); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &updatedBlock); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err

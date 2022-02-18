@@ -21,7 +21,7 @@ func (mv PublicModuleVersions) List(moduleName string) ([]types.ModuleVersion, e
 	}
 
 	var moduleVersions []types.ModuleVersion
-	if err := mv.Client.ReadJsonResponse(res, &moduleVersions); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &moduleVersions); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -70,7 +70,7 @@ func (mv PublicModuleVersions) Download(moduleName string, versionName string, f
 		return err
 	}
 
-	if err := mv.Client.ReadFileResponse(res, file); response.IsNotFoundError(err) {
+	if err := response.ReadFile(res, file); response.IsNotFoundError(err) {
 		return nil
 	} else if err != nil {
 		return err

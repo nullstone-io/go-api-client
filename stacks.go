@@ -28,7 +28,7 @@ func (s Stacks) List() ([]*types.Stack, error) {
 	}
 
 	var stacks []*types.Stack
-	if err := s.Client.ReadJsonResponse(res, &stacks); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &stacks); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -44,7 +44,7 @@ func (s Stacks) Get(stackId int64) (*types.Stack, error) {
 	}
 
 	var stack types.Stack
-	if err := s.Client.ReadJsonResponse(res, &stack); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &stack); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -61,7 +61,7 @@ func (s Stacks) Create(stack *types.Stack) (*types.Stack, error) {
 	}
 
 	var updatedStack types.Stack
-	if err := s.Client.ReadJsonResponse(res, &updatedStack); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &updatedStack); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -78,7 +78,7 @@ func (s Stacks) Update(stackId int64, stack *types.Stack) (*types.Stack, error) 
 	}
 
 	var updatedStack types.Stack
-	if err := s.Client.ReadJsonResponse(res, &updatedStack); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &updatedStack); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err

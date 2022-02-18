@@ -25,7 +25,7 @@ func (d AutogenSubdomainDelegation) Update(subdomainId, envId int64, delegation 
 	}
 
 	var updatedDelegation types.AutogenSubdomain
-	if err := d.Client.ReadJsonResponse(res, &updatedDelegation); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &updatedDelegation); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err

@@ -28,7 +28,7 @@ func (s Subdomains) List() ([]types.Subdomain, error) {
 	}
 
 	var subdomains []types.Subdomain
-	if err := s.Client.ReadJsonResponse(res, &subdomains); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &subdomains); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -44,7 +44,7 @@ func (s Subdomains) Get(subdomainId int64) (*types.Subdomain, error) {
 	}
 
 	var subdomain types.Subdomain
-	if err := s.Client.ReadJsonResponse(res, &subdomain); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &subdomain); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -61,7 +61,7 @@ func (s Subdomains) Create(subdomain *types.Subdomain) (*types.Subdomain, error)
 	}
 
 	var updatedDomain types.Subdomain
-	if err := s.Client.ReadJsonResponse(res, &updatedDomain); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &updatedDomain); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -78,7 +78,7 @@ func (s Subdomains) Update(subdomainId int64, subdomain *types.Subdomain) (*type
 	}
 
 	var updatedDomain types.Subdomain
-	if err := s.Client.ReadJsonResponse(res, &updatedDomain); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &updatedDomain); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err

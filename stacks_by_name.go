@@ -20,7 +20,7 @@ func (s StacksByName) Get(stackName string) (*types.Stack, error) {
 	}
 
 	var stack types.Stack
-	if err := s.Client.ReadJsonResponse(res, &stack); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &stack); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -38,7 +38,7 @@ func (s StacksByName) Upsert(stackName string, stack *types.Stack) (*types.Stack
 	}
 
 	var updatedStack types.Stack
-	if err := s.Client.ReadJsonResponse(res, &updatedStack); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &updatedStack); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err

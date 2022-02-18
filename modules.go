@@ -19,7 +19,7 @@ func (m Modules) List() ([]types.Module, error) {
 	}
 
 	var modules []types.Module
-	if err := m.Client.ReadJsonResponse(res, &modules); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &modules); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -34,7 +34,7 @@ func (m Modules) Get(moduleName string) (*types.Module, error) {
 	}
 
 	var module types.Module
-	if err := m.Client.ReadJsonResponse(res, &module); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &module); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err

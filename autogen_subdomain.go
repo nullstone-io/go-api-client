@@ -23,7 +23,7 @@ func (a AutogenSubdomain) Get(subdomainId, envId int64) (*types.AutogenSubdomain
 	}
 
 	var autogenSubdomain types.AutogenSubdomain
-	if err := a.Client.ReadJsonResponse(res, &autogenSubdomain); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &autogenSubdomain); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -39,7 +39,7 @@ func (a AutogenSubdomain) Create(subdomainId, envId int64) (*types.AutogenSubdom
 	}
 
 	var autogenSubdomain types.AutogenSubdomain
-	if err := a.Client.ReadJsonResponse(res, &autogenSubdomain); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &autogenSubdomain); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err

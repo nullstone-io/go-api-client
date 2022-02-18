@@ -20,7 +20,7 @@ func (c RunConfigs) GetLatest(stackId int64, workspaceUid uuid.UUID) (*types.Run
 	}
 
 	var runConfig types.RunConfig
-	if err := c.Client.ReadJsonResponse(res, &runConfig); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &runConfig); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err

@@ -28,7 +28,7 @@ func (e AppCapabilities) List(appId int64) ([]types.Capability, error) {
 	}
 
 	var appCaps []types.Capability
-	if err := e.Client.ReadJsonResponse(res, &appCaps); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &appCaps); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -44,7 +44,7 @@ func (e AppCapabilities) Get(appId, capId int64) (*types.Capability, error) {
 	}
 
 	var appCap types.Capability
-	if err := e.Client.ReadJsonResponse(res, &appCap); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &appCap); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -61,7 +61,7 @@ func (e AppCapabilities) Create(appId int64, capability *types.Capability) (*typ
 	}
 
 	var updatedCap types.Capability
-	if err := e.Client.ReadJsonResponse(res, &updatedCap); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &updatedCap); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -78,7 +78,7 @@ func (e AppCapabilities) Update(appId, capId int64, capability *types.Capability
 	}
 
 	var updatedCap types.Capability
-	if err := e.Client.ReadJsonResponse(res, &updatedCap); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &updatedCap); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err

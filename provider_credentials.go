@@ -19,7 +19,7 @@ func (s ProviderCredentials) Get(providerName string) (*json.RawMessage, error) 
 	}
 
 	var creds json.RawMessage
-	if err := s.Client.ReadJsonResponse(res, &creds); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &creds); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -37,7 +37,7 @@ func (s ProviderCredentials) Update(providerName string, credentials interface{}
 	}
 
 	var updatedCreds json.RawMessage
-	if err := s.Client.ReadJsonResponse(res, &updatedCreds); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &updatedCreds); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err

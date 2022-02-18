@@ -20,7 +20,7 @@ func (s EnvironmentsByName) Get(stackName, envName string) (*types.Environment, 
 	}
 
 	var env types.Environment
-	if err := s.Client.ReadJsonResponse(res, &env); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &env); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
@@ -37,7 +37,7 @@ func (s EnvironmentsByName) Upsert(stackName, envName string, env *types.Environ
 	}
 
 	var updatedEnv types.Environment
-	if err := s.Client.ReadJsonResponse(res, &updatedEnv); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &updatedEnv); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err

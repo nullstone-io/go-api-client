@@ -19,7 +19,7 @@ func (w Workspaces) Get(stackId, blockId, envId int64) (*types.Workspace, error)
 	}
 
 	var workspace types.Workspace
-	if err := w.Client.ReadJsonResponse(res, &workspace); response.IsNotFoundError(err) {
+	if err := response.ReadJson(res, &workspace); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
