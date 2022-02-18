@@ -12,9 +12,13 @@ type StacksByName struct {
 	Client *Client
 }
 
+func (s StacksByName) stackPath(stackName string) string {
+	return path.Join("orgs", s.Client.Config.OrgName, "stacks_by_name", stackName)
+}
+
 // Get - GET /orgs/:orgName/stacks_by_name/:name
 func (s StacksByName) Get(stackName string) (*types.Stack, error) {
-	res, err := s.Client.Do(http.MethodGet, path.Join("stacks_by_name", stackName), nil, nil, nil)
+	res, err := s.Client.Do(http.MethodGet, s.stackPath(stackName), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -31,8 +35,7 @@ func (s StacksByName) Get(stackName string) (*types.Stack, error) {
 // Upsert - PUT/PATCH /orgs/:orgName/stacks_by_name/:name
 func (s StacksByName) Upsert(stackName string, stack *types.Stack) (*types.Stack, error) {
 	rawPayload, _ := json.Marshal(stack)
-	endpoint := path.Join("stacks_by_name", stackName)
-	res, err := s.Client.Do(http.MethodPut, endpoint, nil, nil, json.RawMessage(rawPayload))
+	res, err := s.Client.Do(http.MethodPut, s.stackPath(stackName), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}

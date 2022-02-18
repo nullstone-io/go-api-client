@@ -13,11 +13,11 @@ type Subdomains struct {
 }
 
 func (s Subdomains) basePath() string {
-	return fmt.Sprintf("subdomains")
+	return fmt.Sprintf("orgs/%s/subdomains", s.Client.Config.OrgName)
 }
 
 func (s Subdomains) subdomainPath(subdomainId int64) string {
-	return fmt.Sprintf("subdomains/%d", subdomainId)
+	return fmt.Sprintf("orgs/%s/subdomains/%d", s.Client.Config.OrgName, subdomainId)
 }
 
 // List - GET /orgs/:orgName/subdomains

@@ -11,8 +11,8 @@ type AutogenSubdomain struct {
 	Client *Client
 }
 
-func (AutogenSubdomain) path(subdomainId, envId int64) string {
-	return fmt.Sprintf("subdomains/%d/envs/%d/autogen_subdomain", subdomainId, envId)
+func (a AutogenSubdomain) path(subdomainId, envId int64) string {
+	return fmt.Sprintf("orgs/%s/subdomains/%d/envs/%d/autogen_subdomain", a.Client.Config.OrgName, subdomainId, envId)
 }
 
 // Get - GET /orgs/:orgName/subdomains/:subdomainId/envs/:envId/autogen_subdomain

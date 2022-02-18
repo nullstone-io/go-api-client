@@ -14,8 +14,16 @@ type PublicModuleVersions struct {
 	Client *Client
 }
 
+func (mv PublicModuleVersions) path(moduleName string) string {
+	return path.Join("orgs", mv.Client.Config.OrgName, "public-modules", moduleName, "versions")
+}
+
+func (mv PublicModuleVersions) downloadPath(moduleName, versionName string) string {
+	return path.Join("orgs", mv.Client.Config.OrgName, "public-modules", moduleName, "versions", versionName, "download")
+}
+
 func (mv PublicModuleVersions) List(moduleName string) ([]types.ModuleVersion, error) {
-	res, err := mv.Client.Do(http.MethodGet, path.Join("public-modules", moduleName, "versions"), nil, nil, nil)
+	res, err := mv.Client.Do(http.MethodGet, mv.path(moduleName), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -30,7 +38,7 @@ func (mv PublicModuleVersions) List(moduleName string) ([]types.ModuleVersion, e
 }
 
 func (mv PublicModuleVersions) GetDownloadInfo(moduleName string, versionName string) (*types.ModuleDownloadInfo, error) {
-	endpoint, err := mv.Client.Config.ConstructUrl(path.Join("public-modules", moduleName, "versions", versionName, "download"), nil)
+	endpoint, err := mv.Client.Config.ConstructUrl(mv.downloadPath(moduleName, versionName), nil)
 	if err != nil {
 		return nil, err
 	}
@@ -64,8 +72,7 @@ func (mv PublicModuleVersions) GetDownloadInfo(moduleName string, versionName st
 }
 
 func (mv PublicModuleVersions) Download(moduleName string, versionName string, file io.Writer) error {
-	endpoint := path.Join("public-modules", moduleName, "versions", versionName, "download")
-	res, err := mv.Client.Do(http.MethodGet, endpoint, nil, nil, nil)
+	res, err := mv.Client.Do(http.MethodGet, mv.downloadPath(moduleName, versionName), nil, nil, nil)
 	if err != nil {
 		return err
 	}

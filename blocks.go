@@ -13,11 +13,11 @@ type Blocks struct {
 }
 
 func (s Blocks) basePath(stackId int64) string {
-	return fmt.Sprintf("stacks/%d/blocks", stackId)
+	return fmt.Sprintf("orgs/%s/stacks/%d/blocks", s.Client.Config.OrgName, stackId)
 }
 
 func (s Blocks) blockPath(stackId, blockId int64) string {
-	return fmt.Sprintf("stacks/%d/blocks/%d", stackId, blockId)
+	return fmt.Sprintf("orgs/%s/stacks/%d/blocks/%d", s.Client.Config.OrgName, stackId, blockId)
 }
 
 // List - GET /orgs/:orgName/stacks/:stack_id/blocks

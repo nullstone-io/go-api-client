@@ -11,9 +11,13 @@ type SubdomainsByName struct {
 	Client *Client
 }
 
+func (s SubdomainsByName) subdomainPath(stackName, subdomainName string) string {
+	return path.Join("orgs", s.Client.Config.OrgName, "stacks", stackName, "subdomains", subdomainName)
+}
+
 // Get - GET /orgs/:orgName/stacks/:stackName/subdomains/:name
 func (s SubdomainsByName) Get(stackName string, subdomainName string) (*types.Subdomain, error) {
-	res, err := s.Client.Do(http.MethodGet, path.Join("stacks", stackName, "subdomains", subdomainName), nil, nil, nil)
+	res, err := s.Client.Do(http.MethodGet, s.subdomainPath(stackName, subdomainName), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}

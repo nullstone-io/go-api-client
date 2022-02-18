@@ -1,18 +1,26 @@
 package api
 
 import (
+	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
-	"path"
 )
 
 type PublicModules struct {
 	Client *Client
 }
 
+func (m PublicModules) basePath() string {
+	return fmt.Sprintf("orgs/%s/public-modules", m.Client.Config.OrgName)
+}
+
+func (m PublicModules) modulePath(moduleName string) string {
+	return fmt.Sprintf("orgs/%s/public-modules/%s", m.Client.Config.OrgName, moduleName)
+}
+
 func (m PublicModules) List() ([]types.Module, error) {
-	res, err := m.Client.Do(http.MethodGet, path.Join("public-modules"), nil, nil, nil)
+	res, err := m.Client.Do(http.MethodGet, m.basePath(), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -27,7 +35,7 @@ func (m PublicModules) List() ([]types.Module, error) {
 }
 
 func (m PublicModules) Get(moduleName string) (*types.Module, error) {
-	res, err := m.Client.Do(http.MethodGet, path.Join("public-modules", moduleName), nil, nil, nil)
+	res, err := m.Client.Do(http.MethodGet, m.modulePath(moduleName), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}

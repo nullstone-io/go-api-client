@@ -13,11 +13,11 @@ type AppCapabilities struct {
 }
 
 func (e AppCapabilities) basePath(appId int64) string {
-	return fmt.Sprintf("apps/%d/capabilities", appId)
+	return fmt.Sprintf("orgs/%s/apps/%d/capabilities", e.Client.Config.OrgName, appId)
 }
 
 func (e AppCapabilities) capPath(appId, capId int64) string {
-	return fmt.Sprintf("apps/%d/capabilities/%d", appId, capId)
+	return fmt.Sprintf("orgs/%s/apps/%d/capabilities/%d", e.Client.Config.OrgName, appId, capId)
 }
 
 // List - GET /orgs/:orgName/apps/:app_id/capabilities

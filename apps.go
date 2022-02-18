@@ -13,11 +13,11 @@ type Apps struct {
 }
 
 func (a Apps) basePath() string {
-	return fmt.Sprintf("apps")
+	return fmt.Sprintf("orgs/%s/apps", a.Client.Config.OrgName)
 }
 
 func (a Apps) appPath(appId int64) string {
-	return fmt.Sprintf("apps/%d", appId)
+	return fmt.Sprintf("orgs/%s/apps/%d", a.Client.Config.OrgName, appId)
 }
 
 // List - GET /orgs/:orgName/apps

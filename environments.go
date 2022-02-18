@@ -13,11 +13,11 @@ type Environments struct {
 }
 
 func (s Environments) basePath(stackId int64) string {
-	return fmt.Sprintf("stacks/%d/envs", stackId)
+	return fmt.Sprintf("orgs/%s/stacks/%d/envs", s.Client.Config.OrgName, stackId)
 }
 
 func (s Environments) envPath(stackId, envId int64) string {
-	return fmt.Sprintf("stacks/%d/envs/%d", stackId, envId)
+	return fmt.Sprintf("orgs/%s/stacks/%d/envs/%d", s.Client.Config.OrgName, stackId, envId)
 }
 
 // List - GET /orgs/:orgName/stacks/:stackId/envs

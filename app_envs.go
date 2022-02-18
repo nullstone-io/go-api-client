@@ -13,7 +13,7 @@ type AppEnvs struct {
 }
 
 func (e AppEnvs) basePath(appId int64, envName string) string {
-	return fmt.Sprintf("apps/%d/envs/%s", appId, envName)
+	return fmt.Sprintf("orgs/%s/apps/%d/envs/%s", e.Client.Config.OrgName, appId, envName)
 }
 
 func (e AppEnvs) Get(appId int64, envName string) (*types.AppEnv, error) {

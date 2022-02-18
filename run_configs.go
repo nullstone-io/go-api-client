@@ -12,9 +12,12 @@ type RunConfigs struct {
 	Client *Client
 }
 
+func (c RunConfigs) runConfigPath(stackId int64, workspaceUid uuid.UUID) string {
+	return fmt.Sprintf("orgs/%s/stacks/%d/workspaces/%s/run-configs/latest", c.Client.Config.OrgName, stackId, workspaceUid)
+}
+
 func (c RunConfigs) GetLatest(stackId int64, workspaceUid uuid.UUID) (*types.RunConfig, error) {
-	endpoint := fmt.Sprintf("stacks/%d/workspaces/%s/run-configs/latest", stackId, workspaceUid)
-	res, err := c.Client.Do(http.MethodGet, endpoint, nil, nil, nil)
+	res, err := c.Client.Do(http.MethodGet, c.runConfigPath(stackId, workspaceUid), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}

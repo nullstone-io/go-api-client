@@ -12,8 +12,8 @@ type AutogenSubdomainDelegation struct {
 	Client *Client
 }
 
-func (AutogenSubdomainDelegation) path(subdomainId, envId int64) string {
-	return fmt.Sprintf("subdomains/%d/envs/%d/autogen_subdomain/delegation", subdomainId, envId)
+func (d AutogenSubdomainDelegation) path(subdomainId, envId int64) string {
+	return fmt.Sprintf("orgs/%s/subdomains/%d/envs/%d/autogen_subdomain/delegation", d.Client.Config.OrgName, subdomainId, envId)
 }
 
 // Update - PUT /orgs/:orgName/subdomains/:subdomainId/envs/:envId/autogen_subdomain/delegation
