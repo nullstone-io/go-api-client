@@ -9,3 +9,11 @@ const (
 	LayerService     Layer = "service"
 	LayerPublicEntry Layer = "public-entry"
 )
+
+var AllLayerNames = []string{
+	"public-entry",
+	"service",
+	"database",
+	"cluster",
+	"network",
+}
