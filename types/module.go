@@ -15,5 +15,5 @@ type Module struct {
 	ProviderTypes ProviderTypes `json:"providerTypes"`
 	Status        ModuleStatus  `json:"status"`
 
-	Versions []ModuleVersion `json:"versions,omitempty"`
+	Versions ModuleVersions `json:"versions,omitempty"`
 }
