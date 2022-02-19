@@ -9,17 +9,34 @@ type CategoryName string
 
 const (
 	CategoryAppContainer          CategoryName = "app/container"
-	CategoryAppServerless         CategoryName = "app/serverless"
-	CategoryAppStaticSite         CategoryName = "app/static-site"
-	CategoryAppServer             CategoryName = "app/server"
-	CategoryCapabilityPublicEntry CategoryName = "capability/public-entry"
-	CategoryCapabilityDatastores  CategoryName = "capability/datastores"
-	CategoryCapabilitySecrets     CategoryName = "capability/secrets"
-	CategoryCapabilitySidecars    CategoryName = "capability/sidecars"
-	CategoryCapabilityEvents      CategoryName = "capability/events"
-	CategoryCapabilityTelemetry   CategoryName = "capability/telemetry"
-	CategoryDatastore             CategoryName = "datastore"
-	CategorySubdomain             CategoryName = "subdomain"
-	CategoryDomain                CategoryName = "domain"
-	CategoryBlock                 CategoryName = "block"
+	CategoryAppServerless                      = "app/serverless"
+	CategoryAppStaticSite                      = "app/static-site"
+	CategoryAppServer                          = "app/server"
+	CategoryCapabilityPublicEntry              = "capability/public-entry"
+	CategoryCapabilityDatastores               = "capability/datastores"
+	CategoryCapabilitySecrets                  = "capability/secrets"
+	CategoryCapabilitySidecars                 = "capability/sidecars"
+	CategoryCapabilityEvents                   = "capability/events"
+	CategoryCapabilityTelemetry                = "capability/telemetry"
+	CategoryDatastore                          = "datastore"
+	CategorySubdomain                          = "subdomain"
+	CategoryDomain                             = "domain"
+	CategoryBlock                              = "block"
 )
+
+var AllCategoryNames = []string{
+	"app/container",
+	"app/serverless",
+	"app/static-site",
+	"app/server",
+	"capability/public-entry",
+	"capability/datastores",
+	"capability/secrets",
+	"capability/sidecars",
+	"capability/events",
+	"capability/telemetry",
+	"datastore",
+	"subdomain",
+	"domain",
+	"block",
+}
