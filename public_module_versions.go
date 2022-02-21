@@ -6,7 +6,6 @@ import (
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"io"
 	"net/http"
-	"path"
 	"strconv"
 )
 
@@ -15,11 +14,11 @@ type PublicModuleVersions struct {
 }
 
 func (mv PublicModuleVersions) path(moduleName string) string {
-	return path.Join("orgs", mv.Client.Config.OrgName, "public-modules", moduleName, "versions")
+	return fmt.Sprintf("orgs/%s/public-modules/%s/versions", mv.Client.Config.OrgName, moduleName)
 }
 
 func (mv PublicModuleVersions) downloadPath(moduleName, versionName string) string {
-	return path.Join("orgs", mv.Client.Config.OrgName, "public-modules", moduleName, "versions", versionName, "download")
+	return fmt.Sprintf("orgs/%s/public-modules/%s/versions/%s/download", mv.Client.Config.OrgName, moduleName, versionName)
 }
 
 func (mv PublicModuleVersions) List(moduleName string) ([]types.ModuleVersion, error) {

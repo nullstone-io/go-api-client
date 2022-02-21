@@ -9,7 +9,6 @@ import (
 	"mime/multipart"
 	"net/http"
 	"net/url"
-	"path"
 	"strconv"
 )
 
@@ -18,11 +17,11 @@ type ModuleVersions struct {
 }
 
 func (mv ModuleVersions) path(moduleName string) string {
-	return path.Join("modules", moduleName, "versions")
+	return fmt.Sprintf("orgs/%s/modules/%s/versions", mv.Client.Config.OrgName, moduleName)
 }
 
 func (mv ModuleVersions) downloadPath(moduleName, versionName string) string {
-	return path.Join("modules", moduleName, "versions", versionName, "download")
+	return fmt.Sprintf("orgs/%s/modules/%s/versions/%s/download", mv.Client.Config.OrgName, moduleName, versionName)
 }
 
 func (mv ModuleVersions) List(moduleName string) ([]types.ModuleVersion, error) {
