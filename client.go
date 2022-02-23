@@ -94,16 +94,8 @@ func (c *Client) Domains() Domains {
 	return Domains{Client: c}
 }
 
-func (c *Client) DomainsByName() DomainsByName {
-	return DomainsByName{Client: c}
-}
-
 func (c *Client) Subdomains() Subdomains {
 	return Subdomains{Client: c}
-}
-
-func (c *Client) SubdomainsByName() SubdomainsByName {
-	return SubdomainsByName{Client: c}
 }
 
 func (c *Client) Modules() Modules {

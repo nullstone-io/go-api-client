@@ -11,13 +11,13 @@ type AutogenSubdomain struct {
 	Client *Client
 }
 
-func (a AutogenSubdomain) path(subdomainId, envId int64) string {
+func (a AutogenSubdomain) path(stackId, subdomainId, envId int64) string {
 	return fmt.Sprintf("orgs/%s/subdomains/%d/envs/%d/autogen_subdomain", a.Client.Config.OrgName, subdomainId, envId)
 }
 
 // Get - GET /orgs/:orgName/subdomains/:subdomainId/envs/:envId/autogen_subdomain
-func (a AutogenSubdomain) Get(subdomainId, envId int64) (*types.AutogenSubdomain, error) {
-	res, err := a.Client.Do(http.MethodGet, a.path(subdomainId, envId), nil, nil, nil)
+func (a AutogenSubdomain) Get(stackId, subdomainId, envId int64) (*types.AutogenSubdomain, error) {
+	res, err := a.Client.Do(http.MethodGet, a.path(stackId, subdomainId, envId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -32,8 +32,8 @@ func (a AutogenSubdomain) Get(subdomainId, envId int64) (*types.AutogenSubdomain
 }
 
 // Create - POST /orgs/:orgName/subdomains/:subdomainId/envs/:envId/autogen_subdomain
-func (a AutogenSubdomain) Create(subdomainId, envId int64) (*types.AutogenSubdomain, error) {
-	res, err := a.Client.Do(http.MethodPost, a.path(subdomainId, envId), nil, nil, nil)
+func (a AutogenSubdomain) Create(stackId, subdomainId, envId int64) (*types.AutogenSubdomain, error) {
+	res, err := a.Client.Do(http.MethodPost, a.path(stackId, subdomainId, envId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -48,8 +48,8 @@ func (a AutogenSubdomain) Create(subdomainId, envId int64) (*types.AutogenSubdom
 }
 
 // Destroy - DELETE /orgs/:orgName/subdomains/:subdomainId/envs/:envId/autogen_subdomain
-func (a AutogenSubdomain) Destroy(subdomainId, envId int64) (bool, error) {
-	res, err := a.Client.Do(http.MethodDelete, a.path(subdomainId, envId), nil, nil, nil)
+func (a AutogenSubdomain) Destroy(stackId, subdomainId, envId int64) (bool, error) {
+	res, err := a.Client.Do(http.MethodDelete, a.path(stackId, subdomainId, envId), nil, nil, nil)
 	if err != nil {
 		return false, err
 	}
