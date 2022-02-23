@@ -12,6 +12,7 @@ type Module struct {
 	Category      CategoryName  `json:"category"`
 	Layer         Layer         `json:"layer"`
 	Type          string        `json:"type"`
+	AppCategories []string      `json:"appCategories"`
 	ProviderTypes ProviderTypes `json:"providerTypes"`
 	Status        ModuleStatus  `json:"status"`
 

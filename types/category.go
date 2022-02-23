@@ -40,3 +40,10 @@ var AllCategoryNames = []string{
 	"domain",
 	"block",
 }
+
+var AllAppCategoryNames = []string{
+	"app/container",
+	"app/serverless",
+	"app/static-site",
+	"app/server",
+}
