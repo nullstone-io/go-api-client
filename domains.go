@@ -40,7 +40,7 @@ func (s Domains) List() ([]types.Domain, error) {
 	return domains, nil
 }
 
-// Get - GET /orgs/:orgName/domains/:id
+// Get - GET /orgs/:orgName/stacks/:stackId/domains/:id
 func (s Domains) Get(stackId, domainId int64) (*types.Domain, error) {
 	res, err := s.Client.Do(http.MethodGet, s.domainPath(stackId, domainId), nil, nil, nil)
 	if err != nil {
@@ -56,7 +56,7 @@ func (s Domains) Get(stackId, domainId int64) (*types.Domain, error) {
 	return &domain, nil
 }
 
-// Create - POST /orgs/:orgName/domains
+// Create - POST /orgs/:orgName/stacks/:stackId/domains
 func (s Domains) Create(stackId int64, domain *types.Domain) (*types.Domain, error) {
 	rawPayload, _ := json.Marshal(domain)
 	res, err := s.Client.Do(http.MethodPost, s.basePath(stackId), nil, nil, json.RawMessage(rawPayload))
@@ -73,7 +73,7 @@ func (s Domains) Create(stackId int64, domain *types.Domain) (*types.Domain, err
 	return &updatedDomain, nil
 }
 
-// Update - PUT/PATCH /orgs/:orgName/domains/:id
+// Update - PUT/PATCH /orgs/:orgName/stacks/:stackId/domains/:id
 func (s Domains) Update(stackId, domainId int64, domain *types.Domain) (*types.Domain, error) {
 	rawPayload, _ := json.Marshal(domain)
 	res, err := s.Client.Do(http.MethodPut, s.domainPath(stackId, domainId), nil, nil, json.RawMessage(rawPayload))
@@ -90,7 +90,7 @@ func (s Domains) Update(stackId, domainId int64, domain *types.Domain) (*types.D
 	return &updatedDomain, nil
 }
 
-// Destroy - DELETE /orgs/:orgName/domains/:id
+// Destroy - DELETE /orgs/:orgName/stacks/:stackId/domains/:id
 func (s Domains) Destroy(stackId, domainId int64) (bool, error) {
 	res, err := s.Client.Do(http.MethodDelete, s.domainPath(stackId, domainId), nil, nil, nil)
 	if err != nil {

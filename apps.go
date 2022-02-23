@@ -40,7 +40,7 @@ func (a Apps) List() ([]types.Application, error) {
 	return apps, nil
 }
 
-// Get - GET /orgs/:orgName/apps/:id
+// Get - GET /orgs/:orgName/stacks/:stackId/apps/:id
 func (a Apps) Get(stackId, appId int64) (*types.Application, error) {
 	res, err := a.Client.Do(http.MethodGet, a.appPath(stackId, appId), nil, nil, nil)
 	if err != nil {
@@ -56,7 +56,7 @@ func (a Apps) Get(stackId, appId int64) (*types.Application, error) {
 	return &app, nil
 }
 
-// Create - POST /orgs/:orgName/apps
+// Create - POST /orgs/:orgName/stacks/:stackId/apps
 func (a Apps) Create(stackId int64, app *types.Application) (*types.Application, error) {
 	rawPayload, _ := json.Marshal(app)
 	res, err := a.Client.Do(http.MethodPost, a.basePath(stackId), nil, nil, json.RawMessage(rawPayload))
@@ -73,7 +73,7 @@ func (a Apps) Create(stackId int64, app *types.Application) (*types.Application,
 	return &updatedApp, nil
 }
 
-// Update - PUT/PATCH /orgs/:orgName/apps/:id
+// Update - PUT/PATCH /orgs/:orgName/stacks/:stackId/apps/:id
 func (a Apps) Update(stackId, appId int64, app *types.Application) (*types.Application, error) {
 	rawPayload, _ := json.Marshal(app)
 	res, err := a.Client.Do(http.MethodPut, a.appPath(stackId, appId), nil, nil, json.RawMessage(rawPayload))
@@ -90,7 +90,7 @@ func (a Apps) Update(stackId, appId int64, app *types.Application) (*types.Appli
 	return &updatedApp, nil
 }
 
-// Destroy - DELETE /orgs/:orgName/apps/:id
+// Destroy - DELETE /orgs/:orgName/stacks/:stackId/apps/:id
 func (a Apps) Destroy(stackId, appId int64) (bool, error) {
 	res, err := a.Client.Do(http.MethodDelete, a.appPath(stackId, appId), nil, nil, nil)
 	if err != nil {

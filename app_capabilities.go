@@ -20,7 +20,7 @@ func (e AppCapabilities) capPath(stackId, appId, capId int64) string {
 	return fmt.Sprintf("orgs/%s/stacks/%d/apps/%d/capabilities/%d", e.Client.Config.OrgName, stackId, appId, capId)
 }
 
-// List - GET /orgs/:orgName/apps/:app_id/capabilities
+// List - GET /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities
 func (e AppCapabilities) List(stackId, appId int64) ([]types.Capability, error) {
 	res, err := e.Client.Do(http.MethodGet, e.basePath(stackId, appId), nil, nil, nil)
 	if err != nil {
@@ -36,7 +36,7 @@ func (e AppCapabilities) List(stackId, appId int64) ([]types.Capability, error) 
 	return appCaps, nil
 }
 
-// Get - GET /orgs/:orgName/apps/:app_id/capabilities/:id
+// Get - GET /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities/:id
 func (e AppCapabilities) Get(stackId, appId, capId int64) (*types.Capability, error) {
 	res, err := e.Client.Do(http.MethodGet, e.capPath(stackId, appId, capId), nil, nil, nil)
 	if err != nil {
@@ -52,7 +52,7 @@ func (e AppCapabilities) Get(stackId, appId, capId int64) (*types.Capability, er
 	return &appCap, nil
 }
 
-// Create - POST /orgs/:orgName/apps/:app_id/capabilities
+// Create - POST /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities
 func (e AppCapabilities) Create(stackId, appId int64, capability *types.Capability) (*types.Capability, error) {
 	rawPayload, _ := json.Marshal(capability)
 	res, err := e.Client.Do(http.MethodPost, e.basePath(stackId, appId), nil, nil, json.RawMessage(rawPayload))
@@ -69,7 +69,7 @@ func (e AppCapabilities) Create(stackId, appId int64, capability *types.Capabili
 	return &updatedCap, nil
 }
 
-// Update - PUT/PATCH /orgs/:orgName/apps/:app_id/capabilities/:id
+// Update - PUT/PATCH /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities/:id
 func (e AppCapabilities) Update(stackId, appId, capId int64, capability *types.Capability) (*types.Capability, error) {
 	rawPayload, _ := json.Marshal(capability)
 	res, err := e.Client.Do(http.MethodPut, e.capPath(stackId, appId, capId), nil, nil, json.RawMessage(rawPayload))
@@ -86,7 +86,7 @@ func (e AppCapabilities) Update(stackId, appId, capId int64, capability *types.C
 	return &updatedCap, nil
 }
 
-// Destroy - DELETE /orgs/:orgName/apps/:app_id/capabilities/:id
+// Destroy - DELETE /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities/:id
 func (e AppCapabilities) Destroy(stackId, appId, capId int64) (bool, error) {
 	res, err := e.Client.Do(http.MethodDelete, e.capPath(stackId, appId, capId), nil, nil, nil)
 	if err != nil {
