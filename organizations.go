@@ -12,10 +12,10 @@ type Organizations struct {
 }
 
 func (o Organizations) basePath() string {
-	return fmt.Sprintf("organizations")
+	return fmt.Sprintf("orgs")
 }
 
-// List - GET /organizations
+// List - GET /orgs
 func (o Organizations) List() ([]types.Organization, error) {
 	res, err := o.Client.Do(http.MethodGet, o.basePath(), nil, nil, nil)
 	if err != nil {
