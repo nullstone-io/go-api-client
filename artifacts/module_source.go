@@ -34,3 +34,15 @@ func ParseSource(source string) (*ModuleSource, error) {
 		return nil, ErrInvalidModuleSource
 	}
 }
+
+func (s ModuleSource) String() string {
+	tokens := make([]string, 0)
+	if s.Host != "" {
+		tokens = append(tokens, s.Host)
+	}
+	if s.OrgName != "" {
+		tokens = append(tokens, s.OrgName)
+	}
+	tokens = append(tokens, s.ModuleName)
+	return strings.Join(tokens, "/")
+}
