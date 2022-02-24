@@ -12,17 +12,21 @@ type Domains struct {
 	Client *Client
 }
 
-func (s Domains) basePath() string {
+func (s Domains) globalPath() string {
 	return fmt.Sprintf("orgs/%s/domains", s.Client.Config.OrgName)
 }
 
-func (s Domains) domainPath(domainId int64) string {
-	return fmt.Sprintf("orgs/%s/domains/%d", s.Client.Config.OrgName, domainId)
+func (s Domains) basePath(stackId int64) string {
+	return fmt.Sprintf("orgs/%s/stacks/%d/domains", s.Client.Config.OrgName, stackId)
+}
+
+func (s Domains) domainPath(stackId, domainId int64) string {
+	return fmt.Sprintf("orgs/%s/stacks/%d/domains/%d", s.Client.Config.OrgName, stackId, domainId)
 }
 
 // List - GET /orgs/:orgName/domains
 func (s Domains) List() ([]types.Domain, error) {
-	res, err := s.Client.Do(http.MethodGet, s.basePath(), nil, nil, nil)
+	res, err := s.Client.Do(http.MethodGet, s.globalPath(), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -36,9 +40,9 @@ func (s Domains) List() ([]types.Domain, error) {
 	return domains, nil
 }
 
-// Get - GET /orgs/:orgName/domains/:id
-func (s Domains) Get(domainId int64) (*types.Domain, error) {
-	res, err := s.Client.Do(http.MethodGet, s.domainPath(domainId), nil, nil, nil)
+// Get - GET /orgs/:orgName/stacks/:stackId/domains/:id
+func (s Domains) Get(stackId, domainId int64) (*types.Domain, error) {
+	res, err := s.Client.Do(http.MethodGet, s.domainPath(stackId, domainId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -52,10 +56,10 @@ func (s Domains) Get(domainId int64) (*types.Domain, error) {
 	return &domain, nil
 }
 
-// Create - POST /orgs/:orgName/domains
-func (s Domains) Create(domain *types.Domain) (*types.Domain, error) {
+// Create - POST /orgs/:orgName/stacks/:stackId/domains
+func (s Domains) Create(stackId int64, domain *types.Domain) (*types.Domain, error) {
 	rawPayload, _ := json.Marshal(domain)
-	res, err := s.Client.Do(http.MethodPost, s.basePath(), nil, nil, json.RawMessage(rawPayload))
+	res, err := s.Client.Do(http.MethodPost, s.basePath(stackId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -69,10 +73,10 @@ func (s Domains) Create(domain *types.Domain) (*types.Domain, error) {
 	return &updatedDomain, nil
 }
 
-// Update - PUT/PATCH /orgs/:orgName/domains/:id
-func (s Domains) Update(domainId int64, domain *types.Domain) (*types.Domain, error) {
+// Update - PUT/PATCH /orgs/:orgName/stacks/:stackId/domains/:id
+func (s Domains) Update(stackId, domainId int64, domain *types.Domain) (*types.Domain, error) {
 	rawPayload, _ := json.Marshal(domain)
-	res, err := s.Client.Do(http.MethodPut, s.domainPath(domainId), nil, nil, json.RawMessage(rawPayload))
+	res, err := s.Client.Do(http.MethodPut, s.domainPath(stackId, domainId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -86,9 +90,9 @@ func (s Domains) Update(domainId int64, domain *types.Domain) (*types.Domain, er
 	return &updatedDomain, nil
 }
 
-// Destroy - DELETE /orgs/:orgName/domains/:id
-func (s Domains) Destroy(domainId int64) (bool, error) {
-	res, err := s.Client.Do(http.MethodDelete, s.domainPath(domainId), nil, nil, nil)
+// Destroy - DELETE /orgs/:orgName/stacks/:stackId/domains/:id
+func (s Domains) Destroy(stackId, domainId int64) (bool, error) {
+	res, err := s.Client.Do(http.MethodDelete, s.domainPath(stackId, domainId), nil, nil, nil)
 	if err != nil {
 		return false, err
 	}

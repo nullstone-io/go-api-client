@@ -12,17 +12,25 @@ type Subdomains struct {
 	Client *Client
 }
 
-func (s Subdomains) basePath() string {
+func (s Subdomains) globalPath() string {
 	return fmt.Sprintf("orgs/%s/subdomains", s.Client.Config.OrgName)
 }
 
-func (s Subdomains) subdomainPath(subdomainId int64) string {
+func (s Subdomains) globalSubdomainPath(subdomainId int64) string {
 	return fmt.Sprintf("orgs/%s/subdomains/%d", s.Client.Config.OrgName, subdomainId)
+}
+
+func (s Subdomains) basePath(stackId int64) string {
+	return fmt.Sprintf("orgs/%s/stacks/%d/subdomains", s.Client.Config.OrgName, stackId)
+}
+
+func (s Subdomains) subdomainPath(stackId, subdomainId int64) string {
+	return fmt.Sprintf("orgs/%s/stacks/%d/subdomains/%d", s.Client.Config.OrgName, stackId, subdomainId)
 }
 
 // List - GET /orgs/:orgName/subdomains
 func (s Subdomains) List() ([]types.Subdomain, error) {
-	res, err := s.Client.Do(http.MethodGet, s.basePath(), nil, nil, nil)
+	res, err := s.Client.Do(http.MethodGet, s.globalPath(), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -37,8 +45,8 @@ func (s Subdomains) List() ([]types.Subdomain, error) {
 }
 
 // Get - GET /orgs/:orgName/subdomains/:id
-func (s Subdomains) Get(subdomainId int64) (*types.Subdomain, error) {
-	res, err := s.Client.Do(http.MethodGet, s.subdomainPath(subdomainId), nil, nil, nil)
+func (s Subdomains) GlobalGet(subdomainId int64) (*types.Subdomain, error) {
+	res, err := s.Client.Do(http.MethodGet, s.globalSubdomainPath(subdomainId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -52,10 +60,26 @@ func (s Subdomains) Get(subdomainId int64) (*types.Subdomain, error) {
 	return &subdomain, nil
 }
 
-// Create - POST /orgs/:orgName/subdomains
-func (s Subdomains) Create(subdomain *types.Subdomain) (*types.Subdomain, error) {
+// Get - GET /orgs/:orgName/stacks/:stackId/subdomains/:id
+func (s Subdomains) Get(stackId, subdomainId int64) (*types.Subdomain, error) {
+	res, err := s.Client.Do(http.MethodGet, s.subdomainPath(stackId, subdomainId), nil, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var subdomain types.Subdomain
+	if err := response.ReadJson(res, &subdomain); response.IsNotFoundError(err) {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &subdomain, nil
+}
+
+// Create - POST /orgs/:orgName/stacks/:stackId/subdomains
+func (s Subdomains) Create(stackId int64, subdomain *types.Subdomain) (*types.Subdomain, error) {
 	rawPayload, _ := json.Marshal(subdomain)
-	res, err := s.Client.Do(http.MethodPost, s.basePath(), nil, nil, json.RawMessage(rawPayload))
+	res, err := s.Client.Do(http.MethodPost, s.basePath(stackId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -69,10 +93,10 @@ func (s Subdomains) Create(subdomain *types.Subdomain) (*types.Subdomain, error)
 	return &updatedDomain, nil
 }
 
-// Update - PUT/PATCH /orgs/:orgName/subdomains/:id
-func (s Subdomains) Update(subdomainId int64, subdomain *types.Subdomain) (*types.Subdomain, error) {
+// Update - PUT/PATCH /orgs/:orgName/stacks/:stackId/subdomains/:id
+func (s Subdomains) Update(stackId, subdomainId int64, subdomain *types.Subdomain) (*types.Subdomain, error) {
 	rawPayload, _ := json.Marshal(subdomain)
-	res, err := s.Client.Do(http.MethodPut, s.subdomainPath(subdomainId), nil, nil, json.RawMessage(rawPayload))
+	res, err := s.Client.Do(http.MethodPut, s.subdomainPath(stackId, subdomainId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -86,9 +110,9 @@ func (s Subdomains) Update(subdomainId int64, subdomain *types.Subdomain) (*type
 	return &updatedDomain, nil
 }
 
-// Destroy - DELETE /orgs/:orgName/subdomains/:id
-func (s Subdomains) Destroy(subdomainId int64) (bool, error) {
-	res, err := s.Client.Do(http.MethodDelete, s.subdomainPath(subdomainId), nil, nil, nil)
+// Destroy - DELETE /orgs/:orgName/stacks/:stackId/subdomains/:id
+func (s Subdomains) Destroy(stackId, subdomainId int64) (bool, error) {
+	res, err := s.Client.Do(http.MethodDelete, s.subdomainPath(stackId, subdomainId), nil, nil, nil)
 	if err != nil {
 		return false, err
 	}

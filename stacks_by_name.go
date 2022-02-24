@@ -1,7 +1,6 @@
 package api
 
 import (
-	"encoding/json"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
@@ -30,21 +29,4 @@ func (s StacksByName) Get(stackName string) (*types.Stack, error) {
 		return nil, err
 	}
 	return &stack, nil
-}
-
-// Upsert - PUT/PATCH /orgs/:orgName/stacks_by_name/:name
-func (s StacksByName) Upsert(stackName string, stack *types.Stack) (*types.Stack, error) {
-	rawPayload, _ := json.Marshal(stack)
-	res, err := s.Client.Do(http.MethodPut, s.stackPath(stackName), nil, nil, json.RawMessage(rawPayload))
-	if err != nil {
-		return nil, err
-	}
-
-	var updatedStack types.Stack
-	if err := response.ReadJson(res, &updatedStack); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &updatedStack, nil
 }

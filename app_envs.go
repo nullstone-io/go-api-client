@@ -12,12 +12,12 @@ type AppEnvs struct {
 	Client *Client
 }
 
-func (e AppEnvs) basePath(appId int64, envName string) string {
-	return fmt.Sprintf("orgs/%s/apps/%d/envs/%s", e.Client.Config.OrgName, appId, envName)
+func (e AppEnvs) basePath(stackId, appId int64, envName string) string {
+	return fmt.Sprintf("orgs/%s/stacks/%d/apps/%d/envs/%s", e.Client.Config.OrgName, stackId, appId, envName)
 }
 
-func (e AppEnvs) Get(appId int64, envName string) (*types.AppEnv, error) {
-	res, err := e.Client.Do(http.MethodGet, e.basePath(appId, envName), nil, nil, nil)
+func (e AppEnvs) Get(stackId, appId int64, envName string) (*types.AppEnv, error) {
+	res, err := e.Client.Do(http.MethodGet, e.basePath(stackId, appId, envName), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -31,11 +31,11 @@ func (e AppEnvs) Get(appId int64, envName string) (*types.AppEnv, error) {
 	return &appEnv, nil
 }
 
-func (e AppEnvs) Update(appId int64, envName string, version string) (*types.AppEnv, error) {
+func (e AppEnvs) Update(stackId, appId int64, envName string, version string) (*types.AppEnv, error) {
 	rawPayload, _ := json.Marshal(map[string]interface{}{
 		"version": version,
 	})
-	res, err := e.Client.Do(http.MethodPut, e.basePath(appId, envName), nil, nil, json.RawMessage(rawPayload))
+	res, err := e.Client.Do(http.MethodPut, e.basePath(stackId, appId, envName), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}

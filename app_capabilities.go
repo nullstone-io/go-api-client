@@ -12,17 +12,17 @@ type AppCapabilities struct {
 	Client *Client
 }
 
-func (e AppCapabilities) basePath(appId int64) string {
-	return fmt.Sprintf("orgs/%s/apps/%d/capabilities", e.Client.Config.OrgName, appId)
+func (e AppCapabilities) basePath(stackId, appId int64) string {
+	return fmt.Sprintf("orgs/%s/stacks/%d/apps/%d/capabilities", e.Client.Config.OrgName, stackId, appId)
 }
 
-func (e AppCapabilities) capPath(appId, capId int64) string {
-	return fmt.Sprintf("orgs/%s/apps/%d/capabilities/%d", e.Client.Config.OrgName, appId, capId)
+func (e AppCapabilities) capPath(stackId, appId, capId int64) string {
+	return fmt.Sprintf("orgs/%s/stacks/%d/apps/%d/capabilities/%d", e.Client.Config.OrgName, stackId, appId, capId)
 }
 
-// List - GET /orgs/:orgName/apps/:app_id/capabilities
-func (e AppCapabilities) List(appId int64) ([]types.Capability, error) {
-	res, err := e.Client.Do(http.MethodGet, e.basePath(appId), nil, nil, nil)
+// List - GET /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities
+func (e AppCapabilities) List(stackId, appId int64) ([]types.Capability, error) {
+	res, err := e.Client.Do(http.MethodGet, e.basePath(stackId, appId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -36,9 +36,9 @@ func (e AppCapabilities) List(appId int64) ([]types.Capability, error) {
 	return appCaps, nil
 }
 
-// Get - GET /orgs/:orgName/apps/:app_id/capabilities/:id
-func (e AppCapabilities) Get(appId, capId int64) (*types.Capability, error) {
-	res, err := e.Client.Do(http.MethodGet, e.capPath(appId, capId), nil, nil, nil)
+// Get - GET /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities/:id
+func (e AppCapabilities) Get(stackId, appId, capId int64) (*types.Capability, error) {
+	res, err := e.Client.Do(http.MethodGet, e.capPath(stackId, appId, capId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -52,10 +52,10 @@ func (e AppCapabilities) Get(appId, capId int64) (*types.Capability, error) {
 	return &appCap, nil
 }
 
-// Create - POST /orgs/:orgName/apps/:app_id/capabilities
-func (e AppCapabilities) Create(appId int64, capability *types.Capability) (*types.Capability, error) {
+// Create - POST /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities
+func (e AppCapabilities) Create(stackId, appId int64, capability *types.Capability) (*types.Capability, error) {
 	rawPayload, _ := json.Marshal(capability)
-	res, err := e.Client.Do(http.MethodPost, e.basePath(appId), nil, nil, json.RawMessage(rawPayload))
+	res, err := e.Client.Do(http.MethodPost, e.basePath(stackId, appId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -69,10 +69,10 @@ func (e AppCapabilities) Create(appId int64, capability *types.Capability) (*typ
 	return &updatedCap, nil
 }
 
-// Update - PUT/PATCH /orgs/:orgName/apps/:app_id/capabilities/:id
-func (e AppCapabilities) Update(appId, capId int64, capability *types.Capability) (*types.Capability, error) {
+// Update - PUT/PATCH /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities/:id
+func (e AppCapabilities) Update(stackId, appId, capId int64, capability *types.Capability) (*types.Capability, error) {
 	rawPayload, _ := json.Marshal(capability)
-	res, err := e.Client.Do(http.MethodPut, e.capPath(appId, capId), nil, nil, json.RawMessage(rawPayload))
+	res, err := e.Client.Do(http.MethodPut, e.capPath(stackId, appId, capId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -86,9 +86,9 @@ func (e AppCapabilities) Update(appId, capId int64, capability *types.Capability
 	return &updatedCap, nil
 }
 
-// Destroy - DELETE /orgs/:orgName/apps/:app_id/capabilities/:id
-func (e AppCapabilities) Destroy(appId, capId int64) (bool, error) {
-	res, err := e.Client.Do(http.MethodDelete, e.capPath(appId, capId), nil, nil, nil)
+// Destroy - DELETE /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities/:id
+func (e AppCapabilities) Destroy(stackId, appId, capId int64) (bool, error) {
+	res, err := e.Client.Do(http.MethodDelete, e.capPath(stackId, appId, capId), nil, nil, nil)
 	if err != nil {
 		return false, err
 	}
