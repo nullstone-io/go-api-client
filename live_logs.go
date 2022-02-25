@@ -7,6 +7,9 @@ import (
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
+	"net/http"
+	"net/url"
+	"strings"
 )
 
 type LiveLogs struct {
@@ -18,11 +21,15 @@ func (l LiveLogs) path(stackId int64, runUid uuid.UUID) string {
 }
 
 func (l LiveLogs) Watch(ctx context.Context, stackId int64, runUid uuid.UUID) (<-chan types.LiveLogMessage, error) {
-	endpoint, err := l.Client.Config.ConstructUrl(l.path(stackId, runUid), nil)
+	endpoint, err := url.Parse(l.Client.Config.BaseAddress)
 	if err != nil {
 		return nil, fmt.Errorf("invalid url: %w", err)
 	}
-	c, _, err := websocket.DefaultDialer.Dial(endpoint.String(), nil)
+	endpoint.Path = l.path(stackId, runUid)
+	endpoint.Scheme = strings.Replace(endpoint.Scheme, "http", "ws", 1)
+	headers := http.Header{}
+	headers.Set("Authorization", "Bearer "+l.Client.Config.ApiKey)
+	c, _, err := websocket.DefaultDialer.Dial(endpoint.String(), headers)
 	if err != nil {
 		return nil, fmt.Errorf("error connecting to live logs: %w", err)
 	}
