@@ -6,10 +6,13 @@ import (
 	"fmt"
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
+	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
+	"log"
 	"net/http"
 	"net/url"
 	"strings"
+	"time"
 )
 
 type LiveLogs struct {
@@ -21,17 +24,9 @@ func (l LiveLogs) path(stackId int64, runUid uuid.UUID) string {
 }
 
 func (l LiveLogs) Watch(ctx context.Context, stackId int64, runUid uuid.UUID) (<-chan types.LiveLogMessage, error) {
-	endpoint, err := url.Parse(l.Client.Config.BaseAddress)
+	c, err := l.connect(stackId, runUid)
 	if err != nil {
-		return nil, fmt.Errorf("invalid url: %w", err)
-	}
-	endpoint.Path = l.path(stackId, runUid)
-	endpoint.Scheme = strings.Replace(endpoint.Scheme, "http", "ws", 1)
-	headers := http.Header{}
-	headers.Set("Authorization", "Bearer "+l.Client.Config.ApiKey)
-	c, _, err := websocket.DefaultDialer.Dial(endpoint.String(), headers)
-	if err != nil {
-		return nil, fmt.Errorf("error connecting to live logs: %w", err)
+		return nil, err
 	}
 
 	// Live log messages are sent to this channel
@@ -45,6 +40,15 @@ func (l LiveLogs) Watch(ctx context.Context, stackId int64, runUid uuid.UUID) (<
 		for {
 			_, data, err := c.ReadMessage()
 			if err != nil {
+				if websocket.IsCloseError(err, websocket.CloseAbnormalClosure) {
+					// The stream may not be ready yet, let's wait a second and retry
+					<-time.After(time.Second)
+					if c, err = l.connect(stackId, runUid); err != nil {
+						log.Println("error retrying connection: %w", err)
+						return
+					}
+					continue
+				}
 				return
 			}
 			var msg types.LiveLogMessage
@@ -75,4 +79,23 @@ func (l LiveLogs) Watch(ctx context.Context, stackId int64, runUid uuid.UUID) (<
 	}()
 
 	return ch, nil
+}
+
+func (l LiveLogs) connect(stackId int64, runUid uuid.UUID) (*websocket.Conn, error) {
+	endpoint, err := url.Parse(l.Client.Config.BaseAddress)
+	if err != nil {
+		return nil, fmt.Errorf("invalid url: %w", err)
+	}
+	endpoint.Path = l.path(stackId, runUid)
+	endpoint.Scheme = strings.Replace(endpoint.Scheme, "http", "ws", 1)
+	headers := http.Header{}
+	headers.Set("Authorization", "Bearer "+l.Client.Config.ApiKey)
+	c, res, err := websocket.DefaultDialer.Dial(endpoint.String(), headers)
+	if err != nil {
+		return nil, fmt.Errorf("error connecting to live logs: %w", err)
+	}
+	if err := response.Verify(res); err != nil {
+		return nil, fmt.Errorf("error connecting to live logs: %w", err)
+	}
+	return c, nil
 }
