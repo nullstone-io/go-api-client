@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/google/uuid"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
@@ -17,7 +18,8 @@ func (r Runs) basePath(stackId int64, workspaceUid uuid.UUID) string {
 }
 
 func (r Runs) Create(stackId int64, workspaceUid uuid.UUID, input types.CreateRunInput) (*types.Run, error) {
-	res, err := r.Client.Do(http.MethodPost, r.basePath(stackId, workspaceUid), nil, nil, input)
+	raw, _ := json.Marshal(input)
+	res, err := r.Client.Do(http.MethodPost, r.basePath(stackId, workspaceUid), nil, nil, json.RawMessage(raw))
 	if err != nil {
 		return nil, err
 	}
