@@ -86,6 +86,10 @@ func (c *Client) RunConfigs() RunConfigs {
 	return RunConfigs{Client: c}
 }
 
+func (c *Client) PromotionConfigs() PromotionConfigs {
+	return PromotionConfigs{Client: c}
+}
+
 func (c *Client) AutogenSubdomain() AutogenSubdomain {
 	return AutogenSubdomain{Client: c}
 }
