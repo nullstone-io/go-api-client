@@ -90,6 +90,10 @@ func (c *Client) PromotionConfigs() PromotionConfigs {
 	return PromotionConfigs{Client: c}
 }
 
+func (c *Client) LiveLogs() LiveLogs {
+	return LiveLogs{Client: c}
+}
+
 func (c *Client) AutogenSubdomain() AutogenSubdomain {
 	return AutogenSubdomain{Client: c}
 }
