@@ -22,6 +22,18 @@ const (
 	RunStatusDisapproved   = "disapproved"
 )
 
+func IsTerminalRunStatus(runStatus string) bool {
+	switch runStatus {
+	default:
+		return false
+	case RunStatusCompleted:
+	case RunStatusFailed:
+	case RunStatusCancelled:
+	case RunStatusDisapproved:
+	}
+	return true
+}
+
 type Run struct {
 	UidCreatedModel
 	WorkspaceUid uuid.UUID `json:"workspaceUid"`

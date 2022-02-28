@@ -1,11 +1,8 @@
 package types
 
-import (
-	"github.com/google/uuid"
-)
-
-type RunConfig struct {
-	WorkspaceUid  uuid.UUID         `json:"workspaceUid"`
+type CreateRunInput struct {
+	IsDestroy     bool              `json:"isDestroy"`
+	IsApproved    *bool             `json:"isApproved"`
 	Source        string            `json:"source"`
 	SourceVersion string            `json:"sourceVersion"`
 	Variables     Variables         `json:"variables"`
@@ -13,6 +10,4 @@ type RunConfig struct {
 	Connections   Connections       `json:"connections"`
 	Capabilities  CapabilityConfigs `json:"capabilities"`
 	Providers     Providers         `json:"providers"`
-	Targets       RunTargets        `json:"targets"`
-	Dependencies  Dependencies      `json:"dependencies"`
 }

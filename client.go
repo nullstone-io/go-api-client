@@ -78,8 +78,20 @@ func (c *Client) WorkspaceOutputs() WorkspaceOutputs {
 	return WorkspaceOutputs{Client: c}
 }
 
+func (c *Client) Runs() Runs {
+	return Runs{Client: c}
+}
+
 func (c *Client) RunConfigs() RunConfigs {
 	return RunConfigs{Client: c}
+}
+
+func (c *Client) PromotionConfigs() PromotionConfigs {
+	return PromotionConfigs{Client: c}
+}
+
+func (c *Client) LiveLogs() LiveLogs {
+	return LiveLogs{Client: c}
 }
 
 func (c *Client) AutogenSubdomain() AutogenSubdomain {
