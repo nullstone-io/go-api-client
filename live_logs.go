@@ -42,7 +42,11 @@ func (l LiveLogs) Watch(ctx context.Context, stackId int64, runUid uuid.UUID) (<
 			if err != nil {
 				if websocket.IsCloseError(err, websocket.CloseAbnormalClosure) {
 					// The stream may not be ready yet, let's wait a second and retry
-					<-time.After(time.Second)
+					select {
+						case <-ctx.Done():
+							return
+						case <-time.After(time.Second):
+					}
 					if c, err = l.connect(stackId, runUid); err != nil {
 						log.Println("error retrying connection: %w", err)
 						return
