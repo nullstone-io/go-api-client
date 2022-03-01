@@ -30,6 +30,8 @@ func (r Runs) Get(stackId int64, runUid uuid.UUID) (*types.Run, error) {
 	var run types.Run
 	if err := response.ReadJson(res, &run); response.IsNotFoundError(err) {
 		return nil, nil
+	} else if err != nil {
+		return nil, err
 	}
 	return &run, nil
 }
@@ -44,6 +46,8 @@ func (r Runs) Create(stackId int64, workspaceUid uuid.UUID, input types.CreateRu
 	var run types.Run
 	if err := response.ReadJson(res, &run); response.IsNotFoundError(err) {
 		return nil, nil
+	} else if err != nil {
+		return nil, err
 	}
 	return &run, nil
 }
