@@ -40,11 +40,8 @@ func (mv ModuleVersions) List(moduleName string) ([]types.ModuleVersion, error) 
 }
 
 func (mv ModuleVersions) GetDownloadInfo(moduleName string, versionName string) (*types.ModuleDownloadInfo, error) {
-	endpoint, err := mv.Client.Config.ConstructUrl(mv.downloadPath(moduleName, versionName), nil)
-	if err != nil {
-		return nil, err
-	}
-	res, err := http.Head(endpoint.String())
+	relativePath := mv.downloadPath(moduleName, versionName)
+	res, err := mv.Client.Do(http.MethodHead,relativePath, nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -63,6 +60,10 @@ func (mv ModuleVersions) GetDownloadInfo(moduleName string, versionName string) 
 		return nil, fmt.Errorf("missing 'X-Data-Length' header")
 	}
 
+	endpoint, err := mv.Client.Config.ConstructUrl(relativePath, nil)
+	if err != nil {
+		return nil, err
+	}
 	info := &types.ModuleDownloadInfo{
 		FileExtension: ext,
 		DownloadUrl:   *endpoint,
