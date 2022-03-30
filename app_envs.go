@@ -1,7 +1,6 @@
 package api
 
 import (
-	"encoding/json"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
@@ -29,22 +28,4 @@ func (e AppEnvs) Get(stackId, appId int64, envName string) (*types.AppEnv, error
 		return nil, err
 	}
 	return &appEnv, nil
-}
-
-func (e AppEnvs) Update(stackId, appId int64, envName string, version string) (*types.AppEnv, error) {
-	rawPayload, _ := json.Marshal(map[string]interface{}{
-		"version": version,
-	})
-	res, err := e.Client.Do(http.MethodPut, e.basePath(stackId, appId, envName), nil, nil, json.RawMessage(rawPayload))
-	if err != nil {
-		return nil, err
-	}
-
-	var updated types.AppEnv
-	if err := response.ReadJson(res, &updated); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &updated, nil
 }
