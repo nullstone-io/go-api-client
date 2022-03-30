@@ -70,6 +70,10 @@ func (c *Client) AppEnvs() AppEnvs {
 	return AppEnvs{Client: c}
 }
 
+func (c *Client) Deploys() Deploys {
+	return Deploys{Client: c}
+}
+
 func (c *Client) Workspaces() Workspaces {
 	return Workspaces{Client: c}
 }
