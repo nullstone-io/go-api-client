@@ -36,7 +36,7 @@ func (d Deploys) Create(stackId, appId, envId int64, version string) (*types.Dep
 	rawPayload, _ := json.Marshal(map[string]interface{}{
 		"version": version,
 	})
-	res, err := d.Client.Do(http.MethodPut, d.basePath(stackId, appId, envId), nil, nil, json.RawMessage(rawPayload))
+	res, err := d.Client.Do(http.MethodPost, d.basePath(stackId, appId, envId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
