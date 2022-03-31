@@ -21,7 +21,7 @@ func (a Apps) basePath(stackId int64) string {
 }
 
 func (a Apps) appPath(stackId, appId int64) string {
-	return fmt.Sprintf("orgs/%s/apps/%d", a.Client.Config.OrgName, appId)
+	return fmt.Sprintf("orgs/%s/stacks/%d/apps/%d", a.Client.Config.OrgName, stackId, appId)
 }
 
 // List - GET /orgs/:orgName/apps
