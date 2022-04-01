@@ -3,7 +3,7 @@ package types
 type Deploy struct {
 	IdModel
 	OrgName string `json:"orgName"`
-	StackId string `json:"stackId"`
+	StackId int64  `json:"stackId"`
 	AppId   int64  `json:"appId"`
 	EnvId   int64  `json:"envId"`
 	Version string `json:"version"`
