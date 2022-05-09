@@ -12,7 +12,6 @@ type Deploys struct {
 	Client *Client
 }
 
-
 func (d Deploys) basePath(stackId, appId, envId int64) string {
 	return fmt.Sprintf("orgs/%s/stacks/%d/apps/%d/envs/%d/deploys", d.Client.Config.OrgName, stackId, appId, envId)
 }
