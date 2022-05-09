@@ -41,7 +41,7 @@ func (mv ModuleVersions) List(moduleName string) ([]types.ModuleVersion, error) 
 
 func (mv ModuleVersions) GetDownloadInfo(moduleName string, versionName string) (*types.ModuleDownloadInfo, error) {
 	relativePath := mv.downloadPath(moduleName, versionName)
-	res, err := mv.Client.Do(http.MethodHead,relativePath, nil, nil, nil)
+	res, err := mv.Client.Do(http.MethodHead, relativePath, nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
