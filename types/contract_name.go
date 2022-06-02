@@ -6,7 +6,16 @@ import (
 )
 
 func ParseContractName(s string) (ContractName, error) {
-	cn := ContractName{}
+	cn := ContractName{
+		Category:    "",
+		Subcategory: "",
+		Provider:    "",
+		Platform:    "",
+		Subplatform: "",
+	}
+	if s == "" {
+		return cn, nil
+	}
 	tokens := strings.SplitN(s, "/", 3)
 	if len(tokens) != 3 {
 		return cn, fmt.Errorf("invalid contract format, expected <category>/<provider>/<platform>")
@@ -41,4 +50,22 @@ func (cn ContractName) String() string {
 		fullPlatform = fmt.Sprintf("%s:%s", cn.Platform, cn.Subplatform)
 	}
 	return fmt.Sprintf("%s/%s/%s", fullCategory, cn.Provider, fullPlatform)
+}
+
+func (cn ContractName) Match(other ContractName) bool {
+	return matchContractPart(cn.Category, other.Category, false) &&
+		matchContractPart(cn.Subcategory, other.Subcategory, true) &&
+		matchContractPart(cn.Provider, other.Provider, false) &&
+		matchContractPart(cn.Platform, other.Platform, false) &&
+		matchContractPart(cn.Subplatform, other.Subplatform, true)
+}
+
+func matchContractPart(want, got string, optional bool) bool {
+	if want == "*" {
+		return true
+	}
+	if want == "" && optional {
+		return true
+	}
+	return want == got
 }
