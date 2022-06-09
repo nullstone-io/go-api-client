@@ -5,8 +5,8 @@ import (
 	"strings"
 )
 
-func ParseContractName(s string) (ContractName, error) {
-	cn := ContractName{
+func ParseModuleContractName(s string) (ModuleContractName, error) {
+	cn := ModuleContractName{
 		Category:    "",
 		Subcategory: "",
 		Provider:    "",
@@ -32,7 +32,7 @@ func ParseContractName(s string) (ContractName, error) {
 	return cn, nil
 }
 
-type ContractName struct {
+type ModuleContractName struct {
 	Category    string `json:"category"`
 	Subcategory string `json:"subcategory"`
 	Provider    string `json:"provider"`
@@ -40,7 +40,7 @@ type ContractName struct {
 	Subplatform string `json:"subplatform"`
 }
 
-func (cn ContractName) String() string {
+func (cn ModuleContractName) String() string {
 	fullCategory := cn.Category
 	if cn.Subcategory != "" {
 		fullCategory = fmt.Sprintf("%s:%s", cn.Category, cn.Subcategory)
@@ -52,7 +52,7 @@ func (cn ContractName) String() string {
 	return fmt.Sprintf("%s/%s/%s", fullCategory, cn.Provider, fullPlatform)
 }
 
-func (cn ContractName) Match(other ContractName) bool {
+func (cn ModuleContractName) Match(other ModuleContractName) bool {
 	return matchContractPart(cn.Category, other.Category, false) &&
 		matchContractPart(cn.Subcategory, other.Subcategory, true) &&
 		matchContractPart(cn.Provider, other.Provider, false) &&
