@@ -9,31 +9,31 @@ type SubcategoryName string
 
 const (
 	SubcategoryAppContainer  SubcategoryName = "container"
-	SubcategoryAppServerless                 = "serverless"
-	SubcategoryAppStaticSite                 = "static-site"
-	SubcategoryAppServer                     = "server"
+	SubcategoryAppServerless SubcategoryName = "serverless"
+	SubcategoryAppStaticSite SubcategoryName = "static-site"
+	SubcategoryAppServer     SubcategoryName = "server"
 
-	SubcategoryCapabilityIngress    = "ingress"
-	SubcategoryCapabilityDatastores = "datastores"
-	SubcategoryCapabilitySecrets    = "secrets"
-	SubcategoryCapabilitySidecars   = "sidecars"
-	SubcategoryCapabilityEvents     = "events"
-	SubcategoryCapabilityTelemetry  = "telemetry"
+	SubcategoryCapabilityIngress    SubcategoryName = "ingress"
+	SubcategoryCapabilityDatastores SubcategoryName = "datastores"
+	SubcategoryCapabilitySecrets    SubcategoryName = "secrets"
+	SubcategoryCapabilitySidecars   SubcategoryName = "sidecars"
+	SubcategoryCapabilityEvents     SubcategoryName = "events"
+	SubcategoryCapabilityTelemetry  SubcategoryName = "telemetry"
 )
 
 var AllSubcategoryNames = map[CategoryName][]string{
 	CategoryApp: {
 		string(SubcategoryAppContainer),
-		SubcategoryAppServerless,
-		SubcategoryAppStaticSite,
-		SubcategoryAppServer,
+		string(SubcategoryAppServerless),
+		string(SubcategoryAppStaticSite),
+		string(SubcategoryAppServer),
 	},
 	CategoryCapability: {
-		SubcategoryCapabilityIngress,
-		SubcategoryCapabilityDatastores,
-		SubcategoryCapabilitySecrets,
-		SubcategoryCapabilitySidecars,
-		SubcategoryCapabilityEvents,
-		SubcategoryCapabilityTelemetry,
+		string(SubcategoryCapabilityIngress),
+		string(SubcategoryCapabilityDatastores),
+		string(SubcategoryCapabilitySecrets),
+		string(SubcategoryCapabilitySidecars),
+		string(SubcategoryCapabilityEvents),
+		string(SubcategoryCapabilityTelemetry),
 	},
 }

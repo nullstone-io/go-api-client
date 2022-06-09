@@ -9,13 +9,13 @@ type CategoryName string
 
 const (
 	CategoryApp        CategoryName = "app"
-	CategoryCapability              = "capability"
-	CategoryDatastore               = "datastore"
-	CategorySubdomain               = "subdomain"
-	CategoryDomain                  = "domain"
-	CategoryCluster                 = "cluster"
-	CategoryNetwork                 = "network"
-	CategoryBlock                   = "block"
+	CategoryCapability CategoryName = "capability"
+	CategoryDatastore  CategoryName = "datastore"
+	CategorySubdomain  CategoryName = "subdomain"
+	CategoryDomain     CategoryName = "domain"
+	CategoryCluster    CategoryName = "cluster"
+	CategoryNetwork    CategoryName = "network"
+	CategoryBlock      CategoryName = "block"
 )
 
 var AllCategoryNames = []string{
