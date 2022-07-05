@@ -2,11 +2,12 @@ package types
 
 type Deploy struct {
 	IdModel
-	OrgName string `json:"orgName"`
-	StackId int64  `json:"stackId"`
-	AppId   int64  `json:"appId"`
-	EnvId   int64  `json:"envId"`
-	Version string `json:"version"`
+	OrgName   string `json:"orgName"`
+	StackId   int64  `json:"stackId"`
+	AppId     int64  `json:"appId"`
+	EnvId     int64  `json:"envId"`
+	Version   string `json:"version"`
+	Reference string `json:"reference"`
 
 	App *Application `json:"app,omitempty"`
 	Env *Environment `json:"env,omitempty"`
