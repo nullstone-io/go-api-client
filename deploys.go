@@ -31,10 +31,9 @@ func (d Deploys) List(stackId, appId, envId int64) ([]types.Deploy, error) {
 	return deploys, nil
 }
 
-func (d Deploys) Create(stackId, appId, envId int64, version, reference string) (*types.Deploy, error) {
+func (d Deploys) Create(stackId, appId, envId int64, version string) (*types.Deploy, error) {
 	rawPayload, _ := json.Marshal(map[string]interface{}{
-		"version":   version,
-		"reference": reference,
+		"version": version,
 	})
 	res, err := d.Client.Do(http.MethodPost, d.basePath(stackId, appId, envId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
