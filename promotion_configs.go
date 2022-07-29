@@ -21,7 +21,7 @@ func (s PromotionConfigs) Get(stackId, blockId, envId int64, moduleSourceOverrid
 	if moduleSourceOverride != "" {
 		q.Set("module-source-override", moduleSourceOverride)
 	}
-	res, err := s.Client.Do(http.MethodGet, s.path(stackId, blockId, envId), nil, nil, nil)
+	res, err := s.Client.Do(http.MethodGet, s.path(stackId, blockId, envId), q, nil, nil)
 	if err != nil {
 		return nil, err
 	}
