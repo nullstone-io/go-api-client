@@ -29,6 +29,8 @@ func (s PromotionConfigs) Get(stackId, blockId, envId int64, moduleSourceOverrid
 	var runConfig types.RunConfig
 	if err := response.ReadJson(res, &runConfig); response.IsNotFoundError(err) {
 		return nil, nil
+	} else if err != nil {
+		return nil, err
 	}
 	return &runConfig, nil
 }
