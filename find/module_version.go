@@ -18,7 +18,7 @@ func ModuleVersion(cfg api.Config, moduleSource, moduleSourceVersion string) (*t
 
 	sort.Sort(sort.Reverse(module.Versions)) // "latest" will be at the beginning now
 	if moduleSourceVersion == "latest" {
-		return &module.Versions[0], nil
+		return findLatestInSorted(module.Versions), nil
 	}
 	for _, mv := range module.Versions {
 		if semver.Compare(mv.Version, moduleSourceVersion) == 0 {
@@ -26,4 +26,14 @@ func ModuleVersion(cfg api.Config, moduleSource, moduleSourceVersion string) (*t
 		}
 	}
 	return nil, nil
+}
+
+func findLatestInSorted(mvs types.ModuleVersions) *types.ModuleVersion {
+	for _, mv := range mvs {
+		// Module Versions with build components are ignored from "latest"
+		if build := semver.Build(mv.Version); build == "" {
+			return &mv
+		}
+	}
+	return nil
 }
