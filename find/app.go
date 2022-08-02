@@ -27,7 +27,6 @@ func (e ErrMultipleAppsFound) Error() string {
 	return fmt.Sprintf("found multiple applications named %q located in the following stacks: %s", e.AppName, strings.Join(e.StackNames, ","))
 }
 
-
 // App searches for an app by app name
 // If only 1 app is found, returns that app
 // If many are found, will return an error with matched app stack names
@@ -53,4 +52,3 @@ func App(cfg api.Config, appName, stackName string) (*types.Application, error) 
 
 	return &matched[0], nil
 }
-

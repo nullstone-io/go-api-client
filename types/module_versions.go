@@ -22,3 +22,14 @@ func validSemver(version string) string {
 	}
 	return "v" + version
 }
+
+func (s ModuleVersions) FindLatest() *ModuleVersion {
+	sort.Sort(sort.Reverse(s)) // "latest" will be at the beginning now
+	for _, mv := range s {
+		// Module Versions with build components are ignored from "latest"
+		if build := semver.Build(NormalizedVersion(mv.Version)); build == "" {
+			return &mv
+		}
+	}
+	return nil
+}
