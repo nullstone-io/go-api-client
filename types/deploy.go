@@ -9,6 +9,7 @@ const (
 	DeployPhasePush        = "push"
 	DeployPhaseDeploy      = "deploy"
 	DeployPhaseWaitHealthy = "wait-healthy"
+	DeployPhaseComplete    = "complete"
 )
 
 const (
