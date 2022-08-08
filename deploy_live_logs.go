@@ -3,8 +3,8 @@ package api
 import (
 	"context"
 	"fmt"
+	"gopkg.in/nullstone-io/go-api-client.v0/live_logs"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
-	"gopkg.in/nullstone-io/go-api-client.v0/websocket"
 	"net/http"
 	"net/url"
 	"strings"
@@ -29,7 +29,7 @@ func (l DeployLiveLogs) Watch(ctx context.Context, stackId int64, deployId int64
 	headers := http.Header{}
 	headers.Set("Authorization", fmt.Sprintf("Bearer %s", l.Client.Config.ApiKey))
 
-	streamer, err := websocket.NewReconnectingStreamer[types.LiveLogMessage](ctx, endpoint.String(), headers)
+	streamer, err := live_logs.NewReconnectingStreamer(ctx, endpoint.String(), headers)
 	if err != nil {
 		return nil, err
 	}
