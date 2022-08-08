@@ -2,6 +2,37 @@ package types
 
 import "time"
 
+const (
+	DeployPhaseInit        = "init"
+	DeployPhaseCheckout    = "checkout"
+	DeployPhaseBuild       = "build"
+	DeployPhasePush        = "push"
+	DeployPhaseDeploy      = "deploy"
+	DeployPhaseWaitHealthy = "wait-healthy"
+)
+
+const (
+	DeployStatusQueued       = "queued"
+	DeployStatusInitializing = "initializing"
+	DeployStatusRunning      = "running"
+	DeployStatusCompleted    = "completed"
+	DeployStatusFailed       = "failed"
+	DeployStatusCancelled    = "cancelled"
+)
+
+const (
+	DeployTypeBuildPushDeploy = "build-push-deploy"
+	DeployTypeDeployOnly      = "deploy-only"
+	DeployTypeRollback        = "rollback"
+)
+
+const (
+	DeployPackageModeNone       = "none"
+	DeployPackageModeDockerfile = "dockerfile"
+	DeployPackageModeBuildpacks = "buildpacks"
+	DeployPackageModeZip        = "zip"
+)
+
 type Deploy struct {
 	IdModel
 	OrgName string `json:"orgName"`
