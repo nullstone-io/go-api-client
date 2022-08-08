@@ -11,15 +11,15 @@ import (
 	"strings"
 )
 
-type LiveLogs struct {
+type RunLiveLogs struct {
 	Client *Client
 }
 
-func (l LiveLogs) path(stackId int64, runUid uuid.UUID) string {
+func (l RunLiveLogs) path(stackId int64, runUid uuid.UUID) string {
 	return fmt.Sprintf("/orgs/%s/stacks/%d/runs/%s/live_logs", l.Client.Config.OrgName, stackId, runUid)
 }
 
-func (l LiveLogs) Watch(ctx context.Context, stackId int64, runUid uuid.UUID) (<-chan types.LiveLogMessage, error) {
+func (l RunLiveLogs) Watch(ctx context.Context, stackId int64, runUid uuid.UUID) (<-chan types.LiveLogMessage, error) {
 	endpoint, err := url.Parse(l.Client.Config.BaseAddress)
 	if err != nil {
 		return nil, fmt.Errorf("invalid url: %w", err)
