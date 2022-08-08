@@ -74,6 +74,10 @@ func (c *Client) Deploys() Deploys {
 	return Deploys{Client: c}
 }
 
+func (c *Client) DeployLiveLogs() DeployLiveLogs {
+	return DeployLiveLogs{Client: c}
+}
+
 func (c *Client) Workspaces() Workspaces {
 	return Workspaces{Client: c}
 }
