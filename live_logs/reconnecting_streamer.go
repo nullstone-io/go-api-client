@@ -8,12 +8,7 @@ import (
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
-	"strings"
 	"time"
-)
-
-const (
-	EndOfTransmission = "\x04"
 )
 
 func NewReconnectingStreamer(ctx context.Context, endpoint string, headers http.Header) (*ReconnectingStreamer, error) {
@@ -62,20 +57,8 @@ func (s *ReconnectingStreamer) readLoop(ctx context.Context, ch chan types.LiveL
 	for {
 		_, data, err := s.conn.ReadMessage()
 		if err != nil {
-			if websocket.IsCloseError(err, websocket.CloseAbnormalClosure) {
-				// The stream may not be ready yet, let's wait a second and retry
-				select {
-				case <-ctx.Done():
-					return
-				case <-time.After(time.Second):
-				}
-				if err := s.connect(ctx); err != nil {
-					ch <- types.LiveLogMessage{
-						Source:  "error",
-						Content: fmt.Sprintf("error retrying connection: %s\n", err),
-					}
-					return
-				}
+			// We retry connecting only if the connection closed abnormally
+			if s.retryConnect(ctx, ch, err) {
 				continue
 			}
 			return
@@ -88,24 +71,11 @@ func (s *ReconnectingStreamer) readLoop(ctx context.Context, ch chan types.LiveL
 			}
 			continue
 		}
-		eot := strings.HasSuffix(msg.Content, EndOfTransmission)
-		if eot {
-			msg.Content = strings.TrimSuffix(msg.Content, EndOfTransmission)
-		}
-		if msg.Content != "" {
-			ch <- msg
-		}
-		if eot {
-			// End of transmission characters terminates the stream
-			return
-		}
+		ch <- msg
 	}
 }
 
 func (s *ReconnectingStreamer) watchClose(ctx context.Context) {
-	// The websocket connection is forcefully closed just in case
-	defer s.close()
-
 	// This blocks until either:
 	// 1. The server closed the connection causing the done channel closed
 	// 2. ctx was cancelled (likely due to Ctrl+C)
@@ -113,16 +83,36 @@ func (s *ReconnectingStreamer) watchClose(ctx context.Context) {
 	case <-s.done:
 		return
 	case <-ctx.Done():
-		err := s.conn.WriteMessage(websocket.CloseMessage, websocket.FormatCloseMessage(websocket.CloseNormalClosure, ""))
+		payload := websocket.FormatCloseMessage(websocket.CloseNormalClosure, "cancelled")
+		err := s.conn.WriteMessage(websocket.CloseMessage, payload)
 		if err != nil {
 			return
+		}
+		// wait for message to complete
+		select {
+		case <-s.done:
+		case <-time.After(time.Second):
 		}
 	}
 }
 
-func (s *ReconnectingStreamer) close() error {
-	if s.conn != nil {
-		return s.conn.Close()
+func (s *ReconnectingStreamer) retryConnect(ctx context.Context, ch chan types.LiveLogMessage, err error) bool {
+	if !websocket.IsCloseError(err, websocket.CloseAbnormalClosure) {
+		return false
 	}
-	return nil
+
+	// The stream may not be ready yet, let's wait a second and retry
+	select {
+	case <-ctx.Done():
+		return false
+	case <-time.After(time.Second):
+	}
+	if err := s.connect(ctx); err != nil {
+		ch <- types.LiveLogMessage{
+			Source:  "error",
+			Content: fmt.Sprintf("error retrying connection: %s\n", err),
+		}
+		return false
+	}
+	return true
 }
