@@ -74,6 +74,10 @@ func (c *Client) Deploys() Deploys {
 	return Deploys{Client: c}
 }
 
+func (c *Client) DeployLiveLogs() DeployLiveLogs {
+	return DeployLiveLogs{Client: c}
+}
+
 func (c *Client) Workspaces() Workspaces {
 	return Workspaces{Client: c}
 }
@@ -94,8 +98,8 @@ func (c *Client) PromotionConfigs() PromotionConfigs {
 	return PromotionConfigs{Client: c}
 }
 
-func (c *Client) LiveLogs() LiveLogs {
-	return LiveLogs{Client: c}
+func (c *Client) RunLiveLogs() RunLiveLogs {
+	return RunLiveLogs{Client: c}
 }
 
 func (c *Client) AutogenSubdomain() AutogenSubdomain {

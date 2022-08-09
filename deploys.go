@@ -16,6 +16,10 @@ func (d Deploys) basePath(stackId, appId, envId int64) string {
 	return fmt.Sprintf("orgs/%s/stacks/%d/apps/%d/envs/%d/deploys", d.Client.Config.OrgName, stackId, appId, envId)
 }
 
+func (d Deploys) path(stackId, appId, envId, deployId int64) string {
+	return fmt.Sprintf("orgs/%s/stacks/%d/apps/%d/envs/%d/deploys/%d", d.Client.Config.OrgName, stackId, appId, envId, deployId)
+}
+
 func (d Deploys) List(stackId, appId, envId int64) ([]types.Deploy, error) {
 	res, err := d.Client.Do(http.MethodGet, d.basePath(stackId, appId, envId), nil, nil, nil)
 	if err != nil {
@@ -47,4 +51,19 @@ func (d Deploys) Create(stackId, appId, envId int64, version string) (*types.Dep
 		return nil, err
 	}
 	return &updated, nil
+}
+
+func (d Deploys) Get(stackId, appId, envId, deployId int64) (*types.Deploy, error) {
+	res, err := d.Client.Do(http.MethodGet, d.path(stackId, appId, envId, deployId), nil, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var deploy types.Deploy
+	if err := response.ReadJson(res, &deploy); response.IsNotFoundError(err) {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &deploy, nil
 }
