@@ -15,7 +15,7 @@ type DeployLiveLogs struct {
 }
 
 func (l DeployLiveLogs) path(stackId int64, deployId int64) string {
-	return fmt.Sprintf("/orgs/%s/stacks/%d/deploy/%d/live_logs", l.Client.Config.OrgName, stackId, deployId)
+	return fmt.Sprintf("/orgs/%s/stacks/%d/deploys/%d/live_logs", l.Client.Config.OrgName, stackId, deployId)
 }
 
 func (l DeployLiveLogs) Watch(ctx context.Context, stackId int64, deployId int64) (<-chan types.LiveLogMessage, error) {

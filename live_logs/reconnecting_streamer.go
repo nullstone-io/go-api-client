@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/websocket"
-	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
 	"time"
@@ -42,12 +41,9 @@ func (s *ReconnectingStreamer) Stream(ctx context.Context) chan types.LiveLogMes
 }
 
 func (s *ReconnectingStreamer) connect(ctx context.Context) error {
-	c, res, err := websocket.DefaultDialer.DialContext(ctx, s.Endpoint, s.Headers)
-	if err != nil {
-		return err
-	}
-	s.conn = c
-	return response.Verify(res)
+	var err error
+	s.conn, _, err = websocket.DefaultDialer.DialContext(ctx, s.Endpoint, s.Headers)
+	return err
 }
 
 // readLoop runs until closed by context cancellation or close error from the server
