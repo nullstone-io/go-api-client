@@ -8,6 +8,7 @@ import (
 	"net/url"
 	"os"
 	"path"
+	"strings"
 )
 
 var (
@@ -48,6 +49,20 @@ func (c *Config) ConstructUrl(relativePath string, query url.Values) (*url.URL, 
 		u.RawQuery = query.Encode()
 	}
 	return u, nil
+}
+
+func (c *Config) ConstructWsEndpoint(relativePath string) (string, http.Header, error) {
+	endpoint, err := url.Parse(c.BaseAddress)
+	if err != nil {
+		return "", http.Header{}, fmt.Errorf("invalid url: %w", err)
+	}
+	endpoint.Scheme = strings.Replace(endpoint.Scheme, "http", "ws", 1)
+	endpoint.Path = path.Join(endpoint.Path, relativePath)
+
+	headers := http.Header{}
+	headers.Set("Authorization", fmt.Sprintf("Bearer %s", c.ApiKey))
+
+	return endpoint.String(), headers, nil
 }
 
 func (c *Config) CreateTransport(baseTransport http.RoundTripper) http.RoundTripper {
