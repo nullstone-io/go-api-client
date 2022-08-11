@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
+	websocket2 "gopkg.in/nullstone-io/go-api-client.v0/websocket"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -16,36 +17,7 @@ import (
 	"time"
 )
 
-func TestNewReconnectingStreamer(t *testing.T) {
-	upgrader := websocket.Upgrader{
-		ReadBufferSize:  1204,
-		WriteBufferSize: 1204,
-		CheckOrigin:     func(r *http.Request) bool { return true },
-	}
-
-	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/endpoint" {
-			assert.Equal(t, "test", r.Header.Get("X-Nullstone-Key"))
-			conn, err := upgrader.Upgrade(w, r, nil)
-			if err != nil {
-				http.Error(w, fmt.Sprintf("error upgrading websocket: %s", err), http.StatusInternalServerError)
-				return
-			}
-			assert.NotNil(t, conn, "websocket connection")
-		}
-	}))
-	u, err := url.Parse(server.URL)
-	require.NoError(t, err, "parse server url")
-	u.Path = "/endpoint"
-	u.Scheme = strings.Replace(u.Scheme, "http", "ws", 1)
-	headers := http.Header{}
-	headers.Set("X-Nullstone-Key", "test")
-	streamer, err := NewReconnectingStreamer(context.Background(), u.String(), headers)
-	require.NoError(t, err, "unexpected error")
-	assert.NotNil(t, streamer, "returned streamer")
-}
-
-func TestReconnectingStreamer_Stream(t *testing.T) {
+func TestStream(t *testing.T) {
 	upgrader := websocket.Upgrader{
 		ReadBufferSize:  1204,
 		WriteBufferSize: 1204,
@@ -129,11 +101,8 @@ func TestReconnectingStreamer_Stream(t *testing.T) {
 			require.NoError(t, err, "parse server url")
 			u.Path = "/endpoint"
 			u.Scheme = strings.Replace(u.Scheme, "http", "ws", 1)
-			streamer, err := NewReconnectingStreamer(ctx, u.String(), http.Header{})
-			require.NoError(t, err, "unexpected error")
-			assert.NotNil(t, streamer, "returned streamer")
-			ch := streamer.Stream(ctx)
-			require.NotNil(t, ch, "stream channel")
+			ch := Stream(ctx, u.String(), http.Header{}, websocket2.RetryInfinite(time.Millisecond))
+			assert.NotNil(t, ch, "stream channel")
 			got := make([]types.LiveLogMessage, 0)
 			for msg := range ch {
 				got = append(got, msg)
