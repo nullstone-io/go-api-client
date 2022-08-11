@@ -1,16 +1,15 @@
-package live_logs
+package ws
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
-	"gopkg.in/nullstone-io/go-api-client.v0/websocket"
 	"net/http"
 )
 
-func Stream(ctx context.Context, endpoint string, headers http.Header, retryFn websocket.StreamerRetryFunc) <-chan types.LiveLogMessage {
-	s := websocket.Streamer{
+func StreamLogs(ctx context.Context, endpoint string, headers http.Header, retryFn StreamerRetryFunc) <-chan types.LiveLogMessage {
+	s := Streamer{
 		Endpoint: endpoint,
 		Headers:  headers,
 		RetryFn:  retryFn,

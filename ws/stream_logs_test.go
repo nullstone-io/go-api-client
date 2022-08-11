@@ -1,4 +1,4 @@
-package live_logs
+package ws
 
 import (
 	"context"
@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
-	websocket2 "gopkg.in/nullstone-io/go-api-client.v0/websocket"
 	"log"
 	"net/http"
 	"net/http/httptest"
@@ -17,7 +16,7 @@ import (
 	"time"
 )
 
-func TestStream(t *testing.T) {
+func TestStreamLogs(t *testing.T) {
 	upgrader := websocket.Upgrader{
 		ReadBufferSize:  1204,
 		WriteBufferSize: 1204,
@@ -101,7 +100,7 @@ func TestStream(t *testing.T) {
 			require.NoError(t, err, "parse server url")
 			u.Path = "/endpoint"
 			u.Scheme = strings.Replace(u.Scheme, "http", "ws", 1)
-			ch := Stream(ctx, u.String(), http.Header{}, websocket2.RetryInfinite(time.Millisecond))
+			ch := StreamLogs(ctx, u.String(), http.Header{}, RetryInfinite(time.Millisecond))
 			assert.NotNil(t, ch, "stream channel")
 			got := make([]types.LiveLogMessage, 0)
 			for msg := range ch {
