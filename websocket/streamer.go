@@ -97,8 +97,8 @@ func (s *Streamer) shouldReconnect(ctx context.Context, err error) bool {
 	if !retry {
 		return false
 	}
-	if delay > 0 {
-		return true
+	if delay <= 0 {
+		delay = time.Microsecond
 	}
 	select {
 	case <-ctx.Done():
