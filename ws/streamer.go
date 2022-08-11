@@ -69,12 +69,8 @@ func (s *Streamer) watchCancel(ctx context.Context, done chan struct{}) {
 		return
 	case <-ctx.Done():
 		// The context was cancelled, let's tell the server to close
-		err := s.conn.WriteMessage(websocket.CloseMessage,
-			websocket.FormatCloseMessage(websocket.CloseNormalClosure, "cancelled"))
-		if err != nil {
-			// If we're unable to write a close message, the connection is likely closed
-			return
-		}
+		msg := websocket.FormatCloseMessage(websocket.CloseNormalClosure, "cancelled")
+		s.conn.WriteMessage(websocket.CloseMessage, msg)
 	}
 }
 
