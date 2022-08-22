@@ -25,13 +25,13 @@ func TestStreamLogs(t *testing.T) {
 
 	tests := []struct {
 		name             string
-		messages         []types.LiveLogMessage
+		messages         []types.Message
 		serverEmitsClose bool
 		clientTimeout    time.Duration
 	}{
 		{
 			name: "send 3 messages and EOT",
-			messages: []types.LiveLogMessage{
+			messages: []types.Message{
 				{
 					Source:  "queue-1",
 					Context: types.DeployPhaseInit,
@@ -52,7 +52,7 @@ func TestStreamLogs(t *testing.T) {
 		},
 		{
 			name: "send 1 message, client cancels",
-			messages: []types.LiveLogMessage{
+			messages: []types.Message{
 				{
 					Source:  "queue-1",
 					Context: types.DeployPhaseInit,
@@ -102,7 +102,7 @@ func TestStreamLogs(t *testing.T) {
 			u.Scheme = strings.Replace(u.Scheme, "http", "ws", 1)
 			ch := StreamLogs(ctx, u.String(), http.Header{}, RetryInfinite(time.Millisecond))
 			assert.NotNil(t, ch, "stream channel")
-			got := make([]types.LiveLogMessage, 0)
+			got := make([]types.Message, 0)
 			for msg := range ch {
 				got = append(got, msg)
 			}
