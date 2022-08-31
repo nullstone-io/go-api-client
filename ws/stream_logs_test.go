@@ -33,17 +33,14 @@ func TestStreamLogs(t *testing.T) {
 			name: "send 3 messages and EOT",
 			messages: []types.Message{
 				{
-					Source:  "queue-1",
 					Context: types.DeployPhaseInit,
 					Content: "message 1\n",
 				},
 				{
-					Source:  "queue-1",
 					Context: types.DeployPhaseCheckout,
 					Content: "message 2\n",
 				},
 				{
-					Source:  "queue-1",
 					Context: types.DeployPhaseCheckout,
 					Content: "message 3\n",
 				},
@@ -54,7 +51,6 @@ func TestStreamLogs(t *testing.T) {
 			name: "send 1 message, client cancels",
 			messages: []types.Message{
 				{
-					Source:  "queue-1",
 					Context: types.DeployPhaseInit,
 					Content: "message 1\n",
 				},

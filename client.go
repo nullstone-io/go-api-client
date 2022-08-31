@@ -98,8 +98,8 @@ func (c *Client) PromotionConfigs() PromotionConfigs {
 	return PromotionConfigs{Client: c}
 }
 
-func (c *Client) RunLiveLogs() RunLiveLogs {
-	return RunLiveLogs{Client: c}
+func (c *Client) RunLogs() RunLogs {
+	return RunLogs{Client: c}
 }
 
 func (c *Client) AutogenSubdomain() AutogenSubdomain {

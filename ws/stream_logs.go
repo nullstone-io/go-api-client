@@ -22,7 +22,7 @@ func StreamLogs(ctx context.Context, endpoint string, headers http.Header, retry
 			var msg types.Message
 			if err := json.Unmarshal(raw, &msg); err != nil {
 				msg = types.Message{
-					Source:  "error",
+					Type:    "error",
 					Content: fmt.Sprintf("error reading log: %s\n", err),
 				}
 			}
