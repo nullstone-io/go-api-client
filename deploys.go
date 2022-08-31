@@ -20,21 +20,6 @@ func (d Deploys) path(stackId, appId, envId, deployId int64) string {
 	return fmt.Sprintf("orgs/%s/stacks/%d/apps/%d/envs/%d/deploys/%d", d.Client.Config.OrgName, stackId, appId, envId, deployId)
 }
 
-func (d Deploys) List(stackId, appId, envId int64) ([]types.Deploy, error) {
-	res, err := d.Client.Do(http.MethodGet, d.basePath(stackId, appId, envId), nil, nil, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	var deploys []types.Deploy
-	if err := response.ReadJson(res, &deploys); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return deploys, nil
-}
-
 func (d Deploys) Create(stackId, appId, envId int64, version string) (*types.Deploy, error) {
 	rawPayload, _ := json.Marshal(map[string]interface{}{
 		"version": version,

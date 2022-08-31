@@ -1,7 +1,7 @@
 package types
 
-type LiveLogMessage struct {
-	Source  string `json:"source"`
+type Message struct {
+	Type    string `json:"type"`
 	Context string `json:"context"`
 	Content string `json:"content"`
 }
