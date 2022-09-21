@@ -14,7 +14,7 @@ type WorkspaceOutputs struct {
 }
 
 func (w WorkspaceOutputs) path(stackId int64, workspaceUid uuid.UUID) string {
-	return fmt.Sprintf("stacks/%d/workspaces/%s/current-outputs", stackId, workspaceUid)
+	return fmt.Sprintf("orgs/%s/stacks/%d/workspaces/%s/current-outputs", w.Client.Config.OrgName, stackId, workspaceUid)
 }
 
 // GetCurrent - GET /orgs/:orgName/stacks/:stackId/workspaces/:workspaceUid/current-outputs
