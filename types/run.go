@@ -62,5 +62,4 @@ type Run struct {
 
 	MultiRun *MultiRun  `json:"multiRun,omitempty"`
 	Config   *RunConfig `json:"config,omitempty"`
-	Apply    *RunApply  `json:"apply,omitempty"`
 }
