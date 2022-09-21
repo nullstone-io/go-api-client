@@ -18,7 +18,7 @@ func (w WorkspaceOutputs) path(stackId int64, workspaceUid uuid.UUID) string {
 }
 
 // GetCurrent - GET /orgs/:orgName/stacks/:stackId/workspaces/:workspaceUid/current-outputs
-func (w WorkspaceOutputs) GetCurrent(stackId int64, workspaceUid uuid.UUID, showSensitive bool) (*types.Output, error) {
+func (w WorkspaceOutputs) GetCurrent(stackId int64, workspaceUid uuid.UUID, showSensitive bool) (types.Outputs, error) {
 	q := url.Values{}
 	if showSensitive {
 		q.Set("show_sensitive", "true")
@@ -28,5 +28,5 @@ func (w WorkspaceOutputs) GetCurrent(stackId int64, workspaceUid uuid.UUID, show
 		return nil, err
 	}
 
-	return response.ReadJsonResponse[types.Output](res)
+	return response.ReadJsonVal[types.Outputs](res)
 }
