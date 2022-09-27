@@ -20,22 +20,16 @@ func (d Deploys) path(stackId, appId, envId, deployId int64) string {
 	return fmt.Sprintf("orgs/%s/stacks/%d/apps/%d/envs/%d/deploys/%d", d.Client.Config.OrgName, stackId, appId, envId, deployId)
 }
 
-func (d Deploys) Create(stackId, appId, envId int64, version string) (*types.Deploy, error) {
+func (d Deploys) Create(stackId, appId, envId int64, version string, fromSource bool) (*types.Deploy, error) {
 	rawPayload, _ := json.Marshal(map[string]interface{}{
-		"version": version,
+		"version":    version,
+		"fromSource": fromSource,
 	})
 	res, err := d.Client.Do(http.MethodPost, d.basePath(stackId, appId, envId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
-
-	var updated types.Deploy
-	if err := response.ReadJson(res, &updated); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &updated, nil
+	return response.ReadJsonPtr[types.Deploy](res)
 }
 
 func (d Deploys) Get(stackId, appId, envId, deployId int64) (*types.Deploy, error) {
@@ -43,12 +37,5 @@ func (d Deploys) Get(stackId, appId, envId, deployId int64) (*types.Deploy, erro
 	if err != nil {
 		return nil, err
 	}
-
-	var deploy types.Deploy
-	if err := response.ReadJson(res, &deploy); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &deploy, nil
+	return response.ReadJsonPtr[types.Deploy](res)
 }
