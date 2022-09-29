@@ -1,6 +1,9 @@
 package types
 
-import "fmt"
+import (
+	"fmt"
+	"strings"
+)
 
 type CapabilityConfig struct {
 	Id             int64       `json:"id"`
@@ -25,5 +28,5 @@ func (c CapabilityConfig) EnvPrefix() string {
 	if c.Namespace == "" {
 		return ""
 	}
-	return fmt.Sprintf("%s_", c.Namespace)
+	return fmt.Sprintf("%s_", strings.ToUpper(c.Namespace))
 }
