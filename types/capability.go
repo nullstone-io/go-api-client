@@ -8,7 +8,4 @@ type Capability struct {
 	ModuleSource        string                      `json:"moduleSource"`
 	ModuleSourceVersion string                      `json:"moduleSourceVersion"`
 	Connections         map[string]ConnectionTarget `json:"connections"`
-
-	// Deprecated
-	ParentBlocks map[string]string `json:"parentBlocks"`
 }
