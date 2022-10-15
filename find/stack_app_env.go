@@ -14,11 +14,11 @@ func StackAppEnv(cfg api.Config, stackName, appName, envName string) (*types.Sta
 		return nil, nil, nil, fmt.Errorf("application %q does not exist", appName)
 	}
 
-	stack, err := Stack(cfg, app.StackName)
+	stack, err := Stack(cfg, stackName)
 	if err != nil {
 		return nil, nil, nil, err
 	} else if stack == nil {
-		return nil, nil, nil, fmt.Errorf("stack %q does not exist", app.StackName)
+		return nil, nil, nil, fmt.Errorf("stack %q does not exist", stackName)
 	}
 
 	env, err := Env(cfg, stack.Id, envName)

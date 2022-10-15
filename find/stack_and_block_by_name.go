@@ -40,11 +40,11 @@ func blockByBlockNameNoStack(cfg api.Config, blockName string) (*types.Stack, *t
 		return nil, nil, fmt.Errorf("error retrieving stacks: %w", err)
 	}
 
-	stacksByName := map[string]*types.Stack{}
+	stacksById := map[int64]*types.Stack{}
 	foundBlocks := make([]types.Block, 0)
 	foundStackNames := make([]string, 0)
 	for _, stack := range stacks {
-		stacksByName[stack.Name] = stack
+		stacksById[stack.Id] = stack
 		blocks, err := client.Blocks().List(stack.Id)
 		if err != nil {
 			return nil, nil, fmt.Errorf("error retrieving blocks in stack (%s): %w", stack.Name, err)
@@ -65,5 +65,5 @@ func blockByBlockNameNoStack(cfg api.Config, blockName string) (*types.Stack, *t
 		return nil, nil, nil
 	}
 	block := foundBlocks[0]
-	return stacksByName[block.StackName], &block, nil
+	return stacksById[block.StackId], &block, nil
 }

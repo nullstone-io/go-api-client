@@ -7,10 +7,14 @@ import (
 	"strings"
 )
 
-func newErrMultipleAppsFound(apps []types.Application) *ErrMultipleAppsFound {
+func newErrMultipleAppsFound(apps []types.Application, stacks []*types.Stack) *ErrMultipleAppsFound {
 	stackNames := make([]string, 0)
 	for _, app := range apps {
-		stackNames = append(stackNames, app.StackName)
+		for _, stack := range stacks {
+			if stack.Id == app.StackId {
+				stackNames = append(stackNames, stack.Name)
+			}
+		}
 	}
 	return &ErrMultipleAppsFound{
 		AppName:    apps[0].Name,
@@ -32,6 +36,14 @@ func (e ErrMultipleAppsFound) Error() string {
 // If many are found, will return an error with matched app stack names
 func App(cfg api.Config, appName, stackName string) (*types.Application, error) {
 	client := api.Client{Config: cfg}
+	stackId := int64(0)
+	if stackName != "" {
+		stack, err := client.StacksByName().Get(stackName)
+		if err != nil {
+			return nil, fmt.Errorf("failed to find stack %q: %w", stackName, err)
+		}
+		stackId = stack.Id
+	}
 	allApps, err := client.Apps().List()
 	if err != nil {
 		return nil, fmt.Errorf("error listing applications: %w", err)
@@ -39,7 +51,7 @@ func App(cfg api.Config, appName, stackName string) (*types.Application, error) 
 
 	matched := make([]types.Application, 0)
 	for _, app := range allApps {
-		if app.Name == appName && (stackName == "" || app.StackName == stackName) {
+		if app.Name == appName && (stackId == 0 || app.StackId == stackId) {
 			matched = append(matched, app)
 		}
 	}
@@ -47,7 +59,11 @@ func App(cfg api.Config, appName, stackName string) (*types.Application, error) 
 	if len(matched) == 0 {
 		return nil, nil
 	} else if len(matched) > 1 {
-		return nil, newErrMultipleAppsFound(matched)
+		stacks, err := client.Stacks().List()
+		if err != nil {
+			return nil, fmt.Errorf("error listing stacks: %w", err)
+		}
+		return nil, newErrMultipleAppsFound(matched, stacks)
 	}
 
 	return &matched[0], nil
