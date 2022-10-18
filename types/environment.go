@@ -8,5 +8,5 @@ type Environment struct {
 	OrgName        string         `json:"orgName"`
 	StackId        int64          `json:"stackId"`
 	ProviderConfig ProviderConfig `json:"providerConfig"`
-	PipelineOrder  int            `json:"pipelineOrder"`
+	PipelineOrder  *int           `json:"pipelineOrder"`
 }
