@@ -2,6 +2,7 @@ package types
 
 type Environment struct {
 	IdModel
+	Type           string         `json:"type"`
 	Name           string         `json:"name"`
 	Reference      string         `json:"reference"`
 	OrgName        string         `json:"orgName"`
