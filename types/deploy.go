@@ -47,11 +47,13 @@ type Deploy struct {
 	StatusMessage string    `json:"statusMessage"`
 	StatusAt      time.Time `json:"statusAt"`
 
-	RepoUrl     string `json:"repoUrl"`
-	Version     string `json:"version"`
-	Type        string `json:"type"`
-	PackageMode string `json:"packageMode"`
-
-	App *Application `json:"app,omitempty"`
-	Env *Environment `json:"env,omitempty"`
+	Repo           string `json:"repo"`
+	RepoUrl        string `json:"repoUrl"`
+	CommitSha      string `json:"commitSha"`
+	Version        string `json:"version"`
+	CommitUrl      string `json:"commitUrl"`
+	Dockerfile     string `json:"dockerfile"`
+	GithubUsername string `json:"githubUsername"`
+	Type           string `json:"type"`
+	PackageMode    string `json:"packageMode"`
 }
