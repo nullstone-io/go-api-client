@@ -11,7 +11,6 @@ import (
 	"net/http"
 	"net/http/httptrace"
 	"os"
-	"sync"
 	"time"
 )
 
@@ -24,13 +23,6 @@ type Streamer struct {
 
 	logger *log.Logger
 	conn   *websocket.Conn
-	sync.Mutex
-}
-
-func (s *Streamer) connection() *websocket.Conn {
-	s.Lock()
-	defer s.Unlock()
-	return s.conn
 }
 
 func (s *Streamer) Stream(ctx context.Context) <-chan []byte {
@@ -65,7 +57,11 @@ func (s *Streamer) streamLoop(ctx context.Context, ch chan []byte, done chan str
 			connected = true
 		}
 
-		_, data, err := s.connection().ReadMessage()
+		conn := s.conn
+		if conn == nil {
+			continue
+		}
+		_, data, err := conn.ReadMessage()
 		if err != nil {
 			connected = false
 			// This error could result from transport issues, corrupt data, or a closed message sent from the server
@@ -91,7 +87,7 @@ func (s *Streamer) watchCancel(ctx context.Context, done chan struct{}) {
 	case <-ctx.Done():
 		// The context was cancelled, let's tell the server to close
 		msg := websocket.FormatCloseMessage(websocket.CloseNormalClosure, "cancelled")
-		if conn := s.connection(); conn != nil {
+		if conn := s.conn; conn != nil {
 			conn.WriteMessage(websocket.CloseMessage, msg)
 		}
 	}
@@ -102,22 +98,24 @@ func (s *Streamer) watchCancel(ctx context.Context, done chan struct{}) {
 // This does not fail if the server sends a close message and does not need to handle auto
 func (s *Streamer) connect(ctx context.Context) error {
 	conn, res, err := websocket.DefaultDialer.DialContext(ctx, s.Endpoint, s.Headers)
-	s.Lock()
 	s.conn = conn
-	s.Unlock()
 	if trace.IsEnabled() {
-		var raw []byte
-		if res.Body != nil {
-			raw, _ = ioutil.ReadAll(res.Body)
-			res.Body.Close()
-		}
-		s.logger.Printf(`error connecting to websocket: %s
+		s.dumpConnectTrace(res, err)
+	}
+	return err
+}
+
+func (s *Streamer) dumpConnectTrace(res *http.Response, err error) {
+	var raw []byte
+	if res.Body != nil {
+		raw, _ = ioutil.ReadAll(res.Body)
+		res.Body.Close()
+	}
+	s.logger.Printf(`error connecting to websocket: %s
 	status code: %d
 	status:      %s
 	body:        %s
 `, err, res.StatusCode, res.Status, string(raw))
-	}
-	return err
 }
 
 func (s *Streamer) shouldReconnect(ctx context.Context, err error) bool {

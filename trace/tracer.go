@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http/httptrace"
+	"net/textproto"
 	"os"
 	"strings"
 )
@@ -17,10 +18,13 @@ func Tracer(context string) *httptrace.ClientTrace {
 		PutIdleConn:          nil,
 		GotFirstResponseByte: nil,
 		Got100Continue:       nil,
-		Got1xxResponse:       nil,
-		DNSStart:             nil,
-		DNSDone:              nil,
-		ConnectStart:         nil,
+		Got1xxResponse: func(code int, header textproto.MIMEHeader) error {
+			logger.Printf("Got1xxResponse (code=%d header=%s)", code, header)
+			return nil
+		},
+		DNSStart:     nil,
+		DNSDone:      nil,
+		ConnectStart: nil,
 		ConnectDone: func(network, addr string, err error) {
 			logger.Printf("Connection established (network=%s addr=%s err=%s)\n", network, addr, err)
 		},
