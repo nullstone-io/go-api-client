@@ -2,9 +2,8 @@ package api
 
 import (
 	"fmt"
-	"log"
+	"gopkg.in/nullstone-io/go-api-client.v0/trace"
 	"net/http"
-	"net/http/httputil"
 	"net/url"
 	"os"
 	"path"
@@ -15,7 +14,6 @@ var (
 	ApiKeyEnvVar   = "NULLSTONE_API_KEY"
 	AddressEnvVar  = "NULLSTONE_ADDR"
 	DefaultAddress = "https://api.nullstone.io"
-	TraceEnvVar    = "NULLSTONE_TRACE"
 )
 
 func DefaultConfig() Config {
@@ -26,9 +24,7 @@ func DefaultConfig() Config {
 	if val := os.Getenv(AddressEnvVar); val != "" {
 		cfg.BaseAddress = val
 	}
-	if val := os.Getenv(TraceEnvVar); val != "" {
-		cfg.IsTraceEnabled = true
-	}
+	cfg.IsTraceEnabled = trace.IsEnabled()
 	return cfg
 }
 
@@ -68,21 +64,9 @@ func (c *Config) ConstructWsEndpoint(relativePath string) (string, http.Header, 
 func (c *Config) CreateTransport(baseTransport http.RoundTripper) http.RoundTripper {
 	bt := baseTransport
 	if c.IsTraceEnabled {
-		bt = &tracingTransport{BaseTransport: bt}
+		bt = &trace.HttpTransport{BaseTransport: bt}
 	}
 	return &apiKeyTransport{BaseTransport: bt, ApiKey: c.ApiKey}
-}
-
-var _ http.RoundTripper = &tracingTransport{}
-
-type tracingTransport struct {
-	BaseTransport http.RoundTripper
-}
-
-func (t *tracingTransport) RoundTrip(r *http.Request) (*http.Response, error) {
-	raw, _ := httputil.DumpRequestOut(r, true)
-	log.Printf("[DEBUG] %s", string(raw))
-	return t.BaseTransport.RoundTrip(r)
 }
 
 var _ http.RoundTripper = &apiKeyTransport{}
