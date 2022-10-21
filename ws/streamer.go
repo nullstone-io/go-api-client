@@ -2,10 +2,15 @@ package ws
 
 import (
 	"context"
+	"fmt"
 	"github.com/gorilla/websocket"
 	"gopkg.in/nullstone-io/go-api-client.v0/trace"
+	"io"
+	"log"
 	"net/http"
 	"net/http/httptrace"
+	"os"
+	"sync"
 	"time"
 )
 
@@ -16,12 +21,22 @@ type Streamer struct {
 	Headers  http.Header
 	RetryFn  StreamerRetryFunc
 
-	conn *websocket.Conn
+	logger *log.Logger
+	conn   *websocket.Conn
+	sync.Mutex
+}
+
+func (s *Streamer) connection() *websocket.Conn {
+	s.Lock()
+	defer s.Unlock()
+	return s.conn
 }
 
 func (s *Streamer) Stream(ctx context.Context) <-chan []byte {
+	s.logger = log.New(io.Discard, "", 0)
 	if trace.IsEnabled() {
 		ctx = httptrace.WithClientTrace(ctx, trace.Tracer(s.Endpoint))
+		s.logger = log.New(os.Stdout, fmt.Sprintf("[%s] ", s.Endpoint), 0)
 	}
 	ch := make(chan []byte)
 	done := make(chan struct{})
@@ -49,7 +64,7 @@ func (s *Streamer) streamLoop(ctx context.Context, ch chan []byte, done chan str
 			connected = true
 		}
 
-		_, data, err := s.conn.ReadMessage()
+		_, data, err := s.connection().ReadMessage()
 		if err != nil {
 			connected = false
 			// This error could result from transport issues, corrupt data, or a closed message sent from the server
@@ -75,7 +90,9 @@ func (s *Streamer) watchCancel(ctx context.Context, done chan struct{}) {
 	case <-ctx.Done():
 		// The context was cancelled, let's tell the server to close
 		msg := websocket.FormatCloseMessage(websocket.CloseNormalClosure, "cancelled")
-		s.conn.WriteMessage(websocket.CloseMessage, msg)
+		if conn := s.connection(); conn != nil {
+			conn.WriteMessage(websocket.CloseMessage, msg)
+		}
 	}
 }
 
@@ -83,8 +100,13 @@ func (s *Streamer) watchCancel(ctx context.Context, done chan struct{}) {
 // This will only fail if the server is down, cannot handle the request, or fails to upgrade to websocket connection
 // This does not fail if the server sends a close message and does not need to handle auto
 func (s *Streamer) connect(ctx context.Context) error {
-	var err error
-	s.conn, _, err = websocket.DefaultDialer.DialContext(ctx, s.Endpoint, s.Headers)
+	conn, res, err := websocket.DefaultDialer.DialContext(ctx, s.Endpoint, s.Headers)
+	s.Lock()
+	s.conn = conn
+	s.Unlock()
+	if trace.IsEnabled() {
+		s.logger.Printf("error connecting to websocket: %s\n%+v\n", err, res)
+	}
 	return err
 }
 
