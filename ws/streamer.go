@@ -2,8 +2,15 @@ package ws
 
 import (
 	"context"
+	"fmt"
 	"github.com/gorilla/websocket"
+	"gopkg.in/nullstone-io/go-api-client.v0/trace"
+	"io"
+	"io/ioutil"
+	"log"
 	"net/http"
+	"net/http/httptrace"
+	"os"
 	"time"
 )
 
@@ -14,10 +21,16 @@ type Streamer struct {
 	Headers  http.Header
 	RetryFn  StreamerRetryFunc
 
-	conn *websocket.Conn
+	logger *log.Logger
+	conn   *websocket.Conn
 }
 
 func (s *Streamer) Stream(ctx context.Context) <-chan []byte {
+	s.logger = log.New(io.Discard, "", 0)
+	if trace.IsEnabled() {
+		ctx = httptrace.WithClientTrace(ctx, trace.Tracer(s.Endpoint))
+		s.logger = log.New(os.Stdout, fmt.Sprintf("[%s] ", s.Endpoint), 0)
+	}
 	ch := make(chan []byte)
 	done := make(chan struct{})
 	go s.streamLoop(ctx, ch, done)
@@ -44,7 +57,11 @@ func (s *Streamer) streamLoop(ctx context.Context, ch chan []byte, done chan str
 			connected = true
 		}
 
-		_, data, err := s.conn.ReadMessage()
+		conn := s.conn
+		if conn == nil {
+			continue
+		}
+		_, data, err := conn.ReadMessage()
 		if err != nil {
 			connected = false
 			// This error could result from transport issues, corrupt data, or a closed message sent from the server
@@ -70,7 +87,9 @@ func (s *Streamer) watchCancel(ctx context.Context, done chan struct{}) {
 	case <-ctx.Done():
 		// The context was cancelled, let's tell the server to close
 		msg := websocket.FormatCloseMessage(websocket.CloseNormalClosure, "cancelled")
-		s.conn.WriteMessage(websocket.CloseMessage, msg)
+		if conn := s.conn; conn != nil {
+			conn.WriteMessage(websocket.CloseMessage, msg)
+		}
 	}
 }
 
@@ -78,9 +97,26 @@ func (s *Streamer) watchCancel(ctx context.Context, done chan struct{}) {
 // This will only fail if the server is down, cannot handle the request, or fails to upgrade to websocket connection
 // This does not fail if the server sends a close message and does not need to handle auto
 func (s *Streamer) connect(ctx context.Context) error {
-	var err error
-	s.conn, _, err = websocket.DefaultDialer.DialContext(ctx, s.Endpoint, s.Headers)
+	conn, res, err := websocket.DefaultDialer.DialContext(ctx, s.Endpoint, s.Headers)
+	s.conn = conn
+	if trace.IsEnabled() {
+		s.dumpConnectTrace(res, err)
+	}
 	return err
+}
+
+func (s *Streamer) dumpConnectTrace(res *http.Response, err error) {
+	var raw []byte
+	if res.Body != nil {
+		raw, _ = ioutil.ReadAll(res.Body)
+		res.Body.Close()
+	}
+	s.logger.Printf(`connection to websocket
+	error:       %s
+	status code: %d
+	status:      %s
+	body:        %s
+`, err, res.StatusCode, res.Status, string(raw))
 }
 
 func (s *Streamer) shouldReconnect(ctx context.Context, err error) bool {
