@@ -3,7 +3,9 @@ package ws
 import (
 	"context"
 	"github.com/gorilla/websocket"
+	"gopkg.in/nullstone-io/go-api-client.v0/trace"
 	"net/http"
+	"net/http/httptrace"
 	"time"
 )
 
@@ -18,6 +20,9 @@ type Streamer struct {
 }
 
 func (s *Streamer) Stream(ctx context.Context) <-chan []byte {
+	if trace.IsEnabled() {
+		ctx = httptrace.WithClientTrace(ctx, trace.Tracer(s.Endpoint))
+	}
 	ch := make(chan []byte)
 	done := make(chan struct{})
 	go s.streamLoop(ctx, ch, done)
