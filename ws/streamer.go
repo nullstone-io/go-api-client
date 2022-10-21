@@ -6,6 +6,7 @@ import (
 	"github.com/gorilla/websocket"
 	"gopkg.in/nullstone-io/go-api-client.v0/trace"
 	"io"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"net/http/httptrace"
@@ -105,7 +106,16 @@ func (s *Streamer) connect(ctx context.Context) error {
 	s.conn = conn
 	s.Unlock()
 	if trace.IsEnabled() {
-		s.logger.Printf("error connecting to websocket: %s\n%+v\n", err, res)
+		var raw []byte
+		if res.Body != nil {
+			raw, _ = ioutil.ReadAll(res.Body)
+			res.Body.Close()
+		}
+		s.logger.Printf(`error connecting to websocket: %s
+	status code: %d
+	status:      %s
+	body:        %s
+`, err, res.StatusCode, res.Status, string(raw))
 	}
 	return err
 }
