@@ -111,7 +111,8 @@ func (s *Streamer) dumpConnectTrace(res *http.Response, err error) {
 		raw, _ = ioutil.ReadAll(res.Body)
 		res.Body.Close()
 	}
-	s.logger.Printf(`error connecting to websocket: %s
+	s.logger.Printf(`connection to websocket
+	error:       %s
 	status code: %d
 	status:      %s
 	body:        %s
