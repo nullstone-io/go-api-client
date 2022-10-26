@@ -8,16 +8,16 @@ import (
 	"net/http"
 )
 
-type PreviewEnvironments struct {
+type PreviewEnvs struct {
 	Client *Client
 }
 
-func (pe PreviewEnvironments) basePath(stackId int64) string {
+func (pe PreviewEnvs) basePath(stackId int64) string {
 	return fmt.Sprintf("orgs/%s/stacks/%d/preview_envs", pe.Client.Config.OrgName, stackId)
 }
 
 // Create - POST /orgs/:orgName/stacks/:stack_id/envs
-func (pe PreviewEnvironments) Create(stackId int64, env *types.Environment) (*types.Environment, error) {
+func (pe PreviewEnvs) Create(stackId int64, env *types.Environment) (*types.Environment, error) {
 	rawPayload, _ := json.Marshal(env)
 	res, err := pe.Client.Do(http.MethodPost, pe.basePath(stackId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {

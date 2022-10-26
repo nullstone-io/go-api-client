@@ -42,8 +42,16 @@ func (c *Client) Environments() Environments {
 	return Environments{Client: c}
 }
 
+func (c *Client) PreviewEnvs() PreviewEnvs {
+	return PreviewEnvs{Client: c}
+}
+
 func (c *Client) EnvironmentsByName() EnvironmentsByName {
 	return EnvironmentsByName{Client: c}
+}
+
+func (c *Client) EnvRuns() EnvRuns {
+	return EnvRuns{Client: c}
 }
 
 func (c *Client) Providers() Providers {
