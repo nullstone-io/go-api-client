@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
+	"log"
 	"net/http"
 )
 
@@ -24,6 +25,8 @@ func (pe PreviewEnvs) basePath(stackId int64) string {
 func (pe PreviewEnvs) Create(stackId int64, env *CreatePreviewEnvInput) (*types.Environment, error) {
 	rawPayload, _ := json.Marshal(env)
 	res, err := pe.Client.Do(http.MethodPost, pe.basePath(stackId), nil, nil, json.RawMessage(rawPayload))
+	log.Printf("res: %v", res)
+	log.Printf("err: %v", err)
 	if err != nil {
 		return nil, err
 	}
