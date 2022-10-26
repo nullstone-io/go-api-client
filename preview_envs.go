@@ -8,6 +8,10 @@ import (
 	"net/http"
 )
 
+type CreatePreviewEnvInput struct {
+	Name string `json:"name"`
+}
+
 type PreviewEnvs struct {
 	Client *Client
 }
@@ -17,7 +21,7 @@ func (pe PreviewEnvs) basePath(stackId int64) string {
 }
 
 // Create - POST /orgs/:orgName/stacks/:stack_id/envs
-func (pe PreviewEnvs) Create(stackId int64, env *types.Environment) (*types.Environment, error) {
+func (pe PreviewEnvs) Create(stackId int64, env *CreatePreviewEnvInput) (*types.Environment, error) {
 	rawPayload, _ := json.Marshal(env)
 	res, err := pe.Client.Do(http.MethodPost, pe.basePath(stackId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
