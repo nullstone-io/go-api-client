@@ -20,7 +20,7 @@ func (pe PreviewEnvs) basePath(stackId int64) string {
 	return fmt.Sprintf("orgs/%s/stacks/%d/preview_envs", pe.Client.Config.OrgName, stackId)
 }
 
-// Create - POST /orgs/:orgName/stacks/:stack_id/envs
+// Create - POST /orgs/:orgName/stacks/:stack_id/preview_envs
 func (pe PreviewEnvs) Create(stackId int64, env *CreatePreviewEnvInput) (*types.Environment, error) {
 	rawPayload, _ := json.Marshal(env)
 	res, err := pe.Client.Do(http.MethodPost, pe.basePath(stackId), nil, nil, json.RawMessage(rawPayload))
