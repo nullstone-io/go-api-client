@@ -18,5 +18,6 @@ type Module struct {
 	AppCategories []string        `json:"appCategories"`
 	Status        ModuleStatus    `json:"status"`
 
-	Versions ModuleVersions `json:"versions,omitempty"`
+	Versions      ModuleVersions `json:"versions,omitempty"`
+	LatestVersion *ModuleVersion `json:"latestVersion,omitempty"`
 }
