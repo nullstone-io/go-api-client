@@ -8,16 +8,16 @@ import (
 	"net/http"
 )
 
-func StreamLogs(ctx context.Context, endpoint string, headers http.Header, retryFn StreamerRetryFunc) <-chan types.Message {
+func StreamMessages(ctx context.Context, endpoint string, headers http.Header, retryFn StreamerRetryFunc) <-chan types.Message {
 	s := Streamer{
 		Endpoint: endpoint,
 		Headers:  headers,
 		RetryFn:  retryFn,
 	}
 	rawMsgs := s.Stream(ctx)
-	logMsgs := make(chan types.Message)
+	msgs := make(chan types.Message)
 	go func() {
-		defer close(logMsgs)
+		defer close(msgs)
 		for raw := range rawMsgs {
 			var msg types.Message
 			if err := json.Unmarshal(raw, &msg); err != nil {
@@ -26,8 +26,8 @@ func StreamLogs(ctx context.Context, endpoint string, headers http.Header, retry
 					Content: fmt.Sprintf("error reading log: %s\n", err),
 				}
 			}
-			logMsgs <- msg
+			msgs <- msg
 		}
 	}()
-	return logMsgs
+	return msgs
 }

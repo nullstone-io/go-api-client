@@ -1,9 +1,11 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
+	"gopkg.in/nullstone-io/go-api-client.v0/ws"
 	"net/http"
 )
 
@@ -42,4 +44,12 @@ func (w Workspaces) Get(stackId, blockId, envId int64) (*types.Workspace, error)
 		return nil, err
 	}
 	return &workspace, nil
+}
+
+func (w Workspaces) Watch(ctx context.Context, stackId int64, retryFn ws.StreamerRetryFunc) (<-chan types.Message, error) {
+	endpoint, headers, err := w.Client.Config.ConstructWsEndpoint(w.basePath(stackId))
+	if err != nil {
+		return nil, err
+	}
+	return ws.StreamMessages(ctx, endpoint, headers, retryFn), nil
 }

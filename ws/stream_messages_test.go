@@ -16,7 +16,7 @@ import (
 	"time"
 )
 
-func TestStreamLogs(t *testing.T) {
+func TestStreamMessages(t *testing.T) {
 	upgrader := websocket.Upgrader{
 		ReadBufferSize:  1204,
 		WriteBufferSize: 1204,
@@ -96,7 +96,7 @@ func TestStreamLogs(t *testing.T) {
 			require.NoError(t, err, "parse server url")
 			u.Path = "/endpoint"
 			u.Scheme = strings.Replace(u.Scheme, "http", "ws", 1)
-			ch := StreamLogs(ctx, u.String(), http.Header{}, RetryInfinite(time.Millisecond))
+			ch := StreamMessages(ctx, u.String(), http.Header{}, RetryInfinite(time.Millisecond))
 			assert.NotNil(t, ch, "stream channel")
 			got := make([]types.Message, 0)
 			for msg := range ch {
