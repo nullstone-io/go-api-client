@@ -20,5 +20,5 @@ func (l DeployLogs) Watch(ctx context.Context, stackId int64, deployId int64, re
 	if err != nil {
 		return nil, err
 	}
-	return ws.StreamLogs(ctx, endpoint, headers, retryFn), nil
+	return ws.StreamMessages(ctx, endpoint, headers, retryFn), nil
 }

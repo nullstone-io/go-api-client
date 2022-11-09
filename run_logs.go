@@ -21,5 +21,5 @@ func (l RunLogs) Watch(ctx context.Context, stackId int64, runUid uuid.UUID, ret
 	if err != nil {
 		return nil, err
 	}
-	return ws.StreamLogs(ctx, endpoint, headers, retryFn), nil
+	return ws.StreamMessages(ctx, endpoint, headers, retryFn), nil
 }
