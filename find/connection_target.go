@@ -9,9 +9,10 @@ import (
 
 // ConnectionTarget finds the target of a connection from a source stack
 // A connection target can be specified in one of three ways:
-//   {stack}.{env}.{block}
-//   {stack}.{block}
-//   {block}
+//
+//	{stack}.{env}.{block}
+//	{stack}.{block}
+//	{block}
 func ConnectionTarget(cfg api.Config, sourceStackName, raw string) (*types.ConnectionTarget, error) {
 	tokens := strings.SplitN(raw, ".", 3)
 	switch len(tokens) {

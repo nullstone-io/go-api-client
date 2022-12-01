@@ -18,7 +18,7 @@ func Module(cfg api.Config, moduleSource string) (*types.Module, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving module: %w", err)
 	} else if module == nil {
-		return nil, fmt.Errorf("module %q does not exist in organization %q", moduleSource, ms.OrgName)
+		return nil, fmt.Errorf("module %s does not exist in organization %s", ms.ModuleName, ms.OrgName)
 	}
 	return module, nil
 }
