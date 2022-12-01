@@ -29,14 +29,7 @@ func (mv ModuleVersions) List(moduleName string) ([]types.ModuleVersion, error) 
 	if err != nil {
 		return nil, err
 	}
-
-	var moduleVersions []types.ModuleVersion
-	if err := response.ReadJson(res, &moduleVersions); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return moduleVersions, nil
+	return response.ReadJsonVal[[]types.ModuleVersion](res)
 }
 
 func (mv ModuleVersions) GetDownloadInfo(moduleName string, versionName string) (*types.ModuleDownloadInfo, error) {

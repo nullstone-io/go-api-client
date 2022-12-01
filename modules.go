@@ -25,14 +25,7 @@ func (m Modules) List() ([]types.Module, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	var modules []types.Module
-	if err := response.ReadJson(res, &modules); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return modules, nil
+	return response.ReadJsonVal[[]types.Module](res)
 }
 
 func (m Modules) Get(moduleName string) (*types.Module, error) {
@@ -40,14 +33,7 @@ func (m Modules) Get(moduleName string) (*types.Module, error) {
 	if err != nil {
 		return nil, err
 	}
-
-	var module types.Module
-	if err := response.ReadJson(res, &module); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &module, nil
+	return response.ReadJsonPtr[types.Module](res)
 }
 
 func (m Modules) Create(module *types.Module) error {
@@ -56,6 +42,5 @@ func (m Modules) Create(module *types.Module) error {
 	if err != nil {
 		return err
 	}
-
 	return response.Verify(res)
 }
