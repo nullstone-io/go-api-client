@@ -7,6 +7,9 @@ import (
 )
 
 func Create(cfg api.Config, workspace types.Workspace, runConfig *types.RunConfig, isApproved *bool, isDestroy bool, destroyDeps string) (*types.Run, error) {
+	if runConfig == nil {
+		return nil, nil
+	}
 	input := types.CreateRunInput{
 		IsDestroy:           isDestroy,
 		DestroyDependencies: destroyDeps,
