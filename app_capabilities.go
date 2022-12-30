@@ -12,6 +12,11 @@ type AppCapabilities struct {
 	Client *Client
 }
 
+type CreateCapabilitiesInput struct {
+	Capabilities []*types.Capability `json:"capabilities"`
+	Blocks       []*types.Block      `json:"blocks"`
+}
+
 func (e AppCapabilities) basePath(stackId, appId int64) string {
 	return fmt.Sprintf("orgs/%s/stacks/%d/apps/%d/capabilities", e.Client.Config.OrgName, stackId, appId)
 }
@@ -53,20 +58,24 @@ func (e AppCapabilities) Get(stackId, appId, capId int64) (*types.Capability, er
 }
 
 // Create - POST /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities
-func (e AppCapabilities) Create(stackId, appId int64, capability *types.Capability) (*types.Capability, error) {
-	rawPayload, _ := json.Marshal(capability)
+func (e AppCapabilities) Create(stackId, appId int64, capabilities []*types.Capability, blocks []*types.Block) ([]*types.Capability, error) {
+	input := CreateCapabilitiesInput{
+		Capabilities: capabilities,
+		Blocks:       blocks,
+	}
+	rawPayload, _ := json.Marshal(input)
 	res, err := e.Client.Do(http.MethodPost, e.basePath(stackId, appId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
 
-	var updatedCap types.Capability
+	var updatedCap []*types.Capability
 	if err := response.ReadJson(res, &updatedCap); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
 	}
-	return &updatedCap, nil
+	return updatedCap, nil
 }
 
 // Update - PUT/PATCH /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities/:id
