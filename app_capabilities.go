@@ -66,19 +66,21 @@ func (e AppCapabilities) Create(stackId, appId int64, capabilities []*types.Capa
 	}
 	rawPayload, _ := json.Marshal(input)
 	log.Printf("Creating capabilities: %s", rawPayload)
+	log.Printf("url: %s", e.basePath(stackId, appId))
 	res, err := e.Client.Do(http.MethodPost, e.basePath(stackId, appId), nil, nil, json.RawMessage(rawPayload))
-	log.Printf("Created capabilities: %+v\n", res)
+	log.Printf("Error: %s", err)
 	if err != nil {
 		return nil, err
 	}
+	log.Printf("Created capabilities: %+v\n", res)
 
-	var updatedCap []*types.Capability
-	if err := response.ReadJson(res, &updatedCap); response.IsNotFoundError(err) {
+	var createdCaps []*types.Capability
+	if err := response.ReadJson(res, &createdCaps); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
 	}
-	return updatedCap, nil
+	return createdCaps, nil
 }
 
 // Update - PUT/PATCH /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities/:id
