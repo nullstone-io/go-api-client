@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
-	"log"
 	"net/http"
 )
 
@@ -65,14 +64,10 @@ func (e AppCapabilities) Create(stackId, appId int64, capabilities []*types.Capa
 		Blocks:       blocks,
 	}
 	rawPayload, _ := json.Marshal(input)
-	log.Printf("Creating capabilities: %s", rawPayload)
-	log.Printf("url: %s", e.basePath(stackId, appId))
 	res, err := e.Client.Do(http.MethodPost, e.basePath(stackId, appId), nil, nil, json.RawMessage(rawPayload))
-	log.Printf("Error: %s", err)
 	if err != nil {
 		return nil, err
 	}
-	log.Printf("Created capabilities: %+v\n", res)
 
 	var createdCaps []*types.Capability
 	if err := response.ReadJson(res, &createdCaps); response.IsNotFoundError(err) {
