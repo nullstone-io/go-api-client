@@ -5,9 +5,9 @@ type Capability struct {
 	OrgName             string                      `json:"orgName"`
 	AppId               int64                       `json:"appId"`
 	Name                string                      `json:"name"`
-	ModuleSource        string                      `json:"moduleSource"`
-	ModuleSourceVersion string                      `json:"moduleSourceVersion"`
-	Connections         map[string]ConnectionTarget `json:"connections"`
-	Namespace           string                      `json:"namespace"`
+	ModuleSource        string                      `json:"moduleSource,omitempty"`
+	ModuleSourceVersion string                      `json:"moduleSourceVersion,omitempty"`
+	Connections         map[string]ConnectionTarget `json:"connections,omitempty"`
+	Namespace           string                      `json:"namespace,omitempty"`
 	Status              string                      `json:"status,omitempty"`
 }
