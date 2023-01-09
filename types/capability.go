@@ -9,4 +9,5 @@ type Capability struct {
 	ModuleSourceVersion string                      `json:"moduleSourceVersion"`
 	Connections         map[string]ConnectionTarget `json:"connections"`
 	Namespace           string                      `json:"namespace"`
+	Status              string                      `json:"status,omitempty"`
 }
