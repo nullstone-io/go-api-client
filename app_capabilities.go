@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/google/uuid"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
@@ -21,8 +22,16 @@ func (e AppCapabilities) basePath(stackId, appId int64) string {
 	return fmt.Sprintf("orgs/%s/stacks/%d/apps/%d/capabilities", e.Client.Config.OrgName, stackId, appId)
 }
 
+func (e AppCapabilities) nullfireBasePath(stackId int64, workspaceUid uuid.UUID) string {
+	return fmt.Sprintf("orgs/%s/stacks/%d/workspaces/%s/capabilities", e.Client.Config.OrgName, stackId, workspaceUid)
+}
+
 func (e AppCapabilities) capPath(stackId, appId, capId int64) string {
 	return fmt.Sprintf("orgs/%s/stacks/%d/apps/%d/capabilities/%d", e.Client.Config.OrgName, stackId, appId, capId)
+}
+
+func (e AppCapabilities) nullfireCapPath(stackId int64, workspaceUid uuid.UUID, capId int64) string {
+	return fmt.Sprintf("orgs/%s/stacks/%d/workspaces/%s/capabilities/%d", e.Client.Config.OrgName, stackId, workspaceUid, capId)
 }
 
 // List - GET /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities
@@ -57,54 +66,55 @@ func (e AppCapabilities) Get(stackId, appId, capId int64) (*types.Capability, er
 	return &appCap, nil
 }
 
-// Create - POST /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities
-func (e AppCapabilities) Create(stackId, appId int64, capabilities []*types.Capability, blocks []*types.Block) ([]*types.Capability, error) {
+// Create - POST /orgs/:orgName/stacks/:stackId/workspaces/:workspace_uid/capabilities
+func (e AppCapabilities) Create(stackId int64, workspaceUid uuid.UUID, capabilities []*types.Capability, blocks []*types.Block) ([]types.WorkspaceChange, error) {
 	input := CreateCapabilitiesInput{
 		Capabilities: capabilities,
 		Blocks:       blocks,
 	}
 	rawPayload, _ := json.Marshal(input)
-	res, err := e.Client.Do(http.MethodPost, e.basePath(stackId, appId), nil, nil, json.RawMessage(rawPayload))
+	res, err := e.Client.Do(http.MethodPost, e.nullfireBasePath(stackId, workspaceUid), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
 
-	var createdCaps []*types.Capability
-	if err := response.ReadJson(res, &createdCaps); response.IsNotFoundError(err) {
+	var changes []types.WorkspaceChange
+	if err := response.ReadJson(res, &changes); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
 	}
-	return createdCaps, nil
+	return changes, nil
 }
 
-// Update - PUT/PATCH /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities/:id
-func (e AppCapabilities) Update(stackId, appId, capId int64, capability *types.Capability) (*types.Capability, error) {
-	rawPayload, _ := json.Marshal(capability)
-	res, err := e.Client.Do(http.MethodPut, e.capPath(stackId, appId, capId), nil, nil, json.RawMessage(rawPayload))
+// Update - PUT/PATCH /orgs/:orgName/stacks/:stackId/workspaces/:workspace_uid/capabilities/:id/variables
+func (e AppCapabilities) Update(stackId int64, workspaceUid uuid.UUID, capId int64, variables []*types.VariableValue) ([]types.WorkspaceChange, error) {
+	rawPayload, _ := json.Marshal(variables)
+	res, err := e.Client.Do(http.MethodPut, fmt.Sprintf("%s/variables", e.nullfireCapPath(stackId, workspaceUid, capId)), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
 
-	var updatedCap types.Capability
-	if err := response.ReadJson(res, &updatedCap); response.IsNotFoundError(err) {
+	var changes []types.WorkspaceChange
+	if err := response.ReadJson(res, &changes); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
 	}
-	return &updatedCap, nil
+	return changes, nil
 }
 
-// Destroy - DELETE /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities/:id
-func (e AppCapabilities) Destroy(stackId, appId, capId int64) (bool, error) {
-	res, err := e.Client.Do(http.MethodDelete, e.capPath(stackId, appId, capId), nil, nil, nil)
+// Destroy - DELETE /orgs/:orgName/stacks/:stackId/workspaces/:workspace_uid/capabilities/:id
+func (e AppCapabilities) Destroy(stackId int64, workspaceUid uuid.UUID, capId int64) ([]types.WorkspaceChange, error) {
+	res, err := e.Client.Do(http.MethodDelete, e.nullfireCapPath(stackId, workspaceUid, capId), nil, nil, nil)
 	if err != nil {
-		return false, err
+		return nil, err
 	}
-	if err := response.Verify(res); response.IsNotFoundError(err) {
-		return false, nil
+	var changes []types.WorkspaceChange
+	if err := response.ReadJson(res, &changes); response.IsNotFoundError(err) {
+		return nil, nil
 	} else if err != nil {
-		return false, err
+		return nil, err
 	}
-	return true, nil
+	return changes, nil
 }

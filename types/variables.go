@@ -19,3 +19,8 @@ type Variable struct {
 	// Instead, this field was added to signal to the user that they should remove the variable
 	Unused bool `json:"unused"`
 }
+
+type VariableValue struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}

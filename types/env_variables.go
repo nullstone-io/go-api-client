@@ -7,3 +7,9 @@ type EnvVariable struct {
 	Sensitive bool   `json:"sensitive"`
 	Redacted  bool   `json:"redacted"`
 }
+
+type EnvVariableValue struct {
+	Key       string `json:"key"`
+	Value     string `json:"value"`
+	Sensitive bool   `json:"sensitive"`
+}
