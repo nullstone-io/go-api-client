@@ -78,6 +78,10 @@ func (c *Client) AppEnvs() AppEnvs {
 	return AppEnvs{Client: c}
 }
 
+func (c *Client) EnvVariables() EnvVariables {
+	return EnvVariables{Client: c}
+}
+
 func (c *Client) Deploys() Deploys {
 	return Deploys{Client: c}
 }
@@ -90,8 +94,16 @@ func (c *Client) Workspaces() Workspaces {
 	return Workspaces{Client: c}
 }
 
+func (c *Client) WorkspaceChanges() WorkspaceChanges {
+	return WorkspaceChanges{Client: c}
+}
+
 func (c *Client) WorkspaceOutputs() WorkspaceOutputs {
 	return WorkspaceOutputs{Client: c}
+}
+
+func (c *Client) WorkspaceVariables() WorkspaceVariables {
+	return WorkspaceVariables{Client: c}
 }
 
 func (c *Client) Runs() Runs {
