@@ -88,7 +88,7 @@ func (e AppCapabilities) Create(stackId int64, workspaceUid uuid.UUID, capabilit
 }
 
 // Update - PUT/PATCH /orgs/:orgName/stacks/:stackId/workspaces/:workspace_uid/capabilities/:id/variables
-func (e AppCapabilities) Update(stackId int64, workspaceUid uuid.UUID, capId int64, variables []*types.VariableValue) ([]types.WorkspaceChange, error) {
+func (e AppCapabilities) Update(stackId int64, workspaceUid uuid.UUID, capId int64, variables []*types.VariableInput) ([]types.WorkspaceChange, error) {
 	rawPayload, _ := json.Marshal(variables)
 	res, err := e.Client.Do(http.MethodPut, fmt.Sprintf("%s/variables", e.nullfireCapPath(stackId, workspaceUid, capId)), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {

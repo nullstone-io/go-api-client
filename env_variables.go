@@ -21,7 +21,7 @@ func (ev EnvVariables) envVarPath(stackId int64, workspaceUid uuid.UUID, key str
 	return fmt.Sprintf("/orgs/%s/stacks/%d/workspaces/%s/env-variables/%s", ev.Client.Config.OrgName, stackId, workspaceUid, key)
 }
 
-func (ev EnvVariables) Create(stackId int64, workspaceUid uuid.UUID, input []types.EnvVariableValue) ([]types.WorkspaceChange, error) {
+func (ev EnvVariables) Create(stackId int64, workspaceUid uuid.UUID, input []types.EnvVariableInput) ([]types.WorkspaceChange, error) {
 	raw, _ := json.Marshal(input)
 	res, err := ev.Client.Do(http.MethodPost, ev.basePath(stackId, workspaceUid), nil, nil, json.RawMessage(raw))
 	if err != nil {

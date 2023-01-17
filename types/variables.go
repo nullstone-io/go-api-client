@@ -20,7 +20,7 @@ type Variable struct {
 	Unused bool `json:"unused"`
 }
 
-type VariableValue struct {
+type VariableInput struct {
 	Key   string `json:"key"`
 	Value string `json:"value"`
 }

@@ -17,7 +17,7 @@ func (wv WorkspaceVariables) basePath(stackId int64, workspaceUid uuid.UUID) str
 	return fmt.Sprintf("/orgs/%s/stacks/%d/workspaces/%s/variables", wv.Client.Config.OrgName, stackId, workspaceUid)
 }
 
-func (wv WorkspaceVariables) Update(stackId int64, workspaceUid uuid.UUID, input []types.VariableValue) ([]types.WorkspaceChange, error) {
+func (wv WorkspaceVariables) Update(stackId int64, workspaceUid uuid.UUID, input []types.VariableInput) ([]types.WorkspaceChange, error) {
 	raw, _ := json.Marshal(input)
 	res, err := wv.Client.Do(http.MethodPut, wv.basePath(stackId, workspaceUid), nil, nil, json.RawMessage(raw))
 	if err != nil {
