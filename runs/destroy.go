@@ -11,6 +11,8 @@ func Destroy(cfg api.Config, stackId, appId, envId int64, deps string, approve b
 	workspace, err := client.Workspaces().Get(stackId, appId, envId)
 	if err != nil {
 		return nil, fmt.Errorf("error looking for workspace: %w", err)
+	} else if workspace == nil {
+		return nil, nil
 	}
 
 	runConfig, err := client.RunConfigs().GetLatest(workspace.StackId, workspace.Uid)
