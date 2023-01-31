@@ -77,13 +77,7 @@ func (e AppCapabilities) Create(stackId, blockId, envId int64, capabilities []*t
 		return nil, err
 	}
 
-	var changeset *types.WorkspaceChangeset
-	if err := response.ReadJson(res, changeset); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return changeset, nil
+	return response.ReadJsonPtr[types.WorkspaceChangeset](res)
 }
 
 // Update - PUT/PATCH /orgs/:orgName/stacks/:stackId/workspaces/:workspace_uid/capabilities/:id/variables
@@ -94,13 +88,7 @@ func (e AppCapabilities) Update(stackId, blockId, envId, capId int64, variables 
 		return nil, err
 	}
 
-	var changeset *types.WorkspaceChangeset
-	if err := response.ReadJson(res, changeset); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return changeset, nil
+	return response.ReadJsonPtr[types.WorkspaceChangeset](res)
 }
 
 // Destroy - DELETE /orgs/:orgName/stacks/:stackId/workspaces/:workspace_uid/capabilities/:id
@@ -110,11 +98,5 @@ func (e AppCapabilities) Destroy(stackId, blockId, envId, capId int64) (*types.W
 		return nil, err
 	}
 
-	var changeset *types.WorkspaceChangeset
-	if err := response.ReadJson(res, changeset); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return changeset, nil
+	return response.ReadJsonPtr[types.WorkspaceChangeset](res)
 }

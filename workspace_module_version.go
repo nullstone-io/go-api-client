@@ -23,11 +23,5 @@ func (wmv WorkspaceModuleVersion) Update(stackId, blockId, envId int64, version 
 		return nil, err
 	}
 
-	var changeset *types.WorkspaceChangeset
-	if err := response.ReadJson(res, changeset); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return changeset, nil
+	return response.ReadJsonPtr[types.WorkspaceChangeset](res)
 }

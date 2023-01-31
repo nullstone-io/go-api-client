@@ -27,13 +27,7 @@ func (ev EnvVariables) Create(stackId, blockId, envId int64, input []types.EnvVa
 		return nil, err
 	}
 
-	var changeset *types.WorkspaceChangeset
-	if err := response.ReadJson(res, changeset); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return changeset, nil
+	return response.ReadJsonPtr[types.WorkspaceChangeset](res)
 }
 
 func (ev EnvVariables) Destroy(stackId, blockId, envId int64, key string) (*types.WorkspaceChangeset, error) {
@@ -42,11 +36,5 @@ func (ev EnvVariables) Destroy(stackId, blockId, envId int64, key string) (*type
 		return nil, err
 	}
 
-	var changeset *types.WorkspaceChangeset
-	if err := response.ReadJson(res, changeset); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return changeset, nil
+	return response.ReadJsonPtr[types.WorkspaceChangeset](res)
 }

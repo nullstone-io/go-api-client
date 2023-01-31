@@ -25,13 +25,7 @@ func (wc WorkspaceChanges) List(stackId, blockId, envId int64) (*types.Workspace
 		return nil, err
 	}
 
-	var changeset *types.WorkspaceChangeset
-	if err := response.ReadJson(res, changeset); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return changeset, nil
+	return response.ReadJsonPtr[types.WorkspaceChangeset](res)
 }
 
 func (wc WorkspaceChanges) Destroy(stackId, blockId, envId, changeId int64) (*types.WorkspaceChangeset, error) {
@@ -40,11 +34,5 @@ func (wc WorkspaceChanges) Destroy(stackId, blockId, envId, changeId int64) (*ty
 		return nil, err
 	}
 
-	var changeset *types.WorkspaceChangeset
-	if err := response.ReadJson(res, changeset); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return changeset, nil
+	return response.ReadJsonPtr[types.WorkspaceChangeset](res)
 }

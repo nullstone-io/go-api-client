@@ -23,11 +23,5 @@ func (wv WorkspaceVariables) Update(stackId, blockId, envId int64, input []types
 		return nil, err
 	}
 
-	var changeset *types.WorkspaceChangeset
-	if err := response.ReadJson(res, changeset); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return changeset, nil
+	return response.ReadJsonPtr[types.WorkspaceChangeset](res)
 }
