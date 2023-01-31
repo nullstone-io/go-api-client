@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/google/uuid"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
@@ -13,17 +12,17 @@ type EnvVariables struct {
 	Client *Client
 }
 
-func (ev EnvVariables) basePath(stackId int64, workspaceUid uuid.UUID) string {
-	return fmt.Sprintf("/orgs/%s/stacks/%d/workspaces/%s/env-variables", ev.Client.Config.OrgName, stackId, workspaceUid)
+func (ev EnvVariables) basePath(stackId, blockId, envId int64) string {
+	return fmt.Sprintf("/orgs/%s/stacks/%d/blocks/%d/envs/%d/env-variables", ev.Client.Config.OrgName, stackId, blockId, envId)
 }
 
-func (ev EnvVariables) envVarPath(stackId int64, workspaceUid uuid.UUID, key string) string {
-	return fmt.Sprintf("/orgs/%s/stacks/%d/workspaces/%s/env-variables/%s", ev.Client.Config.OrgName, stackId, workspaceUid, key)
+func (ev EnvVariables) envVarPath(stackId, blockId, envId int64, key string) string {
+	return fmt.Sprintf("/orgs/%s/stacks/%d/blocks/%d/envs/%d/env-variables/%s", ev.Client.Config.OrgName, stackId, blockId, envId, key)
 }
 
-func (ev EnvVariables) Create(stackId int64, workspaceUid uuid.UUID, input []types.EnvVariableInput) (*types.WorkspaceChangeset, error) {
+func (ev EnvVariables) Create(stackId, blockId, envId int64, input []types.EnvVariableInput) (*types.WorkspaceChangeset, error) {
 	raw, _ := json.Marshal(input)
-	res, err := ev.Client.Do(http.MethodPost, ev.basePath(stackId, workspaceUid), nil, nil, json.RawMessage(raw))
+	res, err := ev.Client.Do(http.MethodPost, ev.basePath(stackId, blockId, envId), nil, nil, json.RawMessage(raw))
 	if err != nil {
 		return nil, err
 	}
@@ -37,8 +36,8 @@ func (ev EnvVariables) Create(stackId int64, workspaceUid uuid.UUID, input []typ
 	return changeset, nil
 }
 
-func (ev EnvVariables) Destroy(stackId int64, workspaceUid uuid.UUID, key string) (*types.WorkspaceChangeset, error) {
-	res, err := ev.Client.Do(http.MethodDelete, ev.envVarPath(stackId, workspaceUid, key), nil, nil, nil)
+func (ev EnvVariables) Destroy(stackId, blockId, envId int64, key string) (*types.WorkspaceChangeset, error) {
+	res, err := ev.Client.Do(http.MethodDelete, ev.envVarPath(stackId, blockId, envId, key), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}

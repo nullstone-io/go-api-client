@@ -2,7 +2,6 @@ package api
 
 import (
 	"fmt"
-	"github.com/google/uuid"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
@@ -12,16 +11,16 @@ type WorkspaceChanges struct {
 	Client *Client
 }
 
-func (wc WorkspaceChanges) basePath(stackId int64, workspaceUid uuid.UUID) string {
-	return fmt.Sprintf("/orgs/%s/stacks/%d/workspaces/%s/changes", wc.Client.Config.OrgName, stackId, workspaceUid)
+func (wc WorkspaceChanges) basePath(stackId, blockId, envId int64) string {
+	return fmt.Sprintf("/orgs/%s/stacks/%d/blocks/%d/envs/%d/changes", wc.Client.Config.OrgName, stackId, blockId, envId)
 }
 
-func (wc WorkspaceChanges) changePath(stackId int64, workspaceUid uuid.UUID, changeId int64) string {
-	return fmt.Sprintf("/orgs/%s/stacks/%d/workspaces/%s/changes/%d", wc.Client.Config.OrgName, stackId, workspaceUid, changeId)
+func (wc WorkspaceChanges) changePath(stackId, blockId, envId, changeId int64) string {
+	return fmt.Sprintf("/orgs/%s/stacks/%d/blocks/%d/envs/%d/changes/%d", wc.Client.Config.OrgName, stackId, blockId, envId, changeId)
 }
 
-func (wc WorkspaceChanges) List(stackId int64, workspaceUid uuid.UUID) (*types.WorkspaceChangeset, error) {
-	res, err := wc.Client.Do(http.MethodPost, wc.basePath(stackId, workspaceUid), nil, nil, nil)
+func (wc WorkspaceChanges) List(stackId, blockId, envId int64) (*types.WorkspaceChangeset, error) {
+	res, err := wc.Client.Do(http.MethodPost, wc.basePath(stackId, blockId, envId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -35,8 +34,8 @@ func (wc WorkspaceChanges) List(stackId int64, workspaceUid uuid.UUID) (*types.W
 	return changeset, nil
 }
 
-func (wc WorkspaceChanges) Destroy(stackId int64, workspaceUid uuid.UUID, changeId int64) (*types.WorkspaceChangeset, error) {
-	res, err := wc.Client.Do(http.MethodDelete, wc.changePath(stackId, workspaceUid, changeId), nil, nil, nil)
+func (wc WorkspaceChanges) Destroy(stackId, blockId, envId, changeId int64) (*types.WorkspaceChangeset, error) {
+	res, err := wc.Client.Do(http.MethodDelete, wc.changePath(stackId, blockId, envId, changeId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}

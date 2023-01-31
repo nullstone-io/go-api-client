@@ -3,7 +3,6 @@ package api
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/google/uuid"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
@@ -22,16 +21,16 @@ func (e AppCapabilities) basePath(stackId, appId int64) string {
 	return fmt.Sprintf("orgs/%s/stacks/%d/apps/%d/capabilities", e.Client.Config.OrgName, stackId, appId)
 }
 
-func (e AppCapabilities) nullfireBasePath(stackId int64, workspaceUid uuid.UUID) string {
-	return fmt.Sprintf("orgs/%s/stacks/%d/workspaces/%s/capabilities", e.Client.Config.OrgName, stackId, workspaceUid)
+func (e AppCapabilities) nullfireBasePath(stackId, blockId, envId int64) string {
+	return fmt.Sprintf("orgs/%s/stacks/%d/blocks/%d/envs/%d/capabilities", e.Client.Config.OrgName, stackId, blockId, envId)
 }
 
 func (e AppCapabilities) capPath(stackId, appId, capId int64) string {
 	return fmt.Sprintf("orgs/%s/stacks/%d/apps/%d/capabilities/%d", e.Client.Config.OrgName, stackId, appId, capId)
 }
 
-func (e AppCapabilities) nullfireCapPath(stackId int64, workspaceUid uuid.UUID, capId int64) string {
-	return fmt.Sprintf("orgs/%s/stacks/%d/workspaces/%s/capabilities/%d", e.Client.Config.OrgName, stackId, workspaceUid, capId)
+func (e AppCapabilities) nullfireCapPath(stackId, blockId, envId, capId int64) string {
+	return fmt.Sprintf("orgs/%s/stacks/%d/blocks/%d/envs/%d/capabilities/%d", e.Client.Config.OrgName, stackId, blockId, envId, capId)
 }
 
 // List - GET /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities
@@ -67,13 +66,13 @@ func (e AppCapabilities) Get(stackId, appId, capId int64) (*types.Capability, er
 }
 
 // Create - POST /orgs/:orgName/stacks/:stackId/workspaces/:workspace_uid/capabilities
-func (e AppCapabilities) Create(stackId int64, workspaceUid uuid.UUID, capabilities []*types.Capability, blocks []*types.Block) (*types.WorkspaceChangeset, error) {
+func (e AppCapabilities) Create(stackId, blockId, envId int64, capabilities []*types.Capability, blocks []*types.Block) (*types.WorkspaceChangeset, error) {
 	input := CreateCapabilitiesInput{
 		Capabilities: capabilities,
 		Blocks:       blocks,
 	}
 	rawPayload, _ := json.Marshal(input)
-	res, err := e.Client.Do(http.MethodPost, e.nullfireBasePath(stackId, workspaceUid), nil, nil, json.RawMessage(rawPayload))
+	res, err := e.Client.Do(http.MethodPost, e.nullfireBasePath(stackId, blockId, envId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -88,9 +87,9 @@ func (e AppCapabilities) Create(stackId int64, workspaceUid uuid.UUID, capabilit
 }
 
 // Update - PUT/PATCH /orgs/:orgName/stacks/:stackId/workspaces/:workspace_uid/capabilities/:id/variables
-func (e AppCapabilities) Update(stackId int64, workspaceUid uuid.UUID, capId int64, variables []*types.VariableInput) (*types.WorkspaceChangeset, error) {
+func (e AppCapabilities) Update(stackId, blockId, envId, capId int64, variables []*types.VariableInput) (*types.WorkspaceChangeset, error) {
 	rawPayload, _ := json.Marshal(variables)
-	res, err := e.Client.Do(http.MethodPut, fmt.Sprintf("%s/variables", e.nullfireCapPath(stackId, workspaceUid, capId)), nil, nil, json.RawMessage(rawPayload))
+	res, err := e.Client.Do(http.MethodPut, fmt.Sprintf("%s/variables", e.nullfireCapPath(stackId, blockId, envId, capId)), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -105,8 +104,8 @@ func (e AppCapabilities) Update(stackId int64, workspaceUid uuid.UUID, capId int
 }
 
 // Destroy - DELETE /orgs/:orgName/stacks/:stackId/workspaces/:workspace_uid/capabilities/:id
-func (e AppCapabilities) Destroy(stackId int64, workspaceUid uuid.UUID, capId int64) (*types.WorkspaceChangeset, error) {
-	res, err := e.Client.Do(http.MethodDelete, e.nullfireCapPath(stackId, workspaceUid, capId), nil, nil, nil)
+func (e AppCapabilities) Destroy(stackId, blockId, envId, capId int64) (*types.WorkspaceChangeset, error) {
+	res, err := e.Client.Do(http.MethodDelete, e.nullfireCapPath(stackId, blockId, envId, capId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
