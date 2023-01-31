@@ -67,7 +67,7 @@ func (e AppCapabilities) Get(stackId, appId, capId int64) (*types.Capability, er
 }
 
 // Create - POST /orgs/:orgName/stacks/:stackId/workspaces/:workspace_uid/capabilities
-func (e AppCapabilities) Create(stackId int64, workspaceUid uuid.UUID, capabilities []*types.Capability, blocks []*types.Block) ([]types.WorkspaceChange, error) {
+func (e AppCapabilities) Create(stackId int64, workspaceUid uuid.UUID, capabilities []*types.Capability, blocks []*types.Block) (*types.WorkspaceChangeset, error) {
 	input := CreateCapabilitiesInput{
 		Capabilities: capabilities,
 		Blocks:       blocks,
@@ -78,43 +78,44 @@ func (e AppCapabilities) Create(stackId int64, workspaceUid uuid.UUID, capabilit
 		return nil, err
 	}
 
-	var changes []types.WorkspaceChange
-	if err := response.ReadJson(res, &changes); response.IsNotFoundError(err) {
+	var changeset *types.WorkspaceChangeset
+	if err := response.ReadJson(res, changeset); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
 	}
-	return changes, nil
+	return changeset, nil
 }
 
 // Update - PUT/PATCH /orgs/:orgName/stacks/:stackId/workspaces/:workspace_uid/capabilities/:id/variables
-func (e AppCapabilities) Update(stackId int64, workspaceUid uuid.UUID, capId int64, variables []*types.VariableInput) ([]types.WorkspaceChange, error) {
+func (e AppCapabilities) Update(stackId int64, workspaceUid uuid.UUID, capId int64, variables []*types.VariableInput) (*types.WorkspaceChangeset, error) {
 	rawPayload, _ := json.Marshal(variables)
 	res, err := e.Client.Do(http.MethodPut, fmt.Sprintf("%s/variables", e.nullfireCapPath(stackId, workspaceUid, capId)), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
 
-	var changes []types.WorkspaceChange
-	if err := response.ReadJson(res, &changes); response.IsNotFoundError(err) {
+	var changeset *types.WorkspaceChangeset
+	if err := response.ReadJson(res, changeset); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
 	}
-	return changes, nil
+	return changeset, nil
 }
 
 // Destroy - DELETE /orgs/:orgName/stacks/:stackId/workspaces/:workspace_uid/capabilities/:id
-func (e AppCapabilities) Destroy(stackId int64, workspaceUid uuid.UUID, capId int64) ([]types.WorkspaceChange, error) {
+func (e AppCapabilities) Destroy(stackId int64, workspaceUid uuid.UUID, capId int64) (*types.WorkspaceChangeset, error) {
 	res, err := e.Client.Do(http.MethodDelete, e.nullfireCapPath(stackId, workspaceUid, capId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
-	var changes []types.WorkspaceChange
-	if err := response.ReadJson(res, &changes); response.IsNotFoundError(err) {
+
+	var changeset *types.WorkspaceChangeset
+	if err := response.ReadJson(res, changeset); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
 	}
-	return changes, nil
+	return changeset, nil
 }
