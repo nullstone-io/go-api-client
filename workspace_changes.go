@@ -28,11 +28,11 @@ func (wc WorkspaceChanges) List(stackId, blockId, envId int64) (*types.Workspace
 	return response.ReadJsonPtr[types.WorkspaceChangeset](res)
 }
 
-func (wc WorkspaceChanges) Destroy(stackId, blockId, envId, changeId int64) (*types.WorkspaceChangeset, error) {
+func (wc WorkspaceChanges) Destroy(stackId, blockId, envId, changeId int64) error {
 	res, err := wc.Client.Do(http.MethodDelete, wc.changePath(stackId, blockId, envId, changeId), nil, nil, nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return response.ReadJsonPtr[types.WorkspaceChangeset](res)
+	return response.Verify(res)
 }

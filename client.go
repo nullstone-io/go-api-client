@@ -98,8 +98,8 @@ func (c *Client) WorkspaceChanges() WorkspaceChanges {
 	return WorkspaceChanges{Client: c}
 }
 
-func (c *Client) WorkspaceModuleVersion() WorkspaceModuleVersion {
-	return WorkspaceModuleVersion{Client: c}
+func (c *Client) WorkspaceModule() WorkspaceModule {
+	return WorkspaceModule{Client: c}
 }
 
 func (c *Client) WorkspaceOutputs() WorkspaceOutputs {

@@ -66,7 +66,7 @@ func (e AppCapabilities) Get(stackId, appId, capId int64) (*types.Capability, er
 }
 
 // Create - POST /orgs/:orgName/stacks/:stackId/workspaces/:workspace_uid/capabilities
-func (e AppCapabilities) Create(stackId, blockId, envId int64, capabilities []*types.Capability, blocks []*types.Block) (*types.WorkspaceChangeset, error) {
+func (e AppCapabilities) Create(stackId, blockId, envId int64, capabilities []*types.Capability, blocks []*types.Block) error {
 	input := CreateCapabilitiesInput{
 		Capabilities: capabilities,
 		Blocks:       blocks,
@@ -74,29 +74,29 @@ func (e AppCapabilities) Create(stackId, blockId, envId int64, capabilities []*t
 	rawPayload, _ := json.Marshal(input)
 	res, err := e.Client.Do(http.MethodPost, e.nullfireBasePath(stackId, blockId, envId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return response.ReadJsonPtr[types.WorkspaceChangeset](res)
+	return response.Verify(res)
 }
 
 // Update - PUT/PATCH /orgs/:orgName/stacks/:stackId/workspaces/:workspace_uid/capabilities/:id/variables
-func (e AppCapabilities) Update(stackId, blockId, envId, capId int64, variables []*types.VariableInput) (*types.WorkspaceChangeset, error) {
+func (e AppCapabilities) Update(stackId, blockId, envId, capId int64, variables []*types.VariableInput) error {
 	rawPayload, _ := json.Marshal(variables)
 	res, err := e.Client.Do(http.MethodPut, fmt.Sprintf("%s/variables", e.nullfireCapPath(stackId, blockId, envId, capId)), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return response.ReadJsonPtr[types.WorkspaceChangeset](res)
+	return response.Verify(res)
 }
 
 // Destroy - DELETE /orgs/:orgName/stacks/:stackId/workspaces/:workspace_uid/capabilities/:id
-func (e AppCapabilities) Destroy(stackId, blockId, envId, capId int64) (*types.WorkspaceChangeset, error) {
+func (e AppCapabilities) Destroy(stackId, blockId, envId, capId int64) error {
 	res, err := e.Client.Do(http.MethodDelete, e.nullfireCapPath(stackId, blockId, envId, capId), nil, nil, nil)
 	if err != nil {
-		return nil, err
+		return err
 	}
 
-	return response.ReadJsonPtr[types.WorkspaceChangeset](res)
+	return response.Verify(res)
 }
