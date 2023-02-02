@@ -21,16 +21,8 @@ func (e AppCapabilities) basePath(stackId, appId int64) string {
 	return fmt.Sprintf("orgs/%s/stacks/%d/apps/%d/capabilities", e.Client.Config.OrgName, stackId, appId)
 }
 
-func (e AppCapabilities) nullfireBasePath(stackId, blockId, envId int64) string {
-	return fmt.Sprintf("orgs/%s/stacks/%d/blocks/%d/envs/%d/capabilities", e.Client.Config.OrgName, stackId, blockId, envId)
-}
-
 func (e AppCapabilities) capPath(stackId, appId, capId int64) string {
 	return fmt.Sprintf("orgs/%s/stacks/%d/apps/%d/capabilities/%d", e.Client.Config.OrgName, stackId, appId, capId)
-}
-
-func (e AppCapabilities) nullfireCapPath(stackId, blockId, envId, capId int64) string {
-	return fmt.Sprintf("orgs/%s/stacks/%d/blocks/%d/envs/%d/capabilities/%d", e.Client.Config.OrgName, stackId, blockId, envId, capId)
 }
 
 // List - GET /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities
@@ -65,38 +57,54 @@ func (e AppCapabilities) Get(stackId, appId, capId int64) (*types.Capability, er
 	return &appCap, nil
 }
 
-// Create - POST /orgs/:orgName/stacks/:stackId/workspaces/:workspace_uid/capabilities
-func (e AppCapabilities) Create(stackId, blockId, envId int64, capabilities []*types.Capability, blocks []*types.Block) error {
+// Create - POST /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities
+func (e AppCapabilities) Create(stackId, appId int64, capabilities []*types.Capability, blocks []*types.Block) ([]*types.Capability, error) {
 	input := CreateCapabilitiesInput{
 		Capabilities: capabilities,
 		Blocks:       blocks,
 	}
 	rawPayload, _ := json.Marshal(input)
-	res, err := e.Client.Do(http.MethodPost, e.nullfireBasePath(stackId, blockId, envId), nil, nil, json.RawMessage(rawPayload))
+	res, err := e.Client.Do(http.MethodPost, e.basePath(stackId, appId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return response.Verify(res)
+	var createdCaps []*types.Capability
+	if err := response.ReadJson(res, &createdCaps); response.IsNotFoundError(err) {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return createdCaps, nil
 }
 
-// Update - PUT/PATCH /orgs/:orgName/stacks/:stackId/workspaces/:workspace_uid/capabilities/:id/variables
-func (e AppCapabilities) Update(stackId, blockId, envId, capId int64, variables []*types.VariableInput) error {
-	rawPayload, _ := json.Marshal(variables)
-	res, err := e.Client.Do(http.MethodPut, fmt.Sprintf("%s/variables", e.nullfireCapPath(stackId, blockId, envId, capId)), nil, nil, json.RawMessage(rawPayload))
+// Update - PUT/PATCH /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities/:id
+func (e AppCapabilities) Update(stackId, appId, capId int64, capability *types.Capability) (*types.Capability, error) {
+	rawPayload, _ := json.Marshal(capability)
+	res, err := e.Client.Do(http.MethodPut, e.capPath(stackId, appId, capId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return response.Verify(res)
+	var updatedCap types.Capability
+	if err := response.ReadJson(res, &updatedCap); response.IsNotFoundError(err) {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &updatedCap, nil
 }
 
-// Destroy - DELETE /orgs/:orgName/stacks/:stackId/workspaces/:workspace_uid/capabilities/:id
-func (e AppCapabilities) Destroy(stackId, blockId, envId, capId int64) error {
-	res, err := e.Client.Do(http.MethodDelete, e.nullfireCapPath(stackId, blockId, envId, capId), nil, nil, nil)
+// Destroy - DELETE /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities/:id
+func (e AppCapabilities) Destroy(stackId, appId, capId int64) (bool, error) {
+	res, err := e.Client.Do(http.MethodDelete, e.capPath(stackId, appId, capId), nil, nil, nil)
 	if err != nil {
-		return err
+		return false, err
 	}
-
-	return response.Verify(res)
+	if err := response.Verify(res); response.IsNotFoundError(err) {
+		return false, nil
+	} else if err != nil {
+		return false, err
+	}
+	return true, nil
 }
