@@ -13,14 +13,9 @@ func Launch(cfg api.Config, stackId, appId, envId int64, approve bool) (*types.R
 		return nil, fmt.Errorf("error looking for workspace: %w", err)
 	}
 
-	runConfig, err := client.PromotionConfigs().Get(stackId, appId, envId, "")
-	if err != nil {
-		return nil, fmt.Errorf("error retrieving existing config: %w", err)
-	}
-	fillRunConfig(runConfig)
 	var isApproved *bool
 	if approve {
 		isApproved = &approve
 	}
-	return Create(cfg, *workspace, runConfig, isApproved, false, "")
+	return Create(cfg, *workspace, isApproved, false, "")
 }
