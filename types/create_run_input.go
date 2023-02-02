@@ -11,13 +11,5 @@ type CreateRunInput struct {
 	// `<stack-id>/<block-id>/<env-id>,...` indicates a comma-delimited list of dependencies to destroy with the workspace
 	DestroyDependencies string `json:"destroyDependencies"`
 
-	IsApproved        *bool             `json:"isApproved"`
-	Source            string            `json:"source"`
-	SourceVersion     string            `json:"sourceVersion"`
-	Variables         Variables         `json:"variables"`
-	EnvVariables      EnvVariables      `json:"envVariables"`
-	Connections       Connections       `json:"connections"`
-	Capabilities      CapabilityConfigs `json:"capabilities"`
-	Providers         Providers         `json:"providers"`
-	DependencyConfigs DependencyConfigs `json:"dependencyConfigs"`
+	IsApproved *bool `json:"isApproved"`
 }

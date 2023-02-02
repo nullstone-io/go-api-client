@@ -15,14 +15,9 @@ func Destroy(cfg api.Config, stackId, appId, envId int64, deps string, approve b
 		return nil, nil
 	}
 
-	runConfig, err := client.RunConfigs().GetLatest(workspace.StackId, workspace.Uid)
-	if err != nil {
-		return nil, fmt.Errorf("error retrieving existing config: %w", err)
-	}
-	fillRunConfig(runConfig)
 	var isApproved *bool
 	if approve {
 		isApproved = &approve
 	}
-	return Create(cfg, *workspace, runConfig, isApproved, true, deps)
+	return Create(cfg, *workspace, isApproved, true, deps)
 }
