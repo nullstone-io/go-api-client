@@ -50,6 +50,10 @@ func (c *Client) EnvironmentsByName() EnvironmentsByName {
 	return EnvironmentsByName{Client: c}
 }
 
+func (c *Client) EnvConfigurations() EnvConfigurations {
+	return EnvConfigurations{Client: c}
+}
+
 func (c *Client) EnvRuns() EnvRuns {
 	return EnvRuns{Client: c}
 }
