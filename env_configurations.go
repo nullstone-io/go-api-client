@@ -1,10 +1,11 @@
 package api
 
 import (
+	"bytes"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"io"
-	"io/ioutil"
+	"mime/multipart"
 	"net/http"
 )
 
@@ -17,11 +18,20 @@ func (ec EnvConfigurations) basePath(stackId, envId int64) string {
 }
 
 func (ec EnvConfigurations) Create(stackId, envId int64, file io.Reader) error {
-	raw, err := ioutil.ReadAll(file)
-	headers := map[string]string{
-		"Content-Type": "application/multipart-form-data",
+	body := &bytes.Buffer{}
+	writer := multipart.NewWriter(body)
+	defer writer.Close()
+
+	part, err := writer.CreateFormFile("configuration", "previews.yaml")
+	if err != nil {
+		return err
 	}
-	res, err := ec.Client.Do(http.MethodPost, ec.basePath(stackId, envId), nil, headers, raw)
+	_, err = io.Copy(part, file)
+
+	headers := map[string]string{
+		"Content-Type": writer.FormDataContentType(),
+	}
+	res, err := ec.Client.Do(http.MethodPost, ec.basePath(stackId, envId), nil, headers, body)
 	if err != nil {
 		return err
 	}
