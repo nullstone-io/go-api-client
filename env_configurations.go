@@ -14,7 +14,7 @@ type EnvConfigurations struct {
 }
 
 func (ec EnvConfigurations) basePath(stackId, envId int64) string {
-	return fmt.Sprintf("/orgs/%s/stacks/%d/envs/%d/runs", ec.Client.Config.OrgName, stackId, envId)
+	return fmt.Sprintf("/orgs/%s/stacks/%d/envs/%d/configuration", ec.Client.Config.OrgName, stackId, envId)
 }
 
 func (ec EnvConfigurations) Create(stackId, envId int64, file io.Reader) error {
