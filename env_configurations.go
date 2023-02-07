@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
+	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -17,13 +18,13 @@ func (ec EnvConfigurations) basePath(stackId, envId int64) string {
 	return fmt.Sprintf("/orgs/%s/stacks/%d/envs/%d/configuration", ec.Client.Config.OrgName, stackId, envId)
 }
 
-func (ec EnvConfigurations) Create(stackId, envId int64, file io.Reader) error {
+func (ec EnvConfigurations) Create(stackId, envId int64, file io.Reader) ([]types.Run, error) {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
 	part, err := writer.CreateFormFile("configuration", "previews.yaml")
 	if err != nil {
-		return err
+		return nil, err
 	}
 	_, err = io.Copy(part, file)
 	writer.Close()
@@ -33,8 +34,14 @@ func (ec EnvConfigurations) Create(stackId, envId int64, file io.Reader) error {
 	}
 	res, err := ec.Client.Do(http.MethodPost, ec.basePath(stackId, envId), nil, headers, body)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	return response.Verify(res)
+	var runs []types.Run
+	if err := response.ReadJson(res, &runs); response.IsNotFoundError(err) {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return runs, nil
 }
