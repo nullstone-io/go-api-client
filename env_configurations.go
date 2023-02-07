@@ -20,13 +20,13 @@ func (ec EnvConfigurations) basePath(stackId, envId int64) string {
 func (ec EnvConfigurations) Create(stackId, envId int64, file io.Reader) error {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
-	defer writer.Close()
 
 	part, err := writer.CreateFormFile("configuration", "previews.yaml")
 	if err != nil {
 		return err
 	}
 	_, err = io.Copy(part, file)
+	writer.Close()
 
 	headers := map[string]string{
 		"Content-Type": writer.FormDataContentType(),
