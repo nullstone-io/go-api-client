@@ -18,7 +18,7 @@ func (ec EnvConfigurations) basePath(stackId, envId int64) string {
 	return fmt.Sprintf("/orgs/%s/stacks/%d/envs/%d/configuration", ec.Client.Config.OrgName, stackId, envId)
 }
 
-func (ec EnvConfigurations) Create(stackId, envId int64, file io.Reader) ([]types.Run, error) {
+func (ec EnvConfigurations) Create(stackId, envId int64, file io.Reader) ([]types.Workspace, error) {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
@@ -37,11 +37,11 @@ func (ec EnvConfigurations) Create(stackId, envId int64, file io.Reader) ([]type
 		return nil, err
 	}
 
-	var runs []types.Run
-	if err := response.ReadJson(res, &runs); response.IsNotFoundError(err) {
+	var workspaces []types.Workspace
+	if err := response.ReadJson(res, &workspaces); response.IsNotFoundError(err) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
 	}
-	return runs, nil
+	return workspaces, nil
 }
