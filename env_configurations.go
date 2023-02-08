@@ -37,11 +37,5 @@ func (ec EnvConfigurations) Create(stackId, envId int64, file io.Reader) ([]type
 		return nil, err
 	}
 
-	var workspaces []types.Workspace
-	if err := response.ReadJson(res, &workspaces); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return workspaces, nil
+	return response.ReadJsonVal[[]types.Workspace](res)
 }
