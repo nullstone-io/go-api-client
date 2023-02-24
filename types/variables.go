@@ -20,6 +20,10 @@ type Variable struct {
 	Unused bool `json:"unused"`
 }
 
+func (v Variable) HasValue() bool {
+	return v.Value != nil && !v.Unused
+}
+
 type VariableInput struct {
 	Key   string `json:"key"`
 	Value string `json:"value"`
