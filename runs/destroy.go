@@ -6,7 +6,7 @@ import (
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 )
 
-func Destroy(cfg api.Config, stackId, appId, envId int64, deps string, approve bool) (*types.Run, error) {
+func Destroy(cfg api.Config, stackId, appId, envId int64, commitSha *string, deps string, approve bool) (*types.Run, error) {
 	client := api.Client{Config: cfg}
 	workspace, err := client.Workspaces().Get(stackId, appId, envId)
 	if err != nil {
@@ -19,5 +19,5 @@ func Destroy(cfg api.Config, stackId, appId, envId int64, deps string, approve b
 	if approve {
 		isApproved = &approve
 	}
-	return Create(cfg, *workspace, isApproved, true, deps)
+	return Create(cfg, *workspace, commitSha, isApproved, true, deps)
 }
