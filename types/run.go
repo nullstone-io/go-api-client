@@ -38,6 +38,7 @@ func IsTerminalRunStatus(runStatus string) bool {
 type Run struct {
 	UidCreatedModel
 	WorkspaceUid uuid.UUID `json:"workspaceUid"`
+	CommitSha    *string   `json:"commitSha"`
 
 	// IsDestroy determines whether to run a destroy plan instead of an apply plan
 	IsDestroy bool `json:"isDestroy"`
