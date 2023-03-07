@@ -1,7 +1,7 @@
 package types
 
 type CreateRunInput struct {
-	CommitSha *string `json:"commitSha"`
+	CommitSha string `json:"commitSha"`
 
 	// Create a run that destroys this workspace
 	IsDestroy bool `json:"isDestroy"`

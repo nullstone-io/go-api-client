@@ -6,7 +6,7 @@ import (
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 )
 
-func Launch(cfg api.Config, stackId, appId, envId int64, commitSha *string, approve bool) (*types.Run, error) {
+func Launch(cfg api.Config, stackId, appId, envId int64, commitSha string, approve bool) (*types.Run, error) {
 	client := api.Client{Config: cfg}
 	workspace, err := client.Workspaces().Get(stackId, appId, envId)
 	if err != nil {
