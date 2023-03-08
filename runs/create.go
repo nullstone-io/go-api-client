@@ -6,8 +6,9 @@ import (
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 )
 
-func Create(cfg api.Config, workspace types.Workspace, isApproved *bool, isDestroy bool, destroyDeps string) (*types.Run, error) {
+func Create(cfg api.Config, workspace types.Workspace, commitSha string, isApproved *bool, isDestroy bool, destroyDeps string) (*types.Run, error) {
 	input := types.CreateRunInput{
+		CommitSha:           commitSha,
 		IsDestroy:           isDestroy,
 		DestroyDependencies: destroyDeps,
 		IsApproved:          isApproved,
