@@ -18,7 +18,7 @@ func (ec EnvConfigurations) basePath(stackId, envId int64) string {
 	return fmt.Sprintf("/orgs/%s/stacks/%d/envs/%d/configuration", ec.Client.Config.OrgName, stackId, envId)
 }
 
-func (ec EnvConfigurations) Create(stackId, envId int64, configReader, overridesReader *io.Reader) ([]types.Workspace, error) {
+func (ec EnvConfigurations) Create(stackId, envId int64, configReader, overridesReader io.Reader) ([]types.Workspace, error) {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
@@ -27,14 +27,14 @@ func (ec EnvConfigurations) Create(stackId, envId int64, configReader, overrides
 		if err != nil {
 			return nil, err
 		}
-		_, err = io.Copy(part, *configReader)
+		_, err = io.Copy(part, configReader)
 	}
 	if overridesReader != nil {
 		part, err := writer.CreateFormFile("overrides", "previews.yml")
 		if err != nil {
 			return nil, err
 		}
-		_, err = io.Copy(part, *overridesReader)
+		_, err = io.Copy(part, overridesReader)
 	}
 	writer.Close()
 
