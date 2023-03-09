@@ -22,7 +22,7 @@ func (ec EnvConfigurations) Create(stackId, envId int64, file io.Reader) ([]type
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
-	part, err := writer.CreateFormFile("configuration", "previews.yml")
+	part, err := writer.CreateFormFile("overrides", "previews.yml")
 	if err != nil {
 		return nil, err
 	}
