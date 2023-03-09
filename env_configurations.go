@@ -8,6 +8,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"strings"
 )
 
 type EnvConfigurations struct {
@@ -18,22 +19,24 @@ func (ec EnvConfigurations) basePath(stackId, envId int64) string {
 	return fmt.Sprintf("/orgs/%s/stacks/%d/envs/%d/configuration", ec.Client.Config.OrgName, stackId, envId)
 }
 
-func (ec EnvConfigurations) Create(stackId, envId int64, configReader, overridesReader io.Reader) ([]types.Workspace, error) {
+func (ec EnvConfigurations) Create(stackId, envId int64, config, overrides string) ([]types.Workspace, error) {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
-	if configReader != nil {
+	if config != "" {
 		part, err := writer.CreateFormFile("config", "config.yml")
 		if err != nil {
 			return nil, err
 		}
+		configReader := strings.NewReader(config)
 		_, err = io.Copy(part, configReader)
 	}
-	if overridesReader != nil {
+	if overrides != "" {
 		part, err := writer.CreateFormFile("overrides", "previews.yml")
 		if err != nil {
 			return nil, err
 		}
+		overridesReader := strings.NewReader(overrides)
 		_, err = io.Copy(part, overridesReader)
 	}
 	writer.Close()
