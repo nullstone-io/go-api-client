@@ -8,6 +8,7 @@ import (
 	"io"
 	"mime/multipart"
 	"net/http"
+	"strings"
 )
 
 type EnvConfigurations struct {
@@ -18,15 +19,32 @@ func (ec EnvConfigurations) basePath(stackId, envId int64) string {
 	return fmt.Sprintf("/orgs/%s/stacks/%d/envs/%d/configuration", ec.Client.Config.OrgName, stackId, envId)
 }
 
-func (ec EnvConfigurations) Create(stackId, envId int64, file io.Reader) ([]types.Workspace, error) {
+func (ec EnvConfigurations) Create(stackId, envId int64, config, overrides string) ([]types.Workspace, error) {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
-	part, err := writer.CreateFormFile("configuration", "previews.yml")
-	if err != nil {
-		return nil, err
+	if config != "" {
+		part, err := writer.CreateFormFile("config", "config.yml")
+		if err != nil {
+			return nil, fmt.Errorf("unable to create form file: %w", err)
+		}
+		configReader := strings.NewReader(config)
+		_, err = io.Copy(part, configReader)
+		if err != nil {
+			return nil, fmt.Errorf("unable to copy file contents into form file: %w", err)
+		}
 	}
-	_, err = io.Copy(part, file)
+	if overrides != "" {
+		part, err := writer.CreateFormFile("overrides", "previews.yml")
+		if err != nil {
+			return nil, fmt.Errorf("unable to create form file: %w", err)
+		}
+		overridesReader := strings.NewReader(overrides)
+		_, err = io.Copy(part, overridesReader)
+		if err != nil {
+			return nil, fmt.Errorf("unable to copy file contents into form file: %w", err)
+		}
+	}
 	writer.Close()
 
 	headers := map[string]string{
