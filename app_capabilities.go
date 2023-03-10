@@ -78,6 +78,26 @@ func (e AppCapabilities) Create(stackId, appId, envId int64, capabilities []*typ
 	return createdCaps, nil
 }
 
+func (e AppCapabilities) Replace(stackId, appId, envId int64, capabilities []*types.Capability, blocks []*types.Block) ([]*types.Capability, error) {
+	input := CreateCapabilitiesInput{
+		Capabilities: capabilities,
+		Blocks:       blocks,
+	}
+	rawPayload, _ := json.Marshal(input)
+	res, err := e.Client.Do(http.MethodPut, e.basePath(stackId, appId, envId), nil, nil, json.RawMessage(rawPayload))
+	if err != nil {
+		return nil, err
+	}
+
+	var caps []*types.Capability
+	if err := response.ReadJson(res, &caps); response.IsNotFoundError(err) {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return caps, nil
+}
+
 // Update - PUT/PATCH /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities/:id
 func (e AppCapabilities) Update(stackId, appId, envId, capId int64, capability *types.Capability) (*types.Capability, error) {
 	rawPayload, _ := json.Marshal(capability)
