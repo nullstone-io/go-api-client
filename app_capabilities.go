@@ -32,13 +32,7 @@ func (e AppCapabilities) List(stackId, appId, envId int64) ([]types.Capability, 
 		return nil, err
 	}
 
-	var appCaps []types.Capability
-	if err := response.ReadJson(res, &appCaps); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return appCaps, nil
+	return response.ReadJsonVal[[]types.Capability](res)
 }
 
 // Get - GET /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities/:id
@@ -48,13 +42,7 @@ func (e AppCapabilities) Get(stackId, appId, envId, capId int64) (*types.Capabil
 		return nil, err
 	}
 
-	var appCap types.Capability
-	if err := response.ReadJson(res, &appCap); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &appCap, nil
+	return response.ReadJsonVal[*types.Capability](res)
 }
 
 // Create - POST /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities
@@ -69,15 +57,10 @@ func (e AppCapabilities) Create(stackId, appId, envId int64, capabilities []*typ
 		return nil, err
 	}
 
-	var createdCaps []*types.Capability
-	if err := response.ReadJson(res, &createdCaps); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return createdCaps, nil
+	return response.ReadJsonVal[[]*types.Capability](res)
 }
 
+// Replace - PUT /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities
 func (e AppCapabilities) Replace(stackId, appId, envId int64, capabilities []*types.Capability, blocks []*types.Block) ([]*types.Capability, error) {
 	input := CreateCapabilitiesInput{
 		Capabilities: capabilities,
@@ -89,13 +72,7 @@ func (e AppCapabilities) Replace(stackId, appId, envId int64, capabilities []*ty
 		return nil, err
 	}
 
-	var caps []*types.Capability
-	if err := response.ReadJson(res, &caps); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return caps, nil
+	return response.ReadJsonVal[[]*types.Capability](res)
 }
 
 // Update - PUT/PATCH /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities/:id
@@ -106,13 +83,7 @@ func (e AppCapabilities) Update(stackId, appId, envId, capId int64, capability *
 		return nil, err
 	}
 
-	var updatedCap types.Capability
-	if err := response.ReadJson(res, &updatedCap); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &updatedCap, nil
+	return response.ReadJsonVal[*types.Capability](res)
 }
 
 // Destroy - DELETE /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities/:id

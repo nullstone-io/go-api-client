@@ -26,18 +26,24 @@ func (ec EnvConfigurations) Create(stackId, envId int64, config, overrides strin
 	if config != "" {
 		part, err := writer.CreateFormFile("config", "config.yml")
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("unable to create form file: %w", err)
 		}
 		configReader := strings.NewReader(config)
 		_, err = io.Copy(part, configReader)
+		if err != nil {
+			return nil, fmt.Errorf("unable to copy file contents into form file: %w", err)
+		}
 	}
 	if overrides != "" {
 		part, err := writer.CreateFormFile("overrides", "previews.yml")
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("unable to create form file: %w", err)
 		}
 		overridesReader := strings.NewReader(overrides)
 		_, err = io.Copy(part, overridesReader)
+		if err != nil {
+			return nil, fmt.Errorf("unable to copy file contents into form file: %w", err)
+		}
 	}
 	writer.Close()
 
