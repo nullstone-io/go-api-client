@@ -34,7 +34,17 @@ func (e AppCapabilities) capPath(stackId, appId, capId int64) string {
 }
 
 // List - GET /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities
-func (e AppCapabilities) List(stackId, appId, envId int64) ([]types.Capability, error) {
+func (e AppCapabilities) List(stackId, appId int64) ([]types.Capability, error) {
+	res, err := e.Client.Do(http.MethodGet, e.basePath(stackId, appId), nil, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return response.ReadJsonVal[[]types.Capability](res)
+}
+
+// ListForEnv - GET /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities
+func (e AppCapabilities) ListForEnv(stackId, appId, envId int64) ([]types.Capability, error) {
 	res, err := e.Client.Do(http.MethodGet, e.baseEnvPath(stackId, appId, envId), nil, nil, nil)
 	if err != nil {
 		return nil, err
