@@ -37,7 +37,7 @@ func (e AppPipelineCapabilities) Get(stackId, appId, capId int64) (*types.Capabi
 		return nil, err
 	}
 
-	return response.ReadJsonVal[*types.Capability](res)
+	return response.ReadJsonPtr[types.Capability](res)
 }
 
 // Create - POST /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities
@@ -78,7 +78,7 @@ func (e AppPipelineCapabilities) Update(stackId, appId, capId int64, capability 
 		return nil, err
 	}
 
-	return response.ReadJsonVal[*types.Capability](res)
+	return response.ReadJsonPtr[types.Capability](res)
 }
 
 // Destroy - DELETE /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities/:id
