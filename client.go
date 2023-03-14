@@ -78,6 +78,10 @@ func (c *Client) AppCapabilities() AppCapabilities {
 	return AppCapabilities{Client: c}
 }
 
+func (c *Client) AppPipelineCapabilities() AppPipelineCapabilities {
+	return AppPipelineCapabilities{Client: c}
+}
+
 func (c *Client) AppEnvs() AppEnvs {
 	return AppEnvs{Client: c}
 }
