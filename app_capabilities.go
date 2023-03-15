@@ -13,8 +13,8 @@ type AppCapabilities struct {
 }
 
 type CreateCapabilitiesInput struct {
-	Capabilities []*types.Capability `json:"capabilities"`
-	Blocks       []*types.Block      `json:"blocks"`
+	Capabilities []types.Capability `json:"capabilities"`
+	Blocks       []types.Block      `json:"blocks"`
 }
 
 func (e AppCapabilities) basePath(stackId, appId, envId int64) string {
@@ -46,7 +46,7 @@ func (e AppCapabilities) Get(stackId, appId, envId, capId int64) (*types.Capabil
 }
 
 // Create - POST /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities
-func (e AppCapabilities) Create(stackId, appId, envId int64, capabilities []*types.Capability, blocks []*types.Block) ([]*types.Capability, error) {
+func (e AppCapabilities) Create(stackId, appId, envId int64, capabilities []types.Capability, blocks []types.Block) ([]types.Capability, error) {
 	input := CreateCapabilitiesInput{
 		Capabilities: capabilities,
 		Blocks:       blocks,
@@ -57,11 +57,11 @@ func (e AppCapabilities) Create(stackId, appId, envId int64, capabilities []*typ
 		return nil, err
 	}
 
-	return response.ReadJsonVal[[]*types.Capability](res)
+	return response.ReadJsonVal[[]types.Capability](res)
 }
 
 // Replace - PUT /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities
-func (e AppCapabilities) Replace(stackId, appId, envId int64, capabilities []*types.Capability, blocks []*types.Block) ([]*types.Capability, error) {
+func (e AppCapabilities) Replace(stackId, appId, envId int64, capabilities []types.Capability, blocks []types.Block) ([]types.Capability, error) {
 	input := CreateCapabilitiesInput{
 		Capabilities: capabilities,
 		Blocks:       blocks,
@@ -72,7 +72,7 @@ func (e AppCapabilities) Replace(stackId, appId, envId int64, capabilities []*ty
 		return nil, err
 	}
 
-	return response.ReadJsonVal[[]*types.Capability](res)
+	return response.ReadJsonVal[[]types.Capability](res)
 }
 
 // Update - PUT/PATCH /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities/:id

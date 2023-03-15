@@ -41,7 +41,7 @@ func (e AppPipelineCapabilities) Get(stackId, appId, capId int64) (*types.Capabi
 }
 
 // Create - POST /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities
-func (e AppPipelineCapabilities) Create(stackId, appId int64, capabilities []*types.Capability, blocks []*types.Block) ([]*types.Capability, error) {
+func (e AppPipelineCapabilities) Create(stackId, appId int64, capabilities []types.Capability, blocks []types.Block) ([]types.Capability, error) {
 	input := CreateCapabilitiesInput{
 		Capabilities: capabilities,
 		Blocks:       blocks,
@@ -52,11 +52,11 @@ func (e AppPipelineCapabilities) Create(stackId, appId int64, capabilities []*ty
 		return nil, err
 	}
 
-	return response.ReadJsonVal[[]*types.Capability](res)
+	return response.ReadJsonVal[[]types.Capability](res)
 }
 
 // Replace - PUT /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities
-func (e AppPipelineCapabilities) Replace(stackId, appId int64, capabilities []*types.Capability, blocks []*types.Block) ([]*types.Capability, error) {
+func (e AppPipelineCapabilities) Replace(stackId, appId int64, capabilities []types.Capability, blocks []types.Block) ([]types.Capability, error) {
 	input := CreateCapabilitiesInput{
 		Capabilities: capabilities,
 		Blocks:       blocks,
@@ -67,7 +67,7 @@ func (e AppPipelineCapabilities) Replace(stackId, appId int64, capabilities []*t
 		return nil, err
 	}
 
-	return response.ReadJsonVal[[]*types.Capability](res)
+	return response.ReadJsonVal[[]types.Capability](res)
 }
 
 // Update - PUT/PATCH /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities/:id
