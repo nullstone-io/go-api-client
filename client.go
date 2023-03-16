@@ -186,8 +186,10 @@ func (c *Client) Do(method string, relativePath string, query url.Values, header
 	}
 
 	res, err := httpClient.Do(req)
-	log.Printf("response: %+v\n", res)
-	log.Printf("error: %+v\n", err)
+	if err != nil {
+		log.Printf("response: %+v\n", res)
+		log.Printf("error: %+v\n", err)
+	}
 	return res, err
 }
 
