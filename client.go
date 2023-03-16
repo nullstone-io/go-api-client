@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"log"
 	"net/http"
 	"net/url"
 )
@@ -183,7 +184,11 @@ func (c *Client) Do(method string, relativePath string, query url.Values, header
 	httpClient := &http.Client{
 		Transport: c.Config.CreateTransport(http.DefaultTransport),
 	}
-	return httpClient.Do(req)
+
+	res, err := httpClient.Do(req)
+	log.Printf("response: %+v\n", res)
+	log.Printf("error: %+v\n", err)
+	return res, err
 }
 
 func (c *Client) CreateRequest(method string, relativePath string, query url.Values, body io.Reader) (*http.Request, error) {
