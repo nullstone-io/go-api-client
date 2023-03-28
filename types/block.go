@@ -16,9 +16,9 @@ type Block struct {
 
 type Blocks []Block
 
-func (b *Blocks) Find(orgName string, stackId, blockId int64) *Block {
+func (b *Blocks) Find(stackId, blockId int64) *Block {
 	for _, block := range *b {
-		if block.OrgName == orgName && block.StackId == stackId && block.Id == blockId {
+		if block.StackId == stackId && block.Id == blockId {
 			return &block
 		}
 	}
