@@ -13,3 +13,14 @@ type Block struct {
 	ModuleSourceVersion string                      `json:"moduleSourceVersion"`
 	Connections         map[string]ConnectionTarget `json:"connections"`
 }
+
+type Blocks []Block
+
+func (b *Blocks) Find(orgName string, stackId, blockId int64) *Block {
+	for _, block := range *b {
+		if block.OrgName == orgName && block.StackId == stackId && block.Id == blockId {
+			return &block
+		}
+	}
+	return nil
+}
