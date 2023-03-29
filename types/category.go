@@ -8,14 +8,15 @@ type Category struct {
 type CategoryName string
 
 const (
-	CategoryApp        CategoryName = "app"
-	CategoryCapability CategoryName = "capability"
-	CategoryDatastore  CategoryName = "datastore"
-	CategorySubdomain  CategoryName = "subdomain"
-	CategoryDomain     CategoryName = "domain"
-	CategoryCluster    CategoryName = "cluster"
-	CategoryNetwork    CategoryName = "network"
-	CategoryBlock      CategoryName = "block"
+	CategoryApp              CategoryName = "app"
+	CategoryCapability       CategoryName = "capability"
+	CategoryDatastore        CategoryName = "datastore"
+	CategorySubdomain        CategoryName = "subdomain"
+	CategoryDomain           CategoryName = "domain"
+	CategoryCluster          CategoryName = "cluster"
+	CategoryClusterNamespace CategoryName = "cluster-namespace"
+	CategoryNetwork          CategoryName = "network"
+	CategoryBlock            CategoryName = "block"
 )
 
 var AllCategoryNames = []string{
@@ -24,6 +25,7 @@ var AllCategoryNames = []string{
 	"datastore",
 	"subdomain",
 	"domain",
+	"cluster-namespace",
 	"cluster",
 	"network",
 	"block",
