@@ -8,7 +8,7 @@ type Block struct {
 	Reference           string                      `json:"reference"`
 	Name                string                      `json:"name"`
 	IsShared            bool                        `json:"isShared"`
-	DnsName             string                      `json:"dnsName"`
+	DnsName             string                      `json:"dnsName,omitempty"`
 	ModuleSource        string                      `json:"moduleSource"`
 	ModuleSourceVersion string                      `json:"moduleSourceVersion"`
 	Connections         map[string]ConnectionTarget `json:"connections"`
