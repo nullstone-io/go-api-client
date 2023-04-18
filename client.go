@@ -158,6 +158,10 @@ func (c *Client) ModuleVersions() ModuleVersions {
 	return ModuleVersions{Client: c}
 }
 
+func (c *Client) Events() Events {
+	return Events{Client: c}
+}
+
 func (c *Client) Do(method string, relativePath string, query url.Values, headers map[string]string, body interface{}) (*http.Response, error) {
 	var bodyReader io.Reader
 	if jrm, ok := body.(json.RawMessage); ok {
