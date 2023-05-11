@@ -54,13 +54,16 @@ func (t ConnectionTarget) Match(other ConnectionTarget) bool {
 	if t.StackId != other.StackId {
 		return false
 	}
-	if t.EnvId != other.EnvId {
+	if t.BlockId != other.BlockId {
 		return false
 	}
-	if t.BlockId == 0 || other.BlockId == 0 {
-		return t.BlockName == other.BlockName
+	if t.EnvId == nil {
+		return other.EnvId == nil
 	}
-	return t.BlockId == other.BlockId
+	if other.EnvId == nil {
+		return false
+	}
+	return *t.EnvId == *other.EnvId
 }
 
 func (t ConnectionTarget) Workspace() WorkspaceTarget {
