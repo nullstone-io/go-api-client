@@ -1,6 +1,8 @@
 package types
 
-import "strings"
+import (
+	"strings"
+)
 
 type ConnectionTarget struct {
 	StackId   int64  `json:"stackId,omitempty"`
@@ -59,4 +61,15 @@ func (t ConnectionTarget) Match(other ConnectionTarget) bool {
 		return t.BlockName == other.BlockName
 	}
 	return t.BlockId == other.BlockId
+}
+
+func (t ConnectionTarget) Workspace() WorkspaceTarget {
+	wt := WorkspaceTarget{
+		StackId: t.StackId,
+		BlockId: t.BlockId,
+	}
+	if t.EnvId != nil {
+		wt.EnvId = *t.EnvId
+	}
+	return wt
 }
