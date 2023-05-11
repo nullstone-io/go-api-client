@@ -16,9 +16,21 @@ type Block struct {
 
 type Blocks []Block
 
-func (b *Blocks) Find(stackId, blockId int64) *Block {
-	for _, block := range *b {
+func (s Blocks) Find(stackId, blockId int64) *Block {
+	for _, block := range s {
 		if block.StackId == stackId && block.Id == blockId {
+			return &block
+		}
+	}
+	return nil
+}
+
+func (s Blocks) FindByName(name string) *Block {
+	if name == "" {
+		return nil
+	}
+	for _, block := range s {
+		if block.Name == name {
 			return &block
 		}
 	}
