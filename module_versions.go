@@ -16,16 +16,28 @@ type ModuleVersions struct {
 	Client *Client
 }
 
-func (mv ModuleVersions) path(moduleName string) string {
+func (mv ModuleVersions) basePath(moduleName string) string {
 	return fmt.Sprintf("orgs/%s/modules/%s/versions", mv.Client.Config.OrgName, moduleName)
+}
+
+func (mv ModuleVersions) path(moduleName, version string) string {
+	return fmt.Sprintf("orgs/%s/modules/%s/versions/%s", mv.Client.Config.OrgName, moduleName, version)
 }
 
 func (mv ModuleVersions) downloadPath(moduleName, versionName string) string {
 	return fmt.Sprintf("orgs/%s/modules/%s/versions/%s/download", mv.Client.Config.OrgName, moduleName, versionName)
 }
 
+func (mv ModuleVersions) Get(moduleName string, version string) (*types.ModuleVersion, error) {
+	res, err := mv.Client.Do(http.MethodGet, mv.path(moduleName, version), nil, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	return response.ReadJsonPtr[types.ModuleVersion](res)
+}
+
 func (mv ModuleVersions) List(moduleName string) ([]types.ModuleVersion, error) {
-	res, err := mv.Client.Do(http.MethodGet, mv.path(moduleName), nil, nil, nil)
+	res, err := mv.Client.Do(http.MethodGet, mv.basePath(moduleName), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -102,7 +114,7 @@ func (mv ModuleVersions) Create(moduleName string, versionName string, file io.R
 
 	var headers = map[string]string{}
 	headers["Content-Type"] = writer.FormDataContentType()
-	res, err := mv.Client.Do(http.MethodPost, mv.path(moduleName), query, headers, body)
+	res, err := mv.Client.Do(http.MethodPost, mv.basePath(moduleName), query, headers, body)
 	if err != nil {
 		return err
 	}
