@@ -52,6 +52,8 @@ func (cn ModuleContractName) String() string {
 	return fmt.Sprintf("%s/%s/%s", fullCategory, cn.Provider, fullPlatform)
 }
 
+// Match performs a match of one module contract to another
+// Typically, a connection or module (`other`) is validated to follow the contract (`cn`)
 func (cn ModuleContractName) Match(other ModuleContractName) bool {
 	// if the provider is a set of providers, we will check to see if ANY of the providers match
 	// if so, we will set the other.provider to * so that the matchContractPart below will always match
