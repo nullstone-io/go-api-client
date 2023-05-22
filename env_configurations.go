@@ -2,10 +2,12 @@ package api
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"io"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"strings"
@@ -52,6 +54,16 @@ func (ec EnvConfigurations) Create(stackId, envId int64, config, overrides strin
 	}
 	res, err := ec.Client.Do(http.MethodPost, ec.basePath(stackId, envId), nil, headers, body)
 	if err != nil {
+		if res.StatusCode == http.StatusUnprocessableEntity {
+			var verr response.InvalidRequestError
+			strerr := fmt.Sprintf("%s", err)
+			log.Printf("string error: %s\n", strerr)
+			jsonerr := json.Unmarshal([]byte(strerr), &verr)
+			if jsonerr != nil {
+				return nil, jsonerr
+			}
+			return nil, &verr
+		}
 		return nil, err
 	}
 
