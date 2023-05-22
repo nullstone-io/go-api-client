@@ -54,6 +54,7 @@ func (ec EnvConfigurations) Create(stackId, envId int64, config, overrides strin
 	}
 	res, err := ec.Client.Do(http.MethodPost, ec.basePath(stackId, envId), nil, headers, body)
 	if err != nil {
+		log.Printf("status_code: %d, expected: %d\n", res.StatusCode, http.StatusUnprocessableEntity)
 		if res.StatusCode == http.StatusUnprocessableEntity {
 			var verr response.InvalidRequestError
 			strerr := fmt.Sprintf("%s", err)
