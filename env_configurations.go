@@ -2,7 +2,6 @@ package api
 
 import (
 	"bytes"
-	"encoding/json"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
@@ -53,19 +52,7 @@ func (ec EnvConfigurations) Create(stackId, envId int64, config, overrides strin
 	}
 	res, err := ec.Client.Do(http.MethodPost, ec.basePath(stackId, envId), nil, headers, body)
 	if err != nil {
-		if res.StatusCode == http.StatusUnprocessableEntity {
-			var verr response.InvalidRequestError
-			resBody, err := io.ReadAll(res.Body)
-			if err != nil {
-				return nil, err
-			}
-			jsonerr := json.Unmarshal([]byte(resBody), &verr)
-			if jsonerr != nil {
-				return nil, jsonerr
-			}
-			return nil, &verr
-		}
-		return nil, fmt.Errorf("status_code: %d, expected: %d, %w", res.StatusCode, http.StatusUnprocessableEntity, err)
+		return nil, err
 	}
 
 	return response.ReadJsonVal[[]types.Workspace](res)
