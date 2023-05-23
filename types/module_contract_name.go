@@ -52,7 +52,28 @@ func (cn ModuleContractName) String() string {
 	return fmt.Sprintf("%s/%s/%s", fullCategory, cn.Provider, fullPlatform)
 }
 
+// Match performs a match of one module contract to another
+// Typically, a connection or module (`other`) is validated to follow the contract (`cn`)
 func (cn ModuleContractName) Match(other ModuleContractName) bool {
+	// if the provider is a set of providers, we will check to see if ANY of the providers match
+	// if so, we will set the other.provider to * so that the matchContractPart below will always match
+	// this is essentially moving the provider check here
+	if cn.Provider == "*" {
+		// if the source is *, set the "other" to * so that it will always matchContractPart below
+		other.Provider = "*"
+	} else {
+		// if ANY of the providers from "other" match the source, set the "other" to * so that it will always matchContractPart below
+		pts := strings.Split(other.Provider, ",")
+		if len(pts) > 1 {
+			for _, pt := range pts {
+				if pt == cn.Provider {
+					other.Provider = "*"
+					break
+				}
+			}
+		}
+	}
+
 	return matchContractPart(cn.Category, other.Category, false) &&
 		matchContractPart(cn.Subcategory, other.Subcategory, true) &&
 		matchContractPart(cn.Provider, other.Provider, false) &&
