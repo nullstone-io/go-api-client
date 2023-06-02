@@ -17,5 +17,5 @@ type Environment struct {
 	StackId        int64           `json:"stackId"`
 	ProviderConfig ProviderConfig  `json:"providerConfig"`
 	PipelineOrder  *int            `json:"pipelineOrder"`
-	PullRequestId  *int            `json:"pullRequestId"`
+	PullRequestId  *int64          `json:"pullRequestId"`
 }
