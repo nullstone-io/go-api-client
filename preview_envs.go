@@ -9,7 +9,8 @@ import (
 )
 
 type CreatePreviewEnvInput struct {
-	Name string `json:"name"`
+	Name          string `json:"name"`
+	PullRequestId int    `json:"pullRequestId"`
 }
 
 type PreviewEnvs struct {
