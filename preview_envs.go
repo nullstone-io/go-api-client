@@ -8,9 +8,9 @@ import (
 	"net/http"
 )
 
-type PreviewEnvInput struct {
-	Name          string `json:"name"`
-	PullRequestId int64  `json:"pullRequestId"`
+type CreatePreviewEnvInput struct {
+	Name       string `json:"name"`
+	ContextKey string `json:"contextKey"`
 }
 
 type PreviewEnvs struct {
@@ -26,7 +26,7 @@ func (pe PreviewEnvs) envPath(stackId, envId int64) string {
 }
 
 // Create - POST /orgs/:orgName/stacks/:stack_id/preview_envs
-func (pe PreviewEnvs) Create(stackId int64, env *PreviewEnvInput) (*types.Environment, error) {
+func (pe PreviewEnvs) Create(stackId int64, env *CreatePreviewEnvInput) (*types.Environment, error) {
 	rawPayload, _ := json.Marshal(env)
 	res, err := pe.Client.Do(http.MethodPost, pe.basePath(stackId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
@@ -43,8 +43,8 @@ func (pe PreviewEnvs) Create(stackId int64, env *PreviewEnvInput) (*types.Enviro
 }
 
 // Update - PUT/PATCH /orgs/:orgName/stacks/:stack_id/preview_envs/:id
-func (pe PreviewEnvs) Update(stackId, envId int64, env *PreviewEnvInput) (*types.Environment, error) {
-	rawPayload, _ := json.Marshal(env)
+func (pe PreviewEnvs) Update(stackId, envId int64, name string) (*types.Environment, error) {
+	rawPayload, _ := json.Marshal(map[string]string{"name": name})
 	res, err := pe.Client.Do(http.MethodPut, pe.envPath(stackId, envId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
