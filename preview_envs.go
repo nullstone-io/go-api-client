@@ -13,6 +13,10 @@ type CreatePreviewEnvInput struct {
 	ContextKey string `json:"contextKey"`
 }
 
+type UpdatePreviewEnvInput struct {
+	Name *string `json:"name,omitempty"`
+}
+
 type PreviewEnvs struct {
 	Client *Client
 }
@@ -43,8 +47,8 @@ func (pe PreviewEnvs) Create(stackId int64, env *CreatePreviewEnvInput) (*types.
 }
 
 // Update - PUT/PATCH /orgs/:orgName/stacks/:stack_id/preview_envs/:id
-func (pe PreviewEnvs) Update(stackId, envId int64, name string) (*types.Environment, error) {
-	rawPayload, _ := json.Marshal(map[string]string{"name": name})
+func (pe PreviewEnvs) Update(stackId, envId int64, env *UpdatePreviewEnvInput) (*types.Environment, error) {
+	rawPayload, _ := json.Marshal(env)
 	res, err := pe.Client.Do(http.MethodPut, pe.envPath(stackId, envId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
