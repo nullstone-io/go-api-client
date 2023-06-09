@@ -8,11 +8,13 @@ import (
 	"net/http"
 )
 
+// when creating a preview environment, we must have a name
 type CreatePreviewEnvInput struct {
-	Name       string `json:"name"`
-	ContextKey string `json:"contextKey"`
+	Name string `json:"name"`
 }
 
+// when updating, we don't have to pass a name
+// if you don't pass any fields, the api will simply make sure the preview environment is active
 type UpdatePreviewEnvInput struct {
 	Name *string `json:"name,omitempty"`
 }
