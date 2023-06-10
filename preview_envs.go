@@ -39,13 +39,7 @@ func (pe PreviewEnvs) Create(stackId int64, env *CreatePreviewEnvInput) (*types.
 		return nil, err
 	}
 
-	var updatedEnv types.Environment
-	if err := response.ReadJson(res, &updatedEnv); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &updatedEnv, nil
+	return response.ReadJsonPtr[types.Environment](res)
 }
 
 // Update - PUT/PATCH /orgs/:orgName/stacks/:stack_id/preview_envs/:id
@@ -56,11 +50,5 @@ func (pe PreviewEnvs) Update(stackId, envId int64, env *UpdatePreviewEnvInput) (
 		return nil, err
 	}
 
-	var updatedEnv types.Environment
-	if err := response.ReadJson(res, &updatedEnv); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &updatedEnv, nil
+	return response.ReadJsonPtr[types.Environment](res)
 }
