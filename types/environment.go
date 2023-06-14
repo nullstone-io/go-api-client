@@ -14,6 +14,7 @@ type Environment struct {
 	Name           string          `json:"name"`
 	OrgName        string          `json:"orgName"`
 	StackId        int64           `json:"stackId"`
+	Reference      string          `json:"reference"`
 	ProviderConfig ProviderConfig  `json:"providerConfig"`
 	PipelineOrder  *int            `json:"pipelineOrder,omitempty"`
 	ContextKey     string          `json:"contextKey"`
