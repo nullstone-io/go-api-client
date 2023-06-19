@@ -8,6 +8,13 @@ const (
 	EnvTypeGlobal   EnvironmentType = "GlobalEnv"
 )
 
+type EnvStatus string
+
+const (
+	EnvStatusActive   = "active"
+	EnvStatusArchived = "archived"
+)
+
 type Environment struct {
 	IdModel
 	Type           EnvironmentType `json:"type"`
@@ -18,4 +25,5 @@ type Environment struct {
 	ProviderConfig ProviderConfig  `json:"providerConfig"`
 	PipelineOrder  *int            `json:"pipelineOrder,omitempty"`
 	ContextKey     string          `json:"contextKey"`
+	Status         EnvStatus       `json:"status"`
 }
