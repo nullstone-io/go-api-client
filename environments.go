@@ -37,8 +37,12 @@ func (s Environments) List(stackId int64) ([]*types.Environment, error) {
 }
 
 // Get - GET /orgs/:orgName/stacks/:stack_id/envs/:id
-func (s Environments) Get(stackId, envId int64) (*types.Environment, error) {
-	res, err := s.Client.Do(http.MethodGet, s.envPath(stackId, envId), nil, nil, nil)
+func (s Environments) Get(stackId, envId int64, includeArchived bool) (*types.Environment, error) {
+	input := map[string]any{
+		"includeArchived": includeArchived,
+	}
+	raw, _ := json.Marshal(input)
+	res, err := s.Client.Do(http.MethodGet, s.envPath(stackId, envId), nil, nil, json.RawMessage(raw))
 	if err != nil {
 		return nil, err
 	}
