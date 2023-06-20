@@ -23,6 +23,16 @@ func (pe PreviewEnvs) envPath(stackId, envId int64) string {
 	return fmt.Sprintf("orgs/%s/stacks/%d/preview_envs/%d", pe.Client.Config.OrgName, stackId, envId)
 }
 
+// Get - GET /orgs/:orgName/stacks/:stack_id/preview_envs/:id
+func (pe PreviewEnvs) Get(stackId, envId int64) (*types.Environment, error) {
+	res, err := pe.Client.Do(http.MethodGet, pe.envPath(stackId, envId), nil, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return response.ReadJsonPtr[types.Environment](res)
+}
+
 // Update - PUT/PATCH /orgs/:orgName/stacks/:stack_id/preview_envs/:id
 func (pe PreviewEnvs) Update(stackId, envId int64, env *UpdatePreviewEnvInput) (*types.Environment, error) {
 	rawPayload, _ := json.Marshal(env)
