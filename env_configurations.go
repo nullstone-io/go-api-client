@@ -19,7 +19,7 @@ func (ec EnvConfigurations) basePath(stackId, envId int64) string {
 	return fmt.Sprintf("/orgs/%s/stacks/%d/envs/%d/configuration", ec.Client.Config.OrgName, stackId, envId)
 }
 
-func (ec EnvConfigurations) Create(stackId, envId int64, config, overrides string) (*types.WorkspaceStatuses, error) {
+func (ec EnvConfigurations) Create(stackId, envId int64, config, overrides string) ([]types.WorkspaceLaunchStatus, error) {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
@@ -55,5 +55,5 @@ func (ec EnvConfigurations) Create(stackId, envId int64, config, overrides strin
 		return nil, err
 	}
 
-	return response.ReadJsonPtr[types.WorkspaceStatuses](res)
+	return response.ReadJsonVal[[]types.WorkspaceLaunchStatus](res)
 }
