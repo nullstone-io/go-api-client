@@ -11,6 +11,11 @@ import (
 	"strings"
 )
 
+type WorkspaceStatuses struct {
+	NeedsLaunched []*types.Workspace `json:"needs_launched"`
+	Updated       []*types.Workspace `json:"updated"`
+}
+
 type EnvConfigurations struct {
 	Client *Client
 }
@@ -19,7 +24,7 @@ func (ec EnvConfigurations) basePath(stackId, envId int64) string {
 	return fmt.Sprintf("/orgs/%s/stacks/%d/envs/%d/configuration", ec.Client.Config.OrgName, stackId, envId)
 }
 
-func (ec EnvConfigurations) Create(stackId, envId int64, config, overrides string) ([]types.Workspace, error) {
+func (ec EnvConfigurations) Create(stackId, envId int64, config, overrides string) (*WorkspaceStatuses, error) {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
@@ -55,5 +60,5 @@ func (ec EnvConfigurations) Create(stackId, envId int64, config, overrides strin
 		return nil, err
 	}
 
-	return response.ReadJsonVal[[]types.Workspace](res)
+	return response.ReadJsonPtr[WorkspaceStatuses](res)
 }
