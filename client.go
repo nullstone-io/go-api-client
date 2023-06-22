@@ -188,7 +188,11 @@ func (c *Client) Do(method string, relativePath string, query url.Values, header
 		Transport: c.Config.CreateTransport(http.DefaultTransport),
 	}
 
-	return httpClient.Do(req)
+	res, err := httpClient.Do(req)
+	if err != nil {
+		return nil, fmt.Errorf("error issuing request: %w", err)
+	}
+	return res, nil
 }
 
 func (c *Client) CreateRequest(method string, relativePath string, query url.Values, body io.Reader) (*http.Request, error) {
