@@ -5,8 +5,6 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/nullstone-io/go-api-client.v0/auth"
-	"net/http"
-	"net/http/httptest"
 	"testing"
 )
 
@@ -51,36 +49,6 @@ func TestConfig_UseApiKey(t *testing.T) {
 			assert.Equal(t, test.want, got)
 		})
 	}
-}
-
-type deadendTransport struct {
-	outgoingHeaders http.Header
-}
-
-func (t *deadendTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	t.outgoingHeaders = req.Header
-	return nil, nil
-}
-
-func TestConfig_CreateTransport(t *testing.T) {
-	t.Run("no-api-key", func(t *testing.T) {
-		cfg := Config{BaseAddress: "http://localhost:12345"}
-		bt := &deadendTransport{}
-		transport := cfg.CreateTransport(bt)
-		_, err := transport.RoundTrip(httptest.NewRequest("GET", "/", nil))
-		require.NoError(t, err, "unexpected error")
-		assert.Equal(t, "", bt.outgoingHeaders.Get("Authorization"))
-	})
-
-	t.Run("has-api-key", func(t *testing.T) {
-		cfg := Config{BaseAddress: "http://localhost:12345"}
-		cfg.UseApiKey("abc123")
-		bt := &deadendTransport{}
-		transport := cfg.CreateTransport(bt)
-		_, err := transport.RoundTrip(httptest.NewRequest("GET", "/", nil))
-		require.NoError(t, err, "unexpected error")
-		assert.Equal(t, "Bearer abc123", bt.outgoingHeaders.Get("Authorization"))
-	})
 }
 
 func TestConfig_ConstructWsEndpoint(t *testing.T) {

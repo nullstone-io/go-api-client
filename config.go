@@ -66,21 +66,26 @@ func (c *Config) ConstructWsEndpoint(relativePath string) (string, http.Header, 
 	endpoint.Path = path.Join(endpoint.Path, relativePath)
 
 	headers := http.Header{}
-	if c.AccessTokenSource != nil {
-		accessToken, err := c.AccessTokenSource.GetAccessToken()
-		if err != nil {
-			return "", nil, fmt.Errorf("unable to retrieve access token to authenticate websocket request: %w", err)
-		}
-		headers.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
+	if err := c.AddAuthorizationHeader(headers); err != nil {
+		return "", nil, err
 	}
-
 	return endpoint.String(), headers, nil
 }
 
-func (c *Config) CreateTransport(baseTransport http.RoundTripper) http.RoundTripper {
-	bt := baseTransport
-	if c.IsTraceEnabled {
-		bt = &trace.HttpTransport{BaseTransport: bt}
+func (c *Config) AddAuthorizationHeader(headers http.Header) error {
+	if c.AccessTokenSource != nil {
+		accessToken, err := c.AccessTokenSource.GetAccessToken(c.OrgName)
+		if err != nil {
+			return fmt.Errorf("unable to retrieve access token to authenticate request: %w", err)
+		}
+		headers.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
 	}
-	return &auth.AccessTokenSourceTransport{BaseTransport: bt, AccessTokenSource: c.AccessTokenSource}
+	return nil
+}
+
+func (c *Config) CreateTransport(baseTransport http.RoundTripper) http.RoundTripper {
+	if c.IsTraceEnabled {
+		return &trace.HttpTransport{BaseTransport: baseTransport}
+	}
+	return baseTransport
 }

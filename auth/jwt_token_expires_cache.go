@@ -20,29 +20,35 @@ var (
 // A token is considered expired if `now() + ExpiresAtThreshold > Token.ExpiresAt`
 // If ExpiresAtThreshold = 0, will use default of 1s
 type JwtTokenExpiresCache struct {
-	AcquireFn          func() (string, error)
-	Raw                string
 	Token              *jwt.Token
 	StdClaims          *jwt.StandardClaims
 	ExpiresAtThreshold time.Duration
 	sync.Mutex
 }
 
-func (c *JwtTokenExpiresCache) Refresh() error {
+type AcquireFunc func() (*jwt.Token, error)
+
+func (c *JwtTokenExpiresCache) Refresh(acquireFn AcquireFunc) (*jwt.Token, error) {
 	c.Lock()
 	defer c.Unlock()
 
 	// Retrieve access token if we don't have one yet
 	if c.StdClaims == nil {
-		return c.retrieve()
+		if err := c.retrieve(acquireFn); err != nil {
+			return nil, err
+		}
+		return c.Token, nil
 	}
 	// Retrieve access token if the token expired or is close to expiring
 	if c.isExpired() {
-		return c.retrieve()
+		if err := c.retrieve(acquireFn); err != nil {
+			return nil, err
+		}
+		return c.Token, nil
 	}
 
 	// We already have a valid token
-	return nil
+	return c.Token, nil
 }
 
 func (c *JwtTokenExpiresCache) isExpired() bool {
@@ -54,21 +60,15 @@ func (c *JwtTokenExpiresCache) isExpired() bool {
 	return time.Now().Add(threshold).After(expiresAt)
 }
 
-func (c *JwtTokenExpiresCache) retrieve() error {
+func (c *JwtTokenExpiresCache) retrieve(acquireFn AcquireFunc) error {
 	var err error
-	c.Raw, err = c.AcquireFn()
+	c.Token, err = acquireFn()
 	if err != nil {
 		return err
-	}
-	c.Token, err = jwt.ParseString(c.Raw)
-	if err != nil {
-		c.Raw = ""
-		return fmt.Errorf("error parsing jwt access token: %w", err)
 	}
 
 	var stdClaims jwt.StandardClaims
 	if err := json.Unmarshal(c.Token.RawClaims(), &stdClaims); err != nil {
-		c.Raw = ""
 		c.Token = nil
 		return fmt.Errorf("error parsing jwt claims: %w", err)
 	}

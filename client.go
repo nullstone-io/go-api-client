@@ -176,12 +176,19 @@ func (c *Client) Do(method string, relativePath string, query url.Values, header
 		bodyReader, _ = body.(io.Reader)
 	}
 
-	req, err := c.CreateRequest(method, relativePath, query, bodyReader)
+	u, err := c.Config.ConstructUrl(relativePath, query)
+	if err != nil {
+		return nil, fmt.Errorf("invalid request url: %w", err)
+	}
+	req, err := http.NewRequest(method, u.String(), bodyReader)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 	for k, v := range headers {
 		req.Header.Set(k, v)
+	}
+	if err := c.Config.AddAuthorizationHeader(req.Header); err != nil {
+		return nil, err
 	}
 
 	httpClient := &http.Client{

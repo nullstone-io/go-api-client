@@ -12,6 +12,9 @@ import (
 	"time"
 )
 
+// RunnerKey holds a set of JWT keys that are used to build a trust relationship with the auth server
+// During the registration of a runner, the auth server acquires the JwtPublicKey
+// During requests to gain an access token, the auth server verifies the incoming jwt token against the JwtPublicKey
 type RunnerKey struct {
 	OrgName string
 	Context string
@@ -23,10 +26,12 @@ type RunnerKey struct {
 	JwtPublicKey  []byte
 }
 
+// CreateImpersonationToken uses this services private JWT keys to generate a valid jwt token
+// The resulting impersonation token is used to acquire an access token from the auth server
 func (k *RunnerKey) CreateImpersonationToken() (*jwt.Token, error) {
 	builder, err := k.createJwtBuilder()
 	if err != nil {
-		return nil, fmt.Errorf("error creating impersonation token: %w", err)
+		return nil, fmt.Errorf("error initializing impersonation token: %w", err)
 	}
 
 	uid, err := uuid.NewRandom()
@@ -42,7 +47,11 @@ func (k *RunnerKey) CreateImpersonationToken() (*jwt.Token, error) {
 		ExpiresAt: jwt.NewNumericDate(time.Now().Add(k.ImpersonationExpiresDuration)),
 		IssuedAt:  jwt.NewNumericDate(time.Now()),
 	}
-	return builder.Build(claims)
+	token, err := builder.Build(claims)
+	if err != nil {
+		return nil, fmt.Errorf("error building impersonation token: %w", err)
+	}
+	return token, nil
 }
 
 // createJwtBuilder creates a jwt builder using the jwt private key
