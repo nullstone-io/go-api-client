@@ -3,6 +3,7 @@ module gopkg.in/nullstone-io/go-api-client.v0
 go 1.18
 
 require (
+	github.com/cristalhq/jwt/v3 v3.1.0
 	github.com/google/uuid v1.2.0
 	github.com/gorilla/websocket v1.5.0
 	github.com/nullstone-io/module v0.2.8

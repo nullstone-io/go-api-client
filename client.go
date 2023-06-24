@@ -16,7 +16,7 @@ type Client struct {
 // WithApiKey returns a copy configured with an API key
 func (c *Client) WithApiKey(apiKey string) *Client {
 	clone := *c
-	clone.Config.ApiKey = apiKey
+	clone.Config.UseApiKey(apiKey)
 	return &clone
 }
 

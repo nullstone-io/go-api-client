@@ -2,6 +2,7 @@ package api
 
 import (
 	"fmt"
+	"gopkg.in/nullstone-io/go-api-client.v0/auth"
 	"gopkg.in/nullstone-io/go-api-client.v0/trace"
 	"net/http"
 	"net/url"
@@ -17,22 +18,31 @@ var (
 )
 
 func DefaultConfig() Config {
-	cfg := Config{
-		BaseAddress: DefaultAddress,
-		ApiKey:      os.Getenv(ApiKeyEnvVar),
-	}
+	cfg := Config{BaseAddress: DefaultAddress}
 	if val := os.Getenv(AddressEnvVar); val != "" {
 		cfg.BaseAddress = val
 	}
+	cfg.UseApiKey(os.Getenv(ApiKeyEnvVar))
 	cfg.IsTraceEnabled = trace.IsEnabled()
 	return cfg
 }
 
 type Config struct {
 	BaseAddress    string
-	ApiKey         string
 	IsTraceEnabled bool
 	OrgName        string
+
+	// AccessTokenSource provides a hook for authenticating requests
+	// GetAccessToken() is performed on every request using http.RoundTripper
+	AccessTokenSource auth.AccessTokenSource
+}
+
+func (c *Config) UseApiKey(apiKey string) {
+	if apiKey == "" {
+		c.AccessTokenSource = nil
+	} else {
+		c.AccessTokenSource = auth.RawAccessTokenSource{AccessToken: apiKey}
+	}
 }
 
 func (c *Config) ConstructUrl(relativePath string, query url.Values) (*url.URL, error) {
@@ -56,7 +66,13 @@ func (c *Config) ConstructWsEndpoint(relativePath string) (string, http.Header, 
 	endpoint.Path = path.Join(endpoint.Path, relativePath)
 
 	headers := http.Header{}
-	headers.Set("Authorization", fmt.Sprintf("Bearer %s", c.ApiKey))
+	if c.AccessTokenSource != nil {
+		accessToken, err := c.AccessTokenSource.GetAccessToken()
+		if err != nil {
+			return "", nil, fmt.Errorf("unable to retrieve access token to authenticate websocket request: %w", err)
+		}
+		headers.Set("Authorization", fmt.Sprintf("Bearer %s", accessToken))
+	}
 
 	return endpoint.String(), headers, nil
 }
@@ -66,17 +82,5 @@ func (c *Config) CreateTransport(baseTransport http.RoundTripper) http.RoundTrip
 	if c.IsTraceEnabled {
 		bt = &trace.HttpTransport{BaseTransport: bt}
 	}
-	return &apiKeyTransport{BaseTransport: bt, ApiKey: c.ApiKey}
-}
-
-var _ http.RoundTripper = &apiKeyTransport{}
-
-type apiKeyTransport struct {
-	BaseTransport http.RoundTripper
-	ApiKey        string
-}
-
-func (t *apiKeyTransport) RoundTrip(r *http.Request) (*http.Response, error) {
-	r.Header.Set("Authorization", "Bearer "+t.ApiKey)
-	return t.BaseTransport.RoundTrip(r)
+	return &auth.AccessTokenSourceTransport{BaseTransport: bt, AccessTokenSource: c.AccessTokenSource}
 }
