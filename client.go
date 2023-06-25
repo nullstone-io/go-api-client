@@ -13,19 +13,6 @@ type Client struct {
 	Config Config
 }
 
-// WithApiKey returns a copy configured with an API key
-func (c *Client) WithApiKey(apiKey string) *Client {
-	clone := *c
-	clone.Config.UseApiKey(apiKey)
-	return &clone
-}
-
-func (c *Client) Org(orgName string) *Client {
-	cfg := c.Config
-	cfg.OrgName = orgName
-	return &Client{Config: cfg}
-}
-
 func (c *Client) Organizations() Organizations {
 	return Organizations{Client: c}
 }

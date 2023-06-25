@@ -22,7 +22,9 @@ func DefaultConfig() Config {
 	if val := os.Getenv(AddressEnvVar); val != "" {
 		cfg.BaseAddress = val
 	}
-	cfg.UseApiKey(os.Getenv(ApiKeyEnvVar))
+	if apiKey := os.Getenv(ApiKeyEnvVar); apiKey != "" {
+		cfg.AccessTokenSource = auth.RawAccessTokenSource{AccessToken: apiKey}
+	}
 	cfg.IsTraceEnabled = trace.IsEnabled()
 	return cfg
 }
@@ -35,14 +37,6 @@ type Config struct {
 	// AccessTokenSource provides a hook for authenticating requests
 	// GetAccessToken() is performed on every request using http.RoundTripper
 	AccessTokenSource auth.AccessTokenSource
-}
-
-func (c *Config) UseApiKey(apiKey string) {
-	if apiKey == "" {
-		c.AccessTokenSource = nil
-	} else {
-		c.AccessTokenSource = auth.RawAccessTokenSource{AccessToken: apiKey}
-	}
 }
 
 func (c *Config) ConstructUrl(relativePath string, query url.Values) (*url.URL, error) {
