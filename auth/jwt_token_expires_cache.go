@@ -52,7 +52,10 @@ func (c *JwtTokenExpiresCache) Refresh(acquireFn AcquireFunc) (*jwt.Token, error
 }
 
 func (c *JwtTokenExpiresCache) isExpired() bool {
-	expiresAt := c.StdClaims.ExpiresAt.Time
+	expiresAt := time.Now()
+	if c.StdClaims.ExpiresAt != nil {
+		expiresAt = c.StdClaims.ExpiresAt.Time
+	}
 	threshold := defaultExpiresAtThreshold
 	if c.ExpiresAtThreshold != 0 {
 		threshold = c.ExpiresAtThreshold
