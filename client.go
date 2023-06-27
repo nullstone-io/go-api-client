@@ -13,6 +13,14 @@ type Client struct {
 	Config Config
 }
 
+// Org
+// Deprecated
+func (c *Client) Org(orgName string) *Client {
+	clone := &Client{Config: c.Config}
+	clone.Config.OrgName = orgName
+	return clone
+}
+
 func (c *Client) Organizations() Organizations {
 	return Organizations{Client: c}
 }
