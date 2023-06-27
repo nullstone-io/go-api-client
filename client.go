@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"gopkg.in/nullstone-io/go-api-client.v0/auth"
 	"io"
 	"net/http"
 	"net/url"
@@ -18,6 +19,14 @@ type Client struct {
 func (c *Client) Org(orgName string) *Client {
 	clone := &Client{Config: c.Config}
 	clone.Config.OrgName = orgName
+	return clone
+}
+
+// WithApiKey
+// Deprecated
+func (c *Client) WithApiKey(apiKey string) *Client {
+	clone := &Client{Config: c.Config}
+	clone.Config.AccessTokenSource = auth.RawAccessTokenSource{AccessToken: apiKey}
 	return clone
 }
 
