@@ -12,9 +12,10 @@ func Module(cfg api.Config, moduleSource string) (*types.Module, error) {
 	if err != nil {
 		return nil, err
 	}
+	ms.OverrideBaseAddress(&cfg)
 
 	client := api.Client{Config: cfg}
-	module, err := client.Org(ms.OrgName).Modules().Get(ms.ModuleName)
+	module, err := client.Modules().Get(ms.OrgName, ms.ModuleName)
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving module: %w", err)
 	} else if module == nil {

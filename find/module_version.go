@@ -12,9 +12,10 @@ func ModuleVersion(cfg api.Config, moduleSource, moduleSourceVersion string) (*t
 	if err != nil {
 		return nil, err
 	}
+	ms.OverrideBaseAddress(&cfg)
 
 	client := api.Client{Config: cfg}
-	versions, err := client.Org(ms.OrgName).ModuleVersions().List(ms.ModuleName)
+	versions, err := client.ModuleVersions().List(ms.OrgName, ms.ModuleName)
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving module versions: %w", err)
 	} else if versions == nil {

@@ -2,6 +2,8 @@ package artifacts
 
 import (
 	"errors"
+	"gopkg.in/nullstone-io/go-api-client.v0"
+	"net/url"
 	"strings"
 )
 
@@ -45,4 +47,10 @@ func (s ModuleSource) String() string {
 	}
 	tokens = append(tokens, s.ModuleName)
 	return strings.Join(tokens, "/")
+}
+
+func (s ModuleSource) OverrideBaseAddress(cfg *api.Config) {
+	if s.Host != "" {
+		cfg.BaseAddress = (&url.URL{Host: s.Host}).String()
+	}
 }

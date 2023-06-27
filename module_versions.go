@@ -16,38 +16,44 @@ type ModuleVersions struct {
 	Client *Client
 }
 
-func (mv ModuleVersions) basePath(moduleName string) string {
-	return fmt.Sprintf("orgs/%s/modules/%s/versions", mv.Client.Config.OrgName, moduleName)
+func (mv ModuleVersions) basePath(orgName, moduleName string) string {
+	return fmt.Sprintf("orgs/%s/modules/%s/versions", orgName, moduleName)
 }
 
-func (mv ModuleVersions) path(moduleName, version string) string {
-	return fmt.Sprintf("orgs/%s/modules/%s/versions/%s", mv.Client.Config.OrgName, moduleName, version)
+func (mv ModuleVersions) path(orgName, moduleName, version string) string {
+	return fmt.Sprintf("orgs/%s/modules/%s/versions/%s", orgName, moduleName, version)
 }
 
-func (mv ModuleVersions) downloadPath(moduleName, versionName string) string {
-	return fmt.Sprintf("orgs/%s/modules/%s/versions/%s/download", mv.Client.Config.OrgName, moduleName, versionName)
+func (mv ModuleVersions) downloadPath(orgName, moduleName, versionName string) string {
+	return fmt.Sprintf("orgs/%s/modules/%s/versions/%s/download", orgName, moduleName, versionName)
 }
 
-func (mv ModuleVersions) Get(moduleName string, version string) (*types.ModuleVersion, error) {
-	res, err := mv.Client.Do(http.MethodGet, mv.path(moduleName, version), nil, nil, nil)
+func (mv ModuleVersions) Get(orgName, moduleName, version string) (*types.ModuleVersion, error) {
+	res, err := mv.Client.Do(http.MethodGet, mv.path(orgName, moduleName, version), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
 	return response.ReadJsonPtr[types.ModuleVersion](res)
 }
 
-func (mv ModuleVersions) List(moduleName string) ([]types.ModuleVersion, error) {
-	res, err := mv.Client.Do(http.MethodGet, mv.basePath(moduleName), nil, nil, nil)
+func (mv ModuleVersions) List(orgName, moduleName string) ([]types.ModuleVersion, error) {
+	res, err := mv.Client.Do(http.MethodGet, mv.basePath(orgName, moduleName), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
 	return response.ReadJsonVal[[]types.ModuleVersion](res)
 }
 
-func (mv ModuleVersions) GetDownloadInfo(moduleName string, versionName string) (*types.ModuleDownloadInfo, error) {
-	relativePath := mv.downloadPath(moduleName, versionName)
+func (mv ModuleVersions) GetDownloadInfo(orgName, moduleName string, versionName string) (*types.ModuleDownloadInfo, error) {
+	relativePath := mv.downloadPath(orgName, moduleName, versionName)
 	res, err := mv.Client.Do(http.MethodHead, relativePath, nil, nil, nil)
 	if err != nil {
+		return nil, err
+	}
+	if err := response.Verify(res); err != nil {
+		if response.IsNotFoundError(err) {
+			return nil, nil
+		}
 		return nil, err
 	}
 
@@ -79,8 +85,8 @@ func (mv ModuleVersions) GetDownloadInfo(moduleName string, versionName string) 
 	return info, nil
 }
 
-func (mv ModuleVersions) Download(moduleName string, versionName string, file io.Writer) error {
-	res, err := mv.Client.Do(http.MethodGet, mv.downloadPath(moduleName, versionName), nil, nil, nil)
+func (mv ModuleVersions) Download(orgName, moduleName, versionName string, file io.Writer) error {
+	res, err := mv.Client.Do(http.MethodGet, mv.downloadPath(orgName, moduleName, versionName), nil, nil, nil)
 	if err != nil {
 		return err
 	}
@@ -93,7 +99,7 @@ func (mv ModuleVersions) Download(moduleName string, versionName string, file io
 	return nil
 }
 
-func (mv ModuleVersions) Create(moduleName string, versionName string, file io.Reader) error {
+func (mv ModuleVersions) Create(orgName, moduleName, versionName string, file io.Reader) error {
 	query := url.Values{}
 	query.Set("version", versionName)
 
@@ -114,7 +120,7 @@ func (mv ModuleVersions) Create(moduleName string, versionName string, file io.R
 
 	var headers = map[string]string{}
 	headers["Content-Type"] = writer.FormDataContentType()
-	res, err := mv.Client.Do(http.MethodPost, mv.basePath(moduleName), query, headers, body)
+	res, err := mv.Client.Do(http.MethodPost, mv.basePath(orgName, moduleName), query, headers, body)
 	if err != nil {
 		return err
 	}
