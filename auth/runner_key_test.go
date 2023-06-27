@@ -12,7 +12,7 @@ import (
 func TestRunnerKey_CreateImpersonationToken(t *testing.T) {
 	rkey := &RunnerKey{
 		OrgName:                      "nullstone",
-		Context:                      "tester",
+		ImpersonationContext:         "tester",
 		ImpersonationAudience:        []string{"auth-server"},
 		ImpersonationExpiresDuration: time.Minute,
 	}

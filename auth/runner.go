@@ -34,7 +34,7 @@ func (r *Runner) Refresh(authServer RunnerAccessTokenGetter) (*jwt.Token, error)
 			return nil, err
 		}
 
-		jwtToken, err := authServer.GetRunnerAccessToken(r.RunnerKey.OrgName, r.RunnerKey.Context, token)
+		jwtToken, err := authServer.GetRunnerAccessToken(r.RunnerKey.OrgName, r.RunnerKey.ImpersonationContext, token)
 		if err != nil {
 			return nil, fmt.Errorf("error acquiring runner access token from auth server: %w", err)
 		}

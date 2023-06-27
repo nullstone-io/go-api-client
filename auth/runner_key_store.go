@@ -30,7 +30,7 @@ func (s *FakeRunnerKeyStore) GetOrCreate(orgName string) (*RunnerKey, error) {
 
 	newRunnerKey := &RunnerKey{
 		OrgName:                      orgName,
-		Context:                      "fake",
+		ImpersonationContext:         "fake",
 		ImpersonationAudience:        []string{"auth-server"},
 		ImpersonationExpiresDuration: 24 * time.Hour,
 	}
