@@ -29,3 +29,23 @@ func GetClaims(source AccessTokenSource, orgName string) (*jwt.StandardClaims, e
 	}
 	return &claims, nil
 }
+
+// GetCustomClaims attempts to read the access token and parse a custom Claims json
+// If the access token is not a valid JWT, this will return NotValidJwtTokenErr
+func GetCustomClaims[T any](source AccessTokenSource, orgName string) (*T, error) {
+	accessToken, err := source.GetAccessToken(orgName)
+	if err != nil {
+		return nil, err
+	}
+
+	token, err := jwt.ParseString(accessToken)
+	if err != nil {
+		return nil, NotValidJwtTokenErr
+	}
+
+	var claims T
+	if err := json.Unmarshal(token.RawClaims(), &claims); err != nil {
+		return nil, NotValidJwtTokenErr
+	}
+	return &claims, nil
+}
