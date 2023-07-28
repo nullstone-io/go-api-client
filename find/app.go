@@ -41,6 +41,8 @@ func App(cfg api.Config, appName, stackName string) (*types.Application, error) 
 		stack, err := client.StacksByName().Get(stackName)
 		if err != nil {
 			return nil, fmt.Errorf("failed to find stack %q: %w", stackName, err)
+		} else if stack == nil {
+			return nil, StackDoesNotExistError{StackName: stackName}
 		}
 		stackId = stack.Id
 	}
