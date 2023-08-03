@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"gopkg.in/nullstone-io/go-api-client.v0/auth"
 	"io"
 	"net/http"
 	"net/url"
@@ -13,17 +14,20 @@ type Client struct {
 	Config Config
 }
 
-// WithApiKey returns a copy configured with an API key
-func (c *Client) WithApiKey(apiKey string) *Client {
-	clone := *c
-	clone.Config.ApiKey = apiKey
-	return &clone
+// Org
+// Deprecated
+func (c *Client) Org(orgName string) *Client {
+	clone := &Client{Config: c.Config}
+	clone.Config.OrgName = orgName
+	return clone
 }
 
-func (c *Client) Org(orgName string) *Client {
-	cfg := c.Config
-	cfg.OrgName = orgName
-	return &Client{Config: cfg}
+// WithApiKey
+// Deprecated
+func (c *Client) WithApiKey(apiKey string) *Client {
+	clone := &Client{Config: c.Config}
+	clone.Config.AccessTokenSource = auth.RawAccessTokenSource{AccessToken: apiKey}
+	return clone
 }
 
 func (c *Client) Organizations() Organizations {
@@ -176,12 +180,19 @@ func (c *Client) Do(method string, relativePath string, query url.Values, header
 		bodyReader, _ = body.(io.Reader)
 	}
 
-	req, err := c.CreateRequest(method, relativePath, query, bodyReader)
+	u, err := c.Config.ConstructUrl(relativePath, query)
+	if err != nil {
+		return nil, fmt.Errorf("invalid request url: %w", err)
+	}
+	req, err := http.NewRequest(method, u.String(), bodyReader)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
 	for k, v := range headers {
 		req.Header.Set(k, v)
+	}
+	if err := c.Config.AddAuthorizationHeader(req.Header); err != nil {
+		return nil, err
 	}
 
 	httpClient := &http.Client{
