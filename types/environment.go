@@ -3,9 +3,10 @@ package types
 type EnvironmentType string
 
 const (
-	EnvTypePipeline EnvironmentType = "PipelineEnv"
-	EnvTypePreview  EnvironmentType = "PreviewEnv"
-	EnvTypeGlobal   EnvironmentType = "GlobalEnv"
+	EnvTypePipeline       EnvironmentType = "PipelineEnv"
+	EnvTypePreview        EnvironmentType = "PreviewEnv"
+	EnvTypePreviewsShared EnvironmentType = "PreviewsSharedEnv"
+	EnvTypeGlobal         EnvironmentType = "GlobalEnv"
 )
 
 type EnvStatus string
