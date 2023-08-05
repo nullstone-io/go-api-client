@@ -13,11 +13,12 @@ var (
 )
 
 type StackResolver struct {
-	Stack        types.Stack
-	EnvsById     map[int64]types.Environment
-	EnvsByName   map[string]types.Environment
-	BlocksById   map[int64]types.Block
-	BlocksByName map[string]types.Block
+	Stack               types.Stack
+	PreviewsSharedEnvId int64
+	EnvsById            map[int64]types.Environment
+	EnvsByName          map[string]types.Environment
+	BlocksById          map[int64]types.Block
+	BlocksByName        map[string]types.Block
 }
 
 func (r *StackResolver) LoadEnvs(apiClient *api.Client, orgName string) error {
@@ -30,6 +31,9 @@ func (r *StackResolver) LoadEnvs(apiClient *api.Client, orgName string) error {
 	for _, env := range envs {
 		r.EnvsById[env.Id] = *env
 		r.EnvsByName[env.Name] = *env
+		if env.Type == types.EnvTypePreviewsShared {
+			r.PreviewsSharedEnvId = env.Id
+		}
 	}
 	return nil
 }

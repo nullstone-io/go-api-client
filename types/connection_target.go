@@ -36,20 +36,6 @@ func ParseConnectionTarget(s string) ConnectionTarget {
 	}
 }
 
-func (t ConnectionTarget) Normalize(stackId int64, blocks Blocks, sharedEnvId int64) ConnectionTarget {
-	result := t
-	if result.StackId == 0 {
-		result.StackId = stackId
-	}
-	if block := blocks.FindByName(result.BlockName); block != nil {
-		result.BlockId = block.Id
-		if block.IsShared && sharedEnvId != 0 {
-			result.EnvId = &sharedEnvId
-		}
-	}
-	return result
-}
-
 func (t ConnectionTarget) Match(other ConnectionTarget) bool {
 	if t.StackId != other.StackId {
 		return false

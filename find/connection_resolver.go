@@ -87,6 +87,10 @@ func (r ConnectionResolver) Resolve(ct types.ConnectionTarget) (types.Connection
 	}
 	result.BlockId = block.Id
 	result.BlockName = block.Name
+	if block.IsShared && sr.PreviewsSharedEnvId != 0 {
+		envId := sr.PreviewsSharedEnvId
+		result.EnvId = &envId
+	}
 
 	return result, nil
 }
