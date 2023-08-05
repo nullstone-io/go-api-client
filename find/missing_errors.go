@@ -28,3 +28,30 @@ type EnvDoesNotExistError struct {
 func (e EnvDoesNotExistError) Error() string {
 	return fmt.Sprintf("environment %s/%s does not exist", e.StackName, e.EnvName)
 }
+
+type EnvIdDoesNotExistError struct {
+	StackName string
+	EnvId     int64
+}
+
+func (e EnvIdDoesNotExistError) Error() string {
+	return fmt.Sprintf("environment %s/%d does not exist", e.StackName, e.EnvId)
+}
+
+type BlockDoesNotExistError struct {
+	StackName string
+	BlockName string
+}
+
+func (e BlockDoesNotExistError) Error() string {
+	return fmt.Sprintf("block %s/%s does not exist", e.StackName, e.BlockName)
+}
+
+type BlockIdDoesNotExistError struct {
+	StackName string
+	BlockId   int64
+}
+
+func (e BlockIdDoesNotExistError) Error() string {
+	return fmt.Sprintf("block %s/%d does not exist", e.StackName, e.BlockId)
+}
