@@ -97,6 +97,15 @@ func (r ResourceResolver) Resolve(ct types.ConnectionTarget) (types.ConnectionTa
 	return result, nil
 }
 
+func (r ResourceResolver) FindBlock(ct types.ConnectionTarget) (types.Block, error) {
+	result := ct
+	sr, err := r.ResolveStack(result)
+	if err != nil {
+		return types.Block{}, err
+	}
+	return sr.ResolveBlock(result)
+}
+
 func (r ResourceResolver) ResolveStack(ct types.ConnectionTarget) (*StackResolver, error) {
 	if ct.StackName != "" {
 		sr, ok := r.StacksByName[ct.StackName]
