@@ -6,22 +6,23 @@ import (
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 )
 
-// ConnectionResolver provides a mechanism to resolve the resulting workspace of a types.ConnectionTarget
-type ConnectionResolver struct {
-	ApiClient    *api.Client
-	OrgName      string
-	CurStackId   int64
-	CurEnvId     int64
-	StacksById   map[int64]*StackResolver
-	StacksByName map[string]*StackResolver
+// ResourceResolver provides a mechanism to resolve the resulting workspace of a types.ConnectionTarget
+type ResourceResolver struct {
+	ApiClient       *api.Client
+	OrgName         string
+	CurStackId      int64
+	CurEnvId        int64
+	CurProviderType string
+	StacksById      map[int64]*StackResolver
+	StacksByName    map[string]*StackResolver
 }
 
-// NewPreloadedConnectionResolver initializes a new ConnectionResolver by:
+// NewPreloadedResourceResolver initializes a new ResourceResolver by:
 // 1. preloading all stacks accessible in the org
 // 2. preloading all envs in the requested stack
 // 3. preloading all blocks in the requested stack
-func NewPreloadedConnectionResolver(apiClient *api.Client, orgName string, curStackId, curEnvId int64) (ConnectionResolver, error) {
-	resources := ConnectionResolver{
+func NewPreloadedResourceResolver(apiClient *api.Client, orgName string, curStackId, curEnvId int64) (ResourceResolver, error) {
+	resources := ResourceResolver{
 		ApiClient:  apiClient,
 		OrgName:    orgName,
 		CurStackId: curStackId,
@@ -42,6 +43,7 @@ func NewPreloadedConnectionResolver(apiClient *api.Client, orgName string, curSt
 			BlocksByName: nil,
 		}
 		if stack.Id == curStackId {
+			resources.CurProviderType = stack.ProviderType
 			// Load envs for current stack
 			if err := sr.LoadEnvs(apiClient, orgName); err != nil {
 				return resources, err
@@ -63,7 +65,7 @@ func NewPreloadedConnectionResolver(apiClient *api.Client, orgName string, curSt
 	return resources, nil
 }
 
-func (r ConnectionResolver) Resolve(ct types.ConnectionTarget) (types.ConnectionTarget, error) {
+func (r ResourceResolver) Resolve(ct types.ConnectionTarget) (types.ConnectionTarget, error) {
 	result := ct
 
 	sr, err := r.ResolveStack(result)
@@ -95,7 +97,7 @@ func (r ConnectionResolver) Resolve(ct types.ConnectionTarget) (types.Connection
 	return result, nil
 }
 
-func (r ConnectionResolver) ResolveStack(ct types.ConnectionTarget) (*StackResolver, error) {
+func (r ResourceResolver) ResolveStack(ct types.ConnectionTarget) (*StackResolver, error) {
 	if ct.StackName != "" {
 		sr, ok := r.StacksByName[ct.StackName]
 		if !ok {
