@@ -21,8 +21,8 @@ type ResourceResolver struct {
 // 1. preloading all stacks accessible in the org
 // 2. preloading all envs in the requested stack
 // 3. preloading all blocks in the requested stack
-func NewPreloadedResourceResolver(apiClient *api.Client, orgName string, curStackId, curEnvId int64) (ResourceResolver, error) {
-	resources := ResourceResolver{
+func NewPreloadedResourceResolver(apiClient *api.Client, orgName string, curStackId, curEnvId int64) (*ResourceResolver, error) {
+	resources := &ResourceResolver{
 		ApiClient:  apiClient,
 		OrgName:    orgName,
 		CurStackId: curStackId,
@@ -65,7 +65,7 @@ func NewPreloadedResourceResolver(apiClient *api.Client, orgName string, curStac
 	return resources, nil
 }
 
-func (r ResourceResolver) Resolve(ct types.ConnectionTarget) (types.ConnectionTarget, error) {
+func (r *ResourceResolver) Resolve(ct types.ConnectionTarget) (types.ConnectionTarget, error) {
 	result := ct
 
 	sr, err := r.ResolveStack(result)
@@ -97,7 +97,7 @@ func (r ResourceResolver) Resolve(ct types.ConnectionTarget) (types.ConnectionTa
 	return result, nil
 }
 
-func (r ResourceResolver) FindBlock(ct types.ConnectionTarget) (types.Block, error) {
+func (r *ResourceResolver) FindBlock(ct types.ConnectionTarget) (types.Block, error) {
 	result := ct
 	sr, err := r.ResolveStack(result)
 	if err != nil {
@@ -106,7 +106,7 @@ func (r ResourceResolver) FindBlock(ct types.ConnectionTarget) (types.Block, err
 	return sr.ResolveBlock(result)
 }
 
-func (r ResourceResolver) ResolveStack(ct types.ConnectionTarget) (*StackResolver, error) {
+func (r *ResourceResolver) ResolveStack(ct types.ConnectionTarget) (*StackResolver, error) {
 	if ct.StackName != "" {
 		sr, ok := r.StacksByName[ct.StackName]
 		if !ok {
