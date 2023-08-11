@@ -14,50 +14,42 @@ type StackResolver struct {
 	EnvsByName          map[string]types.Environment
 	BlocksById          map[int64]types.Block
 	BlocksByName        map[string]types.Block
-
-	initEnvsOnce   onceError
-	initBlocksOnce onceError
 }
 
 func (r *StackResolver) ResolveEnv(ct types.ConnectionTarget, curEnvId int64) (types.Environment, error) {
-	if err := r.initEnvsOnce.Do(r.loadEnvs); err != nil {
-		return types.Environment{}, err
-	}
-
 	if ct.EnvName != "" {
-		env, ok := r.EnvsByName[ct.EnvName]
-		if !ok {
-			return types.Environment{}, EnvDoesNotExistError{StackName: r.Stack.Name, EnvName: ct.EnvName}
-		}
-		return env, nil
+		return r.resolveEnvByName(ct.EnvName)
 	}
 	if ct.EnvId == nil {
 		ct.EnvId = &curEnvId
 	}
-	env, ok := r.EnvsById[*ct.EnvId]
-	if !ok {
-		return types.Environment{}, EnvIdDoesNotExistError{StackName: r.Stack.Name, EnvId: *ct.EnvId}
-	}
-	return env, nil
+	return r.resolveEnvById(*ct.EnvId)
 }
 
-func (r *StackResolver) ResolveBlock(ct types.ConnectionTarget) (types.Block, error) {
-	if err := r.initBlocksOnce.Do(r.loadBlocks); err != nil {
-		return types.Block{}, err
+func (r *StackResolver) resolveEnvByName(envName string) (types.Environment, error) {
+	if env, ok := r.EnvsByName[envName]; ok {
+		return env, nil
 	}
+	if err := r.loadEnvs(); err != nil {
+		return types.Environment{}, err
+	}
+	if env, ok := r.EnvsByName[envName]; ok {
+		return env, nil
+	}
+	return types.Environment{}, EnvDoesNotExistError{EnvName: envName}
+}
 
-	if ct.BlockName != "" {
-		block, ok := r.BlocksByName[ct.BlockName]
-		if !ok {
-			return types.Block{}, BlockDoesNotExistError{StackName: r.Stack.Name, BlockName: ct.BlockName}
-		}
-		return block, nil
+func (r *StackResolver) resolveEnvById(envId int64) (types.Environment, error) {
+	if env, ok := r.EnvsById[envId]; ok {
+		return env, nil
 	}
-	block, ok := r.BlocksById[ct.BlockId]
-	if !ok {
-		return types.Block{}, BlockIdDoesNotExistError{StackName: r.Stack.Name, BlockId: ct.BlockId}
+	if err := r.loadEnvs(); err != nil {
+		return types.Environment{}, err
 	}
-	return block, nil
+	if env, ok := r.EnvsById[envId]; ok {
+		return env, nil
+	}
+	return types.Environment{}, EnvIdDoesNotExistError{EnvId: envId}
 }
 
 func (r *StackResolver) loadEnvs() error {
@@ -75,6 +67,39 @@ func (r *StackResolver) loadEnvs() error {
 		}
 	}
 	return nil
+}
+
+func (r *StackResolver) ResolveBlock(ct types.ConnectionTarget) (types.Block, error) {
+	if ct.BlockName != "" {
+		return r.resolveBlockByName(ct.BlockName)
+	}
+	return r.resolveBlockById(ct.BlockId)
+}
+
+func (r *StackResolver) resolveBlockByName(blockName string) (types.Block, error) {
+	if block, ok := r.BlocksByName[blockName]; ok {
+		return block, nil
+	}
+	if err := r.loadBlocks(); err != nil {
+		return types.Block{}, err
+	}
+	if block, ok := r.BlocksByName[blockName]; ok {
+		return block, nil
+	}
+	return types.Block{}, BlockDoesNotExistError{StackName: r.Stack.Name, BlockName: blockName}
+}
+
+func (r *StackResolver) resolveBlockById(blockId int64) (types.Block, error) {
+	if block, ok := r.BlocksById[blockId]; ok {
+		return block, nil
+	}
+	if err := r.loadBlocks(); err != nil {
+		return types.Block{}, err
+	}
+	if block, ok := r.BlocksById[blockId]; ok {
+		return block, nil
+	}
+	return types.Block{}, BlockIdDoesNotExistError{StackName: r.Stack.Name, BlockId: blockId}
 }
 
 func (r *StackResolver) loadBlocks() error {

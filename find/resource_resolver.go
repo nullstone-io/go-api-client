@@ -13,8 +13,6 @@ type ResourceResolver struct {
 	CurProviderType string
 	StacksById      map[int64]*StackResolver
 	StacksByName    map[string]*StackResolver
-
-	initOnce onceError
 }
 
 func NewResourceResolver(apiClient *api.Client, curStackId, curEnvId int64) *ResourceResolver {
@@ -69,25 +67,39 @@ func (r *ResourceResolver) FindBlock(ct types.ConnectionTarget) (types.Block, er
 }
 
 func (r *ResourceResolver) ResolveStack(ct types.ConnectionTarget) (*StackResolver, error) {
-	if err := r.initOnce.Do(r.loadStacks); err != nil {
-		return nil, err
-	}
-
 	if ct.StackName != "" {
-		sr, ok := r.StacksByName[ct.StackName]
-		if !ok {
-			return nil, StackDoesNotExistError{StackName: ct.StackName}
-		}
-		return sr, nil
+		return r.resolveStackByName(ct.StackName)
 	}
 	if ct.StackId == 0 {
 		ct.StackId = r.CurStackId
 	}
-	sr, ok := r.StacksById[ct.StackId]
-	if !ok {
-		return nil, StackIdDoesNotExistError{StackId: ct.StackId}
+	return r.resolveStackById(ct.StackId)
+}
+
+func (r *ResourceResolver) resolveStackByName(stackName string) (*StackResolver, error) {
+	if sr, ok := r.StacksByName[stackName]; ok {
+		return sr, nil
 	}
-	return sr, nil
+	if err := r.loadStacks(); err != nil {
+		return nil, err
+	}
+	if sr, ok := r.StacksByName[stackName]; ok {
+		return sr, nil
+	}
+	return nil, StackDoesNotExistError{StackName: stackName}
+}
+
+func (r *ResourceResolver) resolveStackById(stackId int64) (*StackResolver, error) {
+	if sr, ok := r.StacksById[stackId]; ok {
+		return sr, nil
+	}
+	if err := r.loadStacks(); err != nil {
+		return nil, err
+	}
+	if sr, ok := r.StacksById[stackId]; ok {
+		return sr, nil
+	}
+	return nil, StackIdDoesNotExistError{StackId: stackId}
 }
 
 func (r *ResourceResolver) loadStacks() error {
