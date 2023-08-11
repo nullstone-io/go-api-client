@@ -1,7 +1,6 @@
 package find
 
 import (
-	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 )
@@ -9,60 +8,23 @@ import (
 // ResourceResolver provides a mechanism to resolve the resulting workspace of a types.ConnectionTarget
 type ResourceResolver struct {
 	ApiClient       *api.Client
-	OrgName         string
 	CurStackId      int64
 	CurEnvId        int64
 	CurProviderType string
 	StacksById      map[int64]*StackResolver
 	StacksByName    map[string]*StackResolver
+
+	initOnce onceError
 }
 
-// NewPreloadedResourceResolver initializes a new ResourceResolver by:
-// 1. preloading all stacks accessible in the org
-// 2. preloading all envs in the requested stack
-// 3. preloading all blocks in the requested stack
-func NewPreloadedResourceResolver(apiClient *api.Client, orgName string, curStackId, curEnvId int64) (*ResourceResolver, error) {
-	resources := &ResourceResolver{
-		ApiClient:  apiClient,
-		OrgName:    orgName,
-		CurStackId: curStackId,
-		CurEnvId:   curEnvId,
+func NewResourceResolver(apiClient *api.Client, curStackId, curEnvId int64) *ResourceResolver {
+	return &ResourceResolver{
+		ApiClient:    apiClient,
+		CurStackId:   curStackId,
+		CurEnvId:     curEnvId,
+		StacksById:   map[int64]*StackResolver{},
+		StacksByName: map[string]*StackResolver{},
 	}
-
-	stacks, err := apiClient.Stacks().List()
-	if err != nil {
-		return resources, fmt.Errorf("unable to fetch stacks for org (org=%s): %w", orgName, err)
-	}
-
-	resources.StacksById = map[int64]*StackResolver{}
-	resources.StacksByName = map[string]*StackResolver{}
-	for _, stack := range stacks {
-		sr := &StackResolver{
-			Stack:        *stack,
-			EnvsByName:   nil,
-			BlocksByName: nil,
-		}
-		if stack.Id == curStackId {
-			resources.CurProviderType = stack.ProviderType
-			// Load envs for current stack
-			if err := sr.LoadEnvs(apiClient, orgName); err != nil {
-				return resources, err
-			}
-			// Load blocks for current stack
-			if err := sr.LoadBlocks(apiClient, orgName); err != nil {
-				return resources, err
-			}
-		}
-		if stack.Name == "global" {
-			// Preload the global stack/env
-			if err := sr.LoadEnvs(apiClient, orgName); err != nil {
-				return resources, err
-			}
-		}
-		resources.StacksById[stack.Id] = sr
-		resources.StacksByName[stack.Name] = sr
-	}
-	return resources, nil
 }
 
 func (r *ResourceResolver) Resolve(ct types.ConnectionTarget) (types.ConnectionTarget, error) {
@@ -107,6 +69,10 @@ func (r *ResourceResolver) FindBlock(ct types.ConnectionTarget) (types.Block, er
 }
 
 func (r *ResourceResolver) ResolveStack(ct types.ConnectionTarget) (*StackResolver, error) {
+	if err := r.initOnce.Do(r.loadStacks); err != nil {
+		return nil, err
+	}
+
 	if ct.StackName != "" {
 		sr, ok := r.StacksByName[ct.StackName]
 		if !ok {
@@ -122,4 +88,17 @@ func (r *ResourceResolver) ResolveStack(ct types.ConnectionTarget) (*StackResolv
 		return nil, StackIdDoesNotExistError{StackId: ct.StackId}
 	}
 	return sr, nil
+}
+
+func (r *ResourceResolver) loadStacks() error {
+	stacks, err := r.ApiClient.Stacks().List()
+	if err != nil {
+		return err
+	}
+	for _, stack := range stacks {
+		sr := &StackResolver{ApiClient: r.ApiClient, Stack: *stack}
+		r.StacksById[stack.Id] = sr
+		r.StacksByName[stack.Name] = sr
+	}
+	return nil
 }
