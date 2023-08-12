@@ -36,7 +36,7 @@ func (r *StackResolver) resolveEnvByName(envName string) (types.Environment, err
 	if env, ok := r.EnvsByName[envName]; ok {
 		return env, nil
 	}
-	return types.Environment{}, EnvDoesNotExistError{EnvName: envName}
+	return types.Environment{}, EnvDoesNotExistError{StackName: r.Stack.Name, EnvName: envName}
 }
 
 func (r *StackResolver) resolveEnvById(envId int64) (types.Environment, error) {
@@ -49,7 +49,7 @@ func (r *StackResolver) resolveEnvById(envId int64) (types.Environment, error) {
 	if env, ok := r.EnvsById[envId]; ok {
 		return env, nil
 	}
-	return types.Environment{}, EnvIdDoesNotExistError{EnvId: envId}
+	return types.Environment{}, EnvIdDoesNotExistError{StackName: r.Stack.Name, EnvId: envId}
 }
 
 func (r *StackResolver) loadEnvs() error {
