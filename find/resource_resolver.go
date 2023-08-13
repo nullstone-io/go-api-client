@@ -28,6 +28,7 @@ func NewResourceResolver(apiClient *api.Client, curStackId, curEnvId int64) *Res
 
 func (r *ResourceResolver) Resolve(ct types.ConnectionTarget) (types.ConnectionTarget, error) {
 	result := ct
+	log.Printf("DEBUG - Resolving ConnectionTarget: %#v", result)
 
 	sr, err := r.ResolveStack(result)
 	if err != nil {
@@ -42,6 +43,7 @@ func (r *ResourceResolver) Resolve(ct types.ConnectionTarget) (types.ConnectionT
 	}
 	envId := env.Id
 	result.EnvId = &envId
+	log.Printf("DEBUG - EnvId resolved to %d", envId)
 	result.EnvName = env.Name
 
 	block, err := sr.ResolveBlock(result)
@@ -50,14 +52,16 @@ func (r *ResourceResolver) Resolve(ct types.ConnectionTarget) (types.ConnectionT
 	}
 	result.BlockId = block.Id
 	result.BlockName = block.Name
-	log.Printf("Resolving target: envType=%s blockIsShared=%t previewsSharedEnvId=%d", env.Type, block.IsShared, sr.PreviewsSharedEnvId)
+
 	if env.Type == types.EnvTypePreview && block.IsShared && sr.PreviewsSharedEnvId != 0 {
 		// We only use the `preview-shared` env if the block is marked shared and our env is a preview env
 		sharedEnvId := sr.PreviewsSharedEnvId
 		result.EnvId = &sharedEnvId
+		log.Printf("DEBUG - EnvId resolved to shared envId %d", sharedEnvId)
 		result.EnvName = sr.EnvsById[sharedEnvId].Name
 	}
 
+	log.Printf("DEBUG - Resolved ConnectionTarget: %#v", result)
 	return result, nil
 }
 
