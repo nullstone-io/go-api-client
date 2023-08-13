@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
+	"log"
 )
 
 type StackResolver struct {
@@ -46,6 +47,7 @@ func (r *StackResolver) resolveEnvById(envId int64) (types.Environment, error) {
 	if err := r.loadEnvs(); err != nil {
 		return types.Environment{}, err
 	}
+	log.Printf("envs: %#v", r.EnvsById)
 	if env, ok := r.EnvsById[envId]; ok {
 		return env, nil
 	}
