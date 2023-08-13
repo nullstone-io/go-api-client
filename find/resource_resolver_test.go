@@ -39,6 +39,22 @@ func TestResourceResolver(t *testing.T) {
 		Reference: "orange-iguana",
 	}
 	env3Id := int64(13)
+	env4 := types.Environment{
+		IdModel:   types.IdModel{Id: 14},
+		Type:      types.EnvTypePipeline,
+		Name:      "dev",
+		OrgName:   "nullstone",
+		StackId:   stack2.Id,
+		Reference: "purple-snail",
+	}
+	env5 := types.Environment{
+		IdModel:   types.IdModel{Id: 15},
+		Type:      types.EnvTypePreviewsShared,
+		Name:      "previews-shared",
+		OrgName:   "nullstone",
+		StackId:   stack2.Id,
+		Reference: "teal-bear",
+	}
 	block1 := types.Block{
 		IdModel:  types.IdModel{Id: 101},
 		Type:     "block",
@@ -56,10 +72,18 @@ func TestResourceResolver(t *testing.T) {
 		IsShared: false,
 	}
 	block3Id := int64(103)
+	block4 := types.Block{
+		IdModel:  types.IdModel{Id: 104},
+		Type:     "block",
+		OrgName:  "nullstone",
+		StackId:  stack2.Id,
+		Name:     "block4",
+		IsShared: true,
+	}
 
 	stacks := []types.Stack{stack1, stack2}
-	envs := []types.Environment{env1, env2}
-	blocks := []types.Block{block1, block2}
+	envs := []types.Environment{env1, env2, env4, env5}
+	blocks := []types.Block{block1, block2, block4}
 	router := mux.NewRouter()
 	mocks.ListStacks(router, stacks)
 	mocks.ListEnvironments(router, envs)
@@ -67,6 +91,7 @@ func TestResourceResolver(t *testing.T) {
 	apiClient := mocks.Client(t, "nullstone", router)
 
 	rr := NewResourceResolver(apiClient, stack1.Id, env1.Id)
+	rr2 := NewResourceResolver(apiClient, stack2.Id, env4.Id)
 
 	t.Run("stack does not exist", func(t *testing.T) {
 		ct := types.ConnectionTarget{
@@ -82,7 +107,7 @@ func TestResourceResolver(t *testing.T) {
 	t.Run("env does not exist", func(t *testing.T) {
 		ct := types.ConnectionTarget{
 			StackId: stack1.Id,
-			BlockId: block3Id,
+			BlockId: block2.Id,
 			EnvId:   &env3Id,
 		}
 		want := ct
@@ -129,6 +154,34 @@ func TestResourceResolver(t *testing.T) {
 		want.EnvName = env1.Name
 		want.BlockName = block1.Name
 		got, err := rr.Resolve(ct)
+		assert.NoError(t, err, "unexpected error")
+		assert.Equal(t, want, got)
+	})
+	t.Run("skip previews-shared because it does not exist", func(t *testing.T) {
+		ct := types.ConnectionTarget{
+			StackId: stack1.Id,
+			BlockId: block2.Id,
+		}
+		want := ct
+		want.StackName = stack1.Name
+		want.EnvId = &env1.Id
+		want.EnvName = env1.Name
+		want.BlockName = block2.Name
+		got, err := rr.Resolve(ct)
+		assert.NoError(t, err, "unexpected error")
+		assert.Equal(t, want, got)
+	})
+	t.Run("load previews-shared", func(t *testing.T) {
+		ct := types.ConnectionTarget{
+			StackId: stack2.Id,
+			BlockId: block4.Id,
+		}
+		want := ct
+		want.StackName = stack2.Name
+		want.EnvId = &env5.Id
+		want.EnvName = env5.Name
+		want.BlockName = block4.Name
+		got, err := rr2.Resolve(ct)
 		assert.NoError(t, err, "unexpected error")
 		assert.Equal(t, want, got)
 	})
