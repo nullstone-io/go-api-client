@@ -41,8 +41,8 @@ func TestResourceResolver(t *testing.T) {
 	env3Id := int64(13)
 	env4 := types.Environment{
 		IdModel:   types.IdModel{Id: 14},
-		Type:      types.EnvTypePipeline,
-		Name:      "dev",
+		Type:      types.EnvTypePreview,
+		Name:      "f-1103-add-something",
 		OrgName:   "nullstone",
 		StackId:   stack2.Id,
 		Reference: "purple-snail",
