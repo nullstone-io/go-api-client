@@ -49,10 +49,10 @@ func (r *ResourceResolver) Resolve(ct types.ConnectionTarget) (types.ConnectionT
 	}
 	result.BlockId = block.Id
 	result.BlockName = block.Name
-	if block.IsShared && sr.PreviewsSharedEnvId != 0 {
+	if env.Type == types.EnvTypePreview && block.IsShared && sr.PreviewsSharedEnvId != 0 {
 		envId := sr.PreviewsSharedEnvId
 		result.EnvId = &envId
-		result.EnvName = sr.EnvsById[sr.PreviewsSharedEnvId].Name
+		result.EnvName = sr.EnvsById[envId].Name
 	}
 
 	return result, nil
