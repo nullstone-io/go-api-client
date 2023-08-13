@@ -3,6 +3,7 @@ package find
 import (
 	"gopkg.in/nullstone-io/go-api-client.v0"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
+	"log"
 )
 
 // ResourceResolver provides a mechanism to resolve the resulting workspace of a types.ConnectionTarget
@@ -49,6 +50,7 @@ func (r *ResourceResolver) Resolve(ct types.ConnectionTarget) (types.ConnectionT
 	}
 	result.BlockId = block.Id
 	result.BlockName = block.Name
+	log.Printf("Resolving target: envType=%s blockIsShared=%t previewsSharedEnvId=%d", env.Type, block.IsShared, sr.PreviewsSharedEnvId)
 	if env.Type == types.EnvTypePreview && block.IsShared && sr.PreviewsSharedEnvId != 0 {
 		envId := sr.PreviewsSharedEnvId
 		result.EnvId = &envId
