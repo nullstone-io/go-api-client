@@ -58,6 +58,10 @@ func (c *Client) EnvConfigurations() EnvConfigurations {
 	return EnvConfigurations{Client: c}
 }
 
+func (c *Client) IacConfiguration() IacConfiguration {
+	return IacConfiguration{Client: c}
+}
+
 func (c *Client) EnvRuns() EnvRuns {
 	return EnvRuns{Client: c}
 }
