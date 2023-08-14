@@ -16,7 +16,7 @@ type IacConfiguration struct {
 }
 
 func (ic IacConfiguration) basePath() string {
-	return fmt.Sprintf("/orgs/%s/iac_configuration", ic.Client.Config.OrgName)
+	return "/iac_config"
 }
 
 func (ic IacConfiguration) Create(config string) (*types.EnvConfiguration, error) {
