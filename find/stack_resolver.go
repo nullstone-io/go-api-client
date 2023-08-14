@@ -69,6 +69,19 @@ func (r *StackResolver) loadEnvs() error {
 	return nil
 }
 
+func (r *StackResolver) Blocks() ([]types.Block, error) {
+	if len(r.BlocksById) == 0 {
+		if err := r.loadBlocks(); err != nil {
+			return nil, err
+		}
+	}
+	result := make([]types.Block, 0, len(r.BlocksById))
+	for _, block := range r.BlocksById {
+		result = append(result, block)
+	}
+	return result, nil
+}
+
 func (r *StackResolver) ResolveBlock(ct types.ConnectionTarget) (types.Block, error) {
 	if ct.BlockName != "" {
 		return r.resolveBlockByName(ct.BlockName)
