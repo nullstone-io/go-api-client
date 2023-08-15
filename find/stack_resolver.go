@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
+	"sync"
 )
 
 type StackResolver struct {
@@ -14,6 +15,9 @@ type StackResolver struct {
 	EnvsByName          map[string]types.Environment
 	BlocksById          map[int64]types.Block
 	BlocksByName        map[string]types.Block
+
+	once            sync.Once
+	blocksLoadError error
 }
 
 func (r *StackResolver) ResolveEnv(ct types.ConnectionTarget, curEnvId int64) (types.Environment, error) {
@@ -69,17 +73,14 @@ func (r *StackResolver) loadEnvs() error {
 	return nil
 }
 
-func (r *StackResolver) Blocks() ([]types.Block, error) {
-	if len(r.BlocksById) == 0 {
-		if err := r.loadBlocks(); err != nil {
-			return nil, err
-		}
+func (r *StackResolver) Blocks() (map[int64]types.Block, error) {
+	r.once.Do(func() {
+		r.blocksLoadError = r.loadBlocks()
+	})
+	if r.blocksLoadError != nil {
+		return nil, r.blocksLoadError
 	}
-	result := make([]types.Block, 0, len(r.BlocksById))
-	for _, block := range r.BlocksById {
-		result = append(result, block)
-	}
-	return result, nil
+	return r.BlocksById, nil
 }
 
 func (r *StackResolver) ResolveBlock(ct types.ConnectionTarget) (types.Block, error) {
