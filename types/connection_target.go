@@ -36,6 +36,8 @@ func ParseConnectionTarget(s string) ConnectionTarget {
 	}
 }
 
+// Normalize
+// Deprecated
 func (t ConnectionTarget) Normalize(stackId int64, blocks Blocks, sharedEnvId int64) ConnectionTarget {
 	result := t
 	if result.StackId == 0 {

@@ -5,6 +5,7 @@ go 1.18
 require (
 	github.com/cristalhq/jwt/v3 v3.1.0
 	github.com/google/uuid v1.2.0
+	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/websocket v1.5.0
 	github.com/nullstone-io/module v0.2.8
 	github.com/stretchr/testify v1.7.0
@@ -19,7 +20,6 @@ require (
 	github.com/mitchellh/go-wordwrap v0.0.0-20150314170334-ad45545899c7 // indirect
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/spf13/afero v1.2.2 // indirect
-	github.com/stretchr/objx v0.1.0 // indirect
 	github.com/tmccombs/hcl2json v0.3.2-0.20201111174327-c96737926b76 // indirect
 	github.com/zclconf/go-cty v1.6.1 // indirect
 	golang.org/x/text v0.3.2 // indirect
