@@ -4,7 +4,7 @@ type Capability struct {
 	IdModel
 	OrgName             string                      `json:"orgName"`
 	AppId               int64                       `json:"appId"`
-	EnvId               *int64                      `json:"envId"`
+	EnvId               int64                       `json:"envId"`
 	Name                string                      `json:"name"`
 	ModuleSource        string                      `json:"moduleSource,omitempty"`
 	ModuleSourceVersion string                      `json:"moduleSourceVersion,omitempty"`
