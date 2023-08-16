@@ -18,7 +18,7 @@ func (sc StackConfigurations) basePath(stackId int64) string {
 	return fmt.Sprintf("/orgs/%s/stacks/%d/configuration", sc.Client.Config.OrgName, stackId)
 }
 
-func (sc StackConfigurations) Create(stackId int64, config, overrides string) error {
+func (sc StackConfigurations) Create(stackId int64, config string) error {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
