@@ -18,7 +18,7 @@ func (sc StackConfigurations) basePath(stackId int64) string {
 	return fmt.Sprintf("/orgs/%s/stacks/%d/configuration", sc.Client.Config.OrgName, stackId)
 }
 
-func (sc StackConfigurations) Create(stackId int64, config string) error {
+func (sc StackConfigurations) Create(stackId int64, config, overrides string) error {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
@@ -29,6 +29,17 @@ func (sc StackConfigurations) Create(stackId int64, config string) error {
 		}
 		configReader := strings.NewReader(config)
 		_, err = io.Copy(part, configReader)
+		if err != nil {
+			return fmt.Errorf("unable to copy file contents into form file: %w", err)
+		}
+	}
+	if overrides != "" {
+		part, err := writer.CreateFormFile("overrides", "previews.yml")
+		if err != nil {
+			return fmt.Errorf("unable to create form file: %w", err)
+		}
+		overridesReader := strings.NewReader(overrides)
+		_, err = io.Copy(part, overridesReader)
 		if err != nil {
 			return fmt.Errorf("unable to copy file contents into form file: %w", err)
 		}
