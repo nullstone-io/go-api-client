@@ -22,15 +22,15 @@ type StackResolver struct {
 
 func (r *StackResolver) ResolveEnv(ct types.ConnectionTarget, curEnvId int64) (types.Environment, error) {
 	if ct.EnvName != "" {
-		return r.resolveEnvByName(ct.EnvName)
+		return r.ResolveEnvByName(ct.EnvName)
 	}
 	if ct.EnvId == nil {
 		ct.EnvId = &curEnvId
 	}
-	return r.resolveEnvById(*ct.EnvId)
+	return r.ResolveEnvById(*ct.EnvId)
 }
 
-func (r *StackResolver) resolveEnvByName(envName string) (types.Environment, error) {
+func (r *StackResolver) ResolveEnvByName(envName string) (types.Environment, error) {
 	if env, ok := r.EnvsByName[envName]; ok {
 		return env, nil
 	}
@@ -43,7 +43,7 @@ func (r *StackResolver) resolveEnvByName(envName string) (types.Environment, err
 	return types.Environment{}, EnvDoesNotExistError{StackName: r.Stack.Name, EnvName: envName}
 }
 
-func (r *StackResolver) resolveEnvById(envId int64) (types.Environment, error) {
+func (r *StackResolver) ResolveEnvById(envId int64) (types.Environment, error) {
 	if env, ok := r.EnvsById[envId]; ok {
 		return env, nil
 	}
@@ -85,12 +85,12 @@ func (r *StackResolver) Blocks() (map[int64]types.Block, error) {
 
 func (r *StackResolver) ResolveBlock(ct types.ConnectionTarget) (types.Block, error) {
 	if ct.BlockName != "" {
-		return r.resolveBlockByName(ct.BlockName)
+		return r.ResolveBlockByName(ct.BlockName)
 	}
-	return r.resolveBlockById(ct.BlockId)
+	return r.ResolveBlockById(ct.BlockId)
 }
 
-func (r *StackResolver) resolveBlockByName(blockName string) (types.Block, error) {
+func (r *StackResolver) ResolveBlockByName(blockName string) (types.Block, error) {
 	if block, ok := r.BlocksByName[blockName]; ok {
 		return block, nil
 	}
@@ -103,7 +103,7 @@ func (r *StackResolver) resolveBlockByName(blockName string) (types.Block, error
 	return types.Block{}, BlockDoesNotExistError{StackName: r.Stack.Name, BlockName: blockName}
 }
 
-func (r *StackResolver) resolveBlockById(blockId int64) (types.Block, error) {
+func (r *StackResolver) ResolveBlockById(blockId int64) (types.Block, error) {
 	if block, ok := r.BlocksById[blockId]; ok {
 		return block, nil
 	}

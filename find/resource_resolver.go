@@ -7,12 +7,11 @@ import (
 
 // ResourceResolver provides a mechanism to resolve the resulting workspace of a types.ConnectionTarget
 type ResourceResolver struct {
-	ApiClient       *api.Client
-	CurStackId      int64
-	CurEnvId        int64
-	CurProviderType string
-	StacksById      map[int64]*StackResolver
-	StacksByName    map[string]*StackResolver
+	ApiClient    *api.Client
+	CurStackId   int64
+	CurEnvId     int64
+	StacksById   map[int64]*StackResolver
+	StacksByName map[string]*StackResolver
 }
 
 func NewResourceResolver(apiClient *api.Client, curStackId, curEnvId int64) *ResourceResolver {
@@ -77,6 +76,14 @@ func (r *ResourceResolver) ResolveStack(ct types.ConnectionTarget) (*StackResolv
 		ct.StackId = r.CurStackId
 	}
 	return r.resolveStackById(ct.StackId)
+}
+
+func (r *ResourceResolver) ResolveCurProviderType() (string, error) {
+	sr, err := r.ResolveStack(types.ConnectionTarget{StackId: r.CurStackId})
+	if err != nil {
+		return "", err
+	}
+	return sr.Stack.ProviderType, nil
 }
 
 func (r *ResourceResolver) resolveStackByName(stackName string) (*StackResolver, error) {
