@@ -27,4 +27,5 @@ type Environment struct {
 	PipelineOrder  *int            `json:"pipelineOrder,omitempty"`
 	ContextKey     string          `json:"contextKey"`
 	Status         EnvStatus       `json:"status"`
+	IsProd         bool            `json:"isProd"`
 }
