@@ -11,5 +11,5 @@ type ErrMultipleBlocksFound struct {
 }
 
 func (e ErrMultipleBlocksFound) Error() string {
-	return fmt.Sprintf("found multiple blocks named %q located in the following stacks: %s", e.BlockName, strings.Join(e.StackNames, ","))
+	return fmt.Sprintf("found multiple blocks named %q located in the following stacks: %s\n use the stack param to select a specific block", e.BlockName, strings.Join(e.StackNames, ","))
 }

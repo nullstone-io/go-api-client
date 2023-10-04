@@ -28,7 +28,7 @@ type ErrMultipleAppsFound struct {
 }
 
 func (e ErrMultipleAppsFound) Error() string {
-	return fmt.Sprintf("found multiple applications named %q located in the following stacks: %s", e.AppName, strings.Join(e.StackNames, ","))
+	return fmt.Sprintf("found multiple applications named %q located in the following stacks: %s\n use the stack param to select a specific application", e.AppName, strings.Join(e.StackNames, ","))
 }
 
 // App searches for an app by app name
