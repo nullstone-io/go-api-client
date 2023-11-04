@@ -60,13 +60,7 @@ func (s Environments) Create(stackId int64, env *types.Environment) (*types.Envi
 		return nil, err
 	}
 
-	var updatedEnv types.Environment
-	if err := response.ReadJson(res, &updatedEnv); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &updatedEnv, nil
+	return response.ReadJsonPtr[types.Environment](res)
 }
 
 // Update - PUT/PATCH /orgs/:orgName/stacks/:stack_id/envs/:id
