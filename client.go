@@ -30,6 +30,10 @@ func (c *Client) WithApiKey(apiKey string) *Client {
 	return clone
 }
 
+func (c *Client) CurrentUser() CurrentUser {
+	return CurrentUser{Client: c}
+}
+
 func (c *Client) Organizations() Organizations {
 	return Organizations{Client: c}
 }
