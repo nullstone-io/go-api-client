@@ -5,12 +5,12 @@ import (
 )
 
 type ConnectionTarget struct {
-	StackId   int64  `json:"stackId,omitempty"`
-	StackName string `json:"stackName,omitempty"`
-	BlockId   int64  `json:"blockId,omitempty"`
-	BlockName string `json:"blockName,omitempty"`
-	EnvId     *int64 `json:"envId,omitempty"`
-	EnvName   string `json:"envName,omitempty"`
+	StackId   int64  `json:"stackId,omitempty" yaml:"stack_id,omitempty"`
+	StackName string `json:"stackName,omitempty" yaml:"stack_name,omitempty"`
+	BlockId   int64  `json:"blockId,omitempty" yaml:"block_id,omitempty"`
+	BlockName string `json:"blockName,omitempty" yaml:"block_name,omitempty"`
+	EnvId     *int64 `json:"envId,omitempty" yaml:"env_id,omitempty"`
+	EnvName   string `json:"envName,omitempty" yaml:"env_name,omitempty"`
 }
 
 func ParseConnectionTarget(s string) ConnectionTarget {
