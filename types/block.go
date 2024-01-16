@@ -8,6 +8,7 @@ type Block struct {
 	Reference           string                      `json:"reference"`
 	Name                string                      `json:"name"`
 	IsShared            bool                        `json:"isShared"`
+	OwningRepo          string                      `json:"owningRepo"`
 	DnsName             string                      `json:"dnsName,omitempty"`
 	ModuleSource        string                      `json:"moduleSource"`
 	ModuleSourceVersion string                      `json:"moduleSourceVersion"`
