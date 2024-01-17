@@ -82,6 +82,10 @@ func (c *Client) Blocks() Blocks {
 	return Blocks{Client: c}
 }
 
+func (c *Client) BlockSyncs() BlockSyncs {
+	return BlockSyncs{Client: c}
+}
+
 func (c *Client) Apps() Apps {
 	return Apps{Client: c}
 }
