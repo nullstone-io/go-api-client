@@ -13,6 +13,7 @@ type Block struct {
 	ModuleSource        string                      `json:"moduleSource"`
 	ModuleSourceVersion string                      `json:"moduleSourceVersion"`
 	Connections         map[string]ConnectionTarget `json:"connections"`
+	Capabilities        []Capability                `json:"capabilities"`
 }
 
 type Blocks []Block

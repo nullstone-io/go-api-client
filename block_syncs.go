@@ -20,7 +20,7 @@ func (s BlockSyncs) basePath(stackId int64, repo string) string {
 	return fmt.Sprintf("orgs/%s/stacks/%d/repos/%s/block_syncs", s.Client.Config.OrgName, stackId, repo)
 }
 
-// Create - POST /orgs/:orgName/stacks/:stack_id/block_syncs
+// Create - POST /orgs/:orgName/stacks/:stack_id/repos/:repo_name/block_syncs
 func (s BlockSyncs) Create(stackId int64, repo string, payload BlockSyncPayload) ([]types.Block, error) {
 	rawPayload, _ := json.Marshal(payload)
 	res, err := s.Client.Do(http.MethodPost, s.basePath(stackId, repo), nil, nil, json.RawMessage(rawPayload))
