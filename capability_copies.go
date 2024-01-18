@@ -11,8 +11,7 @@ type CapabilityCopies struct {
 }
 
 type CapabilityCopiesPayload struct {
-	AppIds []int64 `json:"appIds"`
-	EnvId  int64   `json:"envId"`
+	EnvId int64 `json:"envId"`
 }
 
 func (c CapabilityCopies) basePath(stackId int64) string {
@@ -20,10 +19,9 @@ func (c CapabilityCopies) basePath(stackId int64) string {
 }
 
 // Create - POST /orgs/:orgName/stacks/:stack_id/capability_copies
-func (c CapabilityCopies) Create(stackId int64, appIds []int64, envId int64) error {
+func (c CapabilityCopies) Create(stackId int64, envId int64) error {
 	payload := CapabilityCopiesPayload{
-		AppIds: appIds,
-		EnvId:  envId,
+		EnvId: envId,
 	}
 	rawPayload, _ := json.Marshal(payload)
 	_, err := c.Client.Do(http.MethodPost, c.basePath(stackId), nil, nil, json.RawMessage(rawPayload))
