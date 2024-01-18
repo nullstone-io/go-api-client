@@ -13,7 +13,7 @@ type BlockSyncs struct {
 }
 
 type BlockSyncPayload struct {
-	Blocks []types.Block
+	Blocks []types.Block `json:"blocks"`
 }
 
 func (s BlockSyncs) basePath(stackId int64, repo string) string {

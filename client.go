@@ -86,6 +86,10 @@ func (c *Client) BlockSyncs() BlockSyncs {
 	return BlockSyncs{Client: c}
 }
 
+func (c *Client) CapabilityCopies() CapabilityCopies {
+	return CapabilityCopies{Client: c}
+}
+
 func (c *Client) PipelineBlockSyncs() PipelineBlockSyncs {
 	return PipelineBlockSyncs{Client: c}
 }
