@@ -86,3 +86,61 @@ func matchContractPart(want, got string, optional bool) bool {
 	}
 	return want == got
 }
+
+// CompareModuleContractName provides a comparison of two module contract names for sorting by specificity, then alphabetically
+// This will walk through category, provider, and platform to ensure that "more-specific" contracts appear first
+// A contract with all wildcards is least-specific; a contract with no wildcards is most-specific
+// A backup comparison is made on alphabetic order
+func CompareModuleContractName(a, b ModuleContractName) bool {
+	category := compareContractPart(a.Category, b.Category, false)
+	if category != 0 {
+		return category < 0
+	}
+	subcategory := compareContractPart(a.Subcategory, b.Subcategory, true)
+	if subcategory != 0 {
+		return subcategory < 0
+	}
+	provider := compareContractPart(a.Provider, b.Provider, false)
+	if provider != 0 {
+		return provider < 0
+	}
+	platform := compareContractPart(a.Platform, b.Platform, false)
+	if platform != 0 {
+		return platform < 0
+	}
+	subplatform := compareContractPart(a.Subplatform, b.Subplatform, true)
+	if subplatform != 0 {
+		return subplatform < 0
+	}
+	return false
+}
+
+func compareContractPart(a, b string, optional bool) int {
+	if optional {
+		if a == "" {
+			a = "*"
+		}
+		if b == "" {
+			b = "*"
+		}
+	}
+
+	if a == b {
+		// both * or same value
+		return 0
+	}
+	if a == "*" && b != "*" {
+		// a is less-specific
+		return 1
+	}
+	if a != "*" && b == "*" {
+		// b is less specific
+		return -1
+	}
+	if a < b {
+		// a is before in alphabet
+		return -1
+	}
+	// b is before in alphabet
+	return 1
+}
