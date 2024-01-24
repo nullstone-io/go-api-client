@@ -74,11 +74,8 @@ func (r *StackResolver) loadEnvs() error {
 }
 
 func (r *StackResolver) Blocks() (map[int64]types.Block, error) {
-	r.once.Do(func() {
-		r.blocksLoadError = r.loadBlocks()
-	})
-	if r.blocksLoadError != nil {
-		return nil, r.blocksLoadError
+	if err := r.ensureBlocks(); err != nil {
+		return nil, err
 	}
 	return r.BlocksById, nil
 }
@@ -94,7 +91,7 @@ func (r *StackResolver) ResolveBlockByName(blockName string) (types.Block, error
 	if block, ok := r.BlocksByName[blockName]; ok {
 		return block, nil
 	}
-	if err := r.loadBlocks(); err != nil {
+	if err := r.ensureBlocks(); err != nil {
 		return types.Block{}, err
 	}
 	if block, ok := r.BlocksByName[blockName]; ok {
@@ -107,7 +104,7 @@ func (r *StackResolver) ResolveBlockById(blockId int64) (types.Block, error) {
 	if block, ok := r.BlocksById[blockId]; ok {
 		return block, nil
 	}
-	if err := r.loadBlocks(); err != nil {
+	if err := r.ensureBlocks(); err != nil {
 		return types.Block{}, err
 	}
 	if block, ok := r.BlocksById[blockId]; ok {
@@ -116,16 +113,40 @@ func (r *StackResolver) ResolveBlockById(blockId int64) (types.Block, error) {
 	return types.Block{}, BlockIdDoesNotExistError{StackName: r.Stack.Name, BlockId: blockId}
 }
 
-func (r *StackResolver) loadBlocks() error {
+func (r *StackResolver) ensureBlocks() error {
+	r.once.Do(func() {
+		r.blocksLoadError = r.LoadBlocks()
+	})
+	return r.blocksLoadError
+}
+
+func (r *StackResolver) LoadBlocks() error {
 	blocks, err := r.ApiClient.Blocks().List(r.Stack.Id)
 	if err != nil {
 		return fmt.Errorf("unable to fetch blocks (%s/%d): %w", r.Stack.OrgName, r.Stack.Id, err)
 	}
-	r.BlocksById = map[int64]types.Block{}
-	r.BlocksByName = map[string]types.Block{}
+	if r.BlocksById == nil {
+		r.BlocksById = map[int64]types.Block{}
+	}
+	if r.BlocksByName == nil {
+		r.BlocksByName = map[string]types.Block{}
+	}
 	for _, block := range blocks {
 		r.BlocksById[block.Id] = block
 		r.BlocksByName[block.Name] = block
+	}
+	return nil
+}
+
+func (r *StackResolver) AddBlock(block types.Block) error {
+	if err := r.ensureBlocks(); err != nil {
+		return err
+	}
+	if block.Name != "" {
+		r.BlocksByName[block.Name] = block
+	}
+	if block.Id != 0 {
+		r.BlocksById[block.Id] = block
 	}
 	return nil
 }
