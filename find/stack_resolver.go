@@ -73,11 +73,11 @@ func (r *StackResolver) loadEnvs() error {
 	return nil
 }
 
-func (r *StackResolver) Blocks() (map[int64]types.Block, error) {
+func (r *StackResolver) Blocks() (map[string]types.Block, error) {
 	if err := r.ensureBlocks(); err != nil {
 		return nil, err
 	}
-	return r.BlocksById, nil
+	return r.BlocksByName, nil
 }
 
 func (r *StackResolver) ResolveBlock(ct types.ConnectionTarget) (types.Block, error) {
