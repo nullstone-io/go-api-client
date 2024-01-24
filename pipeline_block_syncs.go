@@ -16,8 +16,8 @@ func (p PipelineBlockSyncs) basePath(stackId int64) string {
 	return fmt.Sprintf("orgs/%s/stacks/%d/block_syncs", p.Client.Config.OrgName, stackId)
 }
 
-// Create - POST /orgs/:orgName/stacks/:stack_id/envs/:env_id/repos/:repo_name/block_syncs
-func (p PipelineBlockSyncs) Create(stackId int64, repo string, payload BlockSyncPayload) ([]types.Block, error) {
+// Create - POST /orgs/:orgName/stacks/:stack_id/envs/:env_id/block_syncs
+func (p PipelineBlockSyncs) Create(stackId int64, payload BlockSyncPayload) ([]types.Block, error) {
 	rawPayload, _ := json.Marshal(payload)
 	res, err := p.Client.Do(http.MethodPost, p.basePath(stackId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
