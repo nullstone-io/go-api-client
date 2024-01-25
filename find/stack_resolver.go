@@ -16,8 +16,17 @@ type StackResolver struct {
 	BlocksById          map[int64]types.Block
 	BlocksByName        map[string]types.Block
 
-	once            sync.Once
+	envsOnce        sync.Once
+	envsLoadError   error
+	blocksOnce      sync.Once
 	blocksLoadError error
+}
+
+func (r *StackResolver) Envs() (map[int64]types.Environment, error) {
+	if err := r.ensureEnvs(); err != nil {
+		return nil, err
+	}
+	return r.EnvsById, nil
 }
 
 func (r *StackResolver) ResolveEnv(ct types.ConnectionTarget, curEnvId int64) (types.Environment, error) {
@@ -34,7 +43,7 @@ func (r *StackResolver) ResolveEnvByName(envName string) (types.Environment, err
 	if env, ok := r.EnvsByName[envName]; ok {
 		return env, nil
 	}
-	if err := r.loadEnvs(); err != nil {
+	if err := r.ensureEnvs(); err != nil {
 		return types.Environment{}, err
 	}
 	if env, ok := r.EnvsByName[envName]; ok {
@@ -47,7 +56,7 @@ func (r *StackResolver) ResolveEnvById(envId int64) (types.Environment, error) {
 	if env, ok := r.EnvsById[envId]; ok {
 		return env, nil
 	}
-	if err := r.loadEnvs(); err != nil {
+	if err := r.ensureEnvs(); err != nil {
 		return types.Environment{}, err
 	}
 	if env, ok := r.EnvsById[envId]; ok {
@@ -61,8 +70,12 @@ func (r *StackResolver) loadEnvs() error {
 	if err != nil {
 		return fmt.Errorf("unable to fetch environments (%s/%d): %w", r.Stack.OrgName, r.Stack.Id, err)
 	}
-	r.EnvsById = map[int64]types.Environment{}
-	r.EnvsByName = map[string]types.Environment{}
+	if r.EnvsById == nil {
+		r.EnvsById = map[int64]types.Environment{}
+	}
+	if r.EnvsByName == nil {
+		r.EnvsByName = map[string]types.Environment{}
+	}
 	for _, env := range envs {
 		r.EnvsById[env.Id] = *env
 		r.EnvsByName[env.Name] = *env
@@ -73,11 +86,19 @@ func (r *StackResolver) loadEnvs() error {
 	return nil
 }
 
-func (r *StackResolver) Blocks() (map[string]types.Block, error) {
+func (r *StackResolver) ensureEnvs() error {
+	r.envsOnce.Do(func() {
+		r.envsLoadError = r.loadEnvs()
+	})
+	return r.envsLoadError
+
+}
+
+func (r *StackResolver) Blocks() (map[int64]types.Block, error) {
 	if err := r.ensureBlocks(); err != nil {
 		return nil, err
 	}
-	return r.BlocksByName, nil
+	return r.BlocksById, nil
 }
 
 func (r *StackResolver) ResolveBlock(ct types.ConnectionTarget) (types.Block, error) {
@@ -114,7 +135,7 @@ func (r *StackResolver) ResolveBlockById(blockId int64) (types.Block, error) {
 }
 
 func (r *StackResolver) ensureBlocks() error {
-	r.once.Do(func() {
+	r.blocksOnce.Do(func() {
 		r.blocksLoadError = r.LoadBlocks()
 	})
 	return r.blocksLoadError
