@@ -56,7 +56,7 @@ func (t ConnectionTarget) Match(other ConnectionTarget) bool {
 	if t.StackId != other.StackId {
 		return false
 	}
-	if t.BlockId != other.BlockId {
+	if t.BlockName != other.BlockName {
 		return false
 	}
 	if t.EnvId == nil {
