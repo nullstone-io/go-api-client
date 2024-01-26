@@ -11,15 +11,15 @@ import (
 	"strings"
 )
 
-type EnvConfigurations struct {
+type EnvInfraConfigurations struct {
 	Client *Client
 }
 
-func (ec EnvConfigurations) basePath(stackId, envId int64) string {
+func (ec EnvInfraConfigurations) basePath(stackId, envId int64) string {
 	return fmt.Sprintf("/orgs/%s/stacks/%d/envs/%d/configuration", ec.Client.Config.OrgName, stackId, envId)
 }
 
-func (ec EnvConfigurations) Create(stackId, envId int64, config, overrides string) (*types.WorkspaceLaunchNeeds, error) {
+func (ec EnvInfraConfigurations) Create(stackId, envId int64, config, overrides string) (*types.WorkspaceLaunchNeeds, error) {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 

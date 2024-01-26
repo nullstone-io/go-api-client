@@ -10,15 +10,15 @@ import (
 	"strings"
 )
 
-type StackConfigurations struct {
+type PipelineInfraConfigurations struct {
 	Client *Client
 }
 
-func (sc StackConfigurations) basePath(stackId int64) string {
+func (sc PipelineInfraConfigurations) basePath(stackId int64) string {
 	return fmt.Sprintf("/orgs/%s/stacks/%d/configuration", sc.Client.Config.OrgName, stackId)
 }
 
-func (sc StackConfigurations) Create(stackId int64, config, overrides string) error {
+func (sc PipelineInfraConfigurations) Create(stackId int64, config, overrides string) error {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 

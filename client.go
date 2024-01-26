@@ -58,12 +58,12 @@ func (c *Client) EnvironmentsByName() EnvironmentsByName {
 	return EnvironmentsByName{Client: c}
 }
 
-func (c *Client) EnvConfigurations() EnvConfigurations {
-	return EnvConfigurations{Client: c}
+func (c *Client) EnvInfraConfigurations() EnvInfraConfigurations {
+	return EnvInfraConfigurations{Client: c}
 }
 
-func (c *Client) StackConfigurations() StackConfigurations {
-	return StackConfigurations{Client: c}
+func (c *Client) PipelineInfraConfigurations() PipelineInfraConfigurations {
+	return PipelineInfraConfigurations{Client: c}
 }
 
 func (c *Client) EnvRuns() EnvRuns {
