@@ -18,17 +18,25 @@ func (sc PipelineInfraConfigurations) basePath(stackId int64) string {
 	return fmt.Sprintf("/orgs/%s/stacks/%d/configuration", sc.Client.Config.OrgName, stackId)
 }
 
-func (sc PipelineInfraConfigurations) Create(stackId int64, config map[string]string) error {
+func (sc PipelineInfraConfigurations) Create(stackId int64, repoName string, config map[string]string) error {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
+	part, err := writer.CreateFormField("repoName")
+	if err != nil {
+		return fmt.Errorf("unable to create form field for repoName: %w", err)
+	}
+	_, err = io.Copy(part, strings.NewReader(repoName))
+	if err != nil {
+		return fmt.Errorf("unable to copy repoName into form field: %w", err)
+	}
+
 	for k, v := range config {
-		part, err := writer.CreateFormFile(k, k)
+		part, err = writer.CreateFormFile(k, k)
 		if err != nil {
 			return fmt.Errorf("unable to create form file: %w", err)
 		}
-		configReader := strings.NewReader(v)
-		_, err = io.Copy(part, configReader)
+		_, err = io.Copy(part, strings.NewReader(v))
 		if err != nil {
 			return fmt.Errorf("unable to copy file contents into form file: %w", err)
 		}
