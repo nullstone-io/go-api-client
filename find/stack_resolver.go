@@ -163,11 +163,20 @@ func (r *StackResolver) AddBlock(block types.Block) error {
 	if err := r.ensureBlocks(); err != nil {
 		return err
 	}
+
+	if block.Id != 0 {
+		// we need to check for an existing block because the name could have changed
+		// and if the name changed, it needs to be removed from the BlocksByName map
+		existingBlock, ok := r.BlocksById[block.Id]
+		if ok {
+			r.BlocksById[block.Id] = block
+			delete(r.BlocksByName, existingBlock.Name)
+		}
+	}
+
 	if block.Name != "" {
 		r.BlocksByName[block.Name] = block
 	}
-	if block.Id != 0 {
-		r.BlocksById[block.Id] = block
-	}
+
 	return nil
 }
