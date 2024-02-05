@@ -186,3 +186,92 @@ func TestResourceResolver(t *testing.T) {
 		assert.Equal(t, want, got)
 	})
 }
+
+func TestResourceResolver_BackfillMissingBlocks(t *testing.T) {
+	stack1 := types.Stack{
+		IdModel:      types.IdModel{Id: 1},
+		OrgName:      "nullstone",
+		Name:         "primary",
+		ProviderType: "aws",
+	}
+	env1 := types.Environment{
+		IdModel:   types.IdModel{Id: 11},
+		Type:      types.EnvTypePipeline,
+		Name:      "dev",
+		OrgName:   "nullstone",
+		StackId:   stack1.Id,
+		Reference: "purple-parrot",
+	}
+	block1 := types.Block{
+		IdModel:  types.IdModel{Id: 101},
+		Type:     "Block",
+		OrgName:  "nullstone",
+		StackId:  stack1.Id,
+		Name:     "block1",
+		IsShared: false,
+	}
+	block2 := types.Block{
+		IdModel:  types.IdModel{Id: 102},
+		Type:     "Block",
+		OrgName:  "nullstone",
+		StackId:  stack1.Id,
+		Name:     "block2",
+		IsShared: false,
+	}
+
+	stacks := []types.Stack{stack1}
+	envs := []types.Environment{env1}
+	blocks := []types.Block{block1, block2}
+	router := mux.NewRouter()
+	mocks.ListStacks(router, stacks)
+	mocks.ListEnvironments(router, envs)
+	mocks.ListBlocks(router, blocks)
+	apiClient := mocks.Client(t, "nullstone", router)
+
+	rr := NewResourceResolver(apiClient, stack1.Id, env1.Id)
+
+	t.Run("adds all blocks", func(t *testing.T) {
+		newBlocks := []types.Block{
+			{
+				Type:     "Block",
+				OrgName:  "nullstone",
+				StackId:  0,
+				Name:     "block3",
+				IsShared: false,
+			},
+			{
+				Type:     "Block",
+				OrgName:  "nullstone",
+				StackId:  0,
+				Name:     "block1",
+				IsShared: true,
+			},
+			{
+				IdModel:  types.IdModel{Id: 102},
+				Type:     "Block",
+				OrgName:  "nullstone",
+				StackId:  0,
+				Name:     "block2",
+				IsShared: true,
+			},
+		}
+
+		err := rr.BackfillMissingBlocks(newBlocks)
+		assert.NoError(t, err)
+
+		sr, err := rr.ResolveStack(types.ConnectionTarget{StackId: stack1.Id})
+		assert.NoError(t, err)
+
+		assert.Equal(t, 3, len(sr.BlocksByName))
+		assert.Equal(t, 2, len(sr.BlocksById))
+
+		// check to make sure "block3" was added and StackId set
+		assert.Equal(t, sr.BlocksByName["block3"].StackId, stack1.Id)
+
+		// check to make sure "block1" was updated because the name was the same
+		assert.Equal(t, sr.BlocksByName["block1"].IsShared, true)
+
+		// check to make sure "block2" was updated because the id was the same
+		assert.Equal(t, sr.BlocksById[102].IsShared, true)
+	})
+}

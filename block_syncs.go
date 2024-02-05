@@ -13,17 +13,18 @@ type BlockSyncs struct {
 }
 
 type BlockSyncPayload struct {
-	Blocks []types.Block
+	Blocks   []types.Block `json:"blocks"`
+	RepoName string        `json:"repoName"`
 }
 
-func (s BlockSyncs) basePath(stackId int64, repo string) string {
-	return fmt.Sprintf("orgs/%s/stacks/%d/repos/%s/block_syncs", s.Client.Config.OrgName, stackId, repo)
+func (s BlockSyncs) basePath(stackId, envId int64) string {
+	return fmt.Sprintf("orgs/%s/stacks/%d/envs/%d/block_syncs", s.Client.Config.OrgName, stackId, envId)
 }
 
 // Create - POST /orgs/:orgName/stacks/:stack_id/block_syncs
-func (s BlockSyncs) Create(stackId int64, repo string, payload BlockSyncPayload) ([]types.Block, error) {
+func (s BlockSyncs) Create(stackId, envId int64, payload BlockSyncPayload) ([]types.Block, error) {
 	rawPayload, _ := json.Marshal(payload)
-	res, err := s.Client.Do(http.MethodPost, s.basePath(stackId, repo), nil, nil, json.RawMessage(rawPayload))
+	res, err := s.Client.Do(http.MethodPost, s.basePath(stackId, envId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}

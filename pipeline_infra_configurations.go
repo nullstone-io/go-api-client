@@ -10,36 +10,33 @@ import (
 	"strings"
 )
 
-type StackConfigurations struct {
+type PipelineInfraConfigurations struct {
 	Client *Client
 }
 
-func (sc StackConfigurations) basePath(stackId int64) string {
+func (sc PipelineInfraConfigurations) basePath(stackId int64) string {
 	return fmt.Sprintf("/orgs/%s/stacks/%d/configuration", sc.Client.Config.OrgName, stackId)
 }
 
-func (sc StackConfigurations) Create(stackId int64, config, overrides string) error {
+func (sc PipelineInfraConfigurations) Create(stackId int64, repoName string, config map[string]string) error {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
-	if config != "" {
-		part, err := writer.CreateFormFile("config", "config.yml")
-		if err != nil {
-			return fmt.Errorf("unable to create form file: %w", err)
-		}
-		configReader := strings.NewReader(config)
-		_, err = io.Copy(part, configReader)
-		if err != nil {
-			return fmt.Errorf("unable to copy file contents into form file: %w", err)
-		}
+	part, err := writer.CreateFormField("repoName")
+	if err != nil {
+		return fmt.Errorf("unable to create form field for repoName: %w", err)
 	}
-	if overrides != "" {
-		part, err := writer.CreateFormFile("overrides", "previews.yml")
+	_, err = io.Copy(part, strings.NewReader(repoName))
+	if err != nil {
+		return fmt.Errorf("unable to copy repoName into form field: %w", err)
+	}
+
+	for k, v := range config {
+		part, err = writer.CreateFormFile(k, k)
 		if err != nil {
 			return fmt.Errorf("unable to create form file: %w", err)
 		}
-		overridesReader := strings.NewReader(overrides)
-		_, err = io.Copy(part, overridesReader)
+		_, err = io.Copy(part, strings.NewReader(v))
 		if err != nil {
 			return fmt.Errorf("unable to copy file contents into form file: %w", err)
 		}

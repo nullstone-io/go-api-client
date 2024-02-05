@@ -16,8 +16,17 @@ type StackResolver struct {
 	BlocksById          map[int64]types.Block
 	BlocksByName        map[string]types.Block
 
-	once            sync.Once
+	envsOnce        sync.Once
+	envsLoadError   error
+	blocksOnce      sync.Once
 	blocksLoadError error
+}
+
+func (r *StackResolver) Envs() (map[int64]types.Environment, error) {
+	if err := r.ensureEnvs(); err != nil {
+		return nil, err
+	}
+	return r.EnvsById, nil
 }
 
 func (r *StackResolver) ResolveEnv(ct types.ConnectionTarget, curEnvId int64) (types.Environment, error) {
@@ -34,7 +43,7 @@ func (r *StackResolver) ResolveEnvByName(envName string) (types.Environment, err
 	if env, ok := r.EnvsByName[envName]; ok {
 		return env, nil
 	}
-	if err := r.loadEnvs(); err != nil {
+	if err := r.ensureEnvs(); err != nil {
 		return types.Environment{}, err
 	}
 	if env, ok := r.EnvsByName[envName]; ok {
@@ -47,7 +56,7 @@ func (r *StackResolver) ResolveEnvById(envId int64) (types.Environment, error) {
 	if env, ok := r.EnvsById[envId]; ok {
 		return env, nil
 	}
-	if err := r.loadEnvs(); err != nil {
+	if err := r.ensureEnvs(); err != nil {
 		return types.Environment{}, err
 	}
 	if env, ok := r.EnvsById[envId]; ok {
@@ -61,8 +70,12 @@ func (r *StackResolver) loadEnvs() error {
 	if err != nil {
 		return fmt.Errorf("unable to fetch environments (%s/%d): %w", r.Stack.OrgName, r.Stack.Id, err)
 	}
-	r.EnvsById = map[int64]types.Environment{}
-	r.EnvsByName = map[string]types.Environment{}
+	if r.EnvsById == nil {
+		r.EnvsById = map[int64]types.Environment{}
+	}
+	if r.EnvsByName == nil {
+		r.EnvsByName = map[string]types.Environment{}
+	}
 	for _, env := range envs {
 		r.EnvsById[env.Id] = *env
 		r.EnvsByName[env.Name] = *env
@@ -73,12 +86,17 @@ func (r *StackResolver) loadEnvs() error {
 	return nil
 }
 
-func (r *StackResolver) Blocks() (map[int64]types.Block, error) {
-	r.once.Do(func() {
-		r.blocksLoadError = r.loadBlocks()
+func (r *StackResolver) ensureEnvs() error {
+	r.envsOnce.Do(func() {
+		r.envsLoadError = r.loadEnvs()
 	})
-	if r.blocksLoadError != nil {
-		return nil, r.blocksLoadError
+	return r.envsLoadError
+
+}
+
+func (r *StackResolver) Blocks() (map[int64]types.Block, error) {
+	if err := r.ensureBlocks(); err != nil {
+		return nil, err
 	}
 	return r.BlocksById, nil
 }
@@ -94,7 +112,7 @@ func (r *StackResolver) ResolveBlockByName(blockName string) (types.Block, error
 	if block, ok := r.BlocksByName[blockName]; ok {
 		return block, nil
 	}
-	if err := r.loadBlocks(); err != nil {
+	if err := r.ensureBlocks(); err != nil {
 		return types.Block{}, err
 	}
 	if block, ok := r.BlocksByName[blockName]; ok {
@@ -107,7 +125,7 @@ func (r *StackResolver) ResolveBlockById(blockId int64) (types.Block, error) {
 	if block, ok := r.BlocksById[blockId]; ok {
 		return block, nil
 	}
-	if err := r.loadBlocks(); err != nil {
+	if err := r.ensureBlocks(); err != nil {
 		return types.Block{}, err
 	}
 	if block, ok := r.BlocksById[blockId]; ok {
@@ -116,16 +134,49 @@ func (r *StackResolver) ResolveBlockById(blockId int64) (types.Block, error) {
 	return types.Block{}, BlockIdDoesNotExistError{StackName: r.Stack.Name, BlockId: blockId}
 }
 
-func (r *StackResolver) loadBlocks() error {
+func (r *StackResolver) ensureBlocks() error {
+	r.blocksOnce.Do(func() {
+		r.blocksLoadError = r.LoadBlocks()
+	})
+	return r.blocksLoadError
+}
+
+func (r *StackResolver) LoadBlocks() error {
 	blocks, err := r.ApiClient.Blocks().List(r.Stack.Id)
 	if err != nil {
 		return fmt.Errorf("unable to fetch blocks (%s/%d): %w", r.Stack.OrgName, r.Stack.Id, err)
 	}
-	r.BlocksById = map[int64]types.Block{}
-	r.BlocksByName = map[string]types.Block{}
+	if r.BlocksById == nil {
+		r.BlocksById = map[int64]types.Block{}
+	}
+	if r.BlocksByName == nil {
+		r.BlocksByName = map[string]types.Block{}
+	}
 	for _, block := range blocks {
 		r.BlocksById[block.Id] = block
 		r.BlocksByName[block.Name] = block
 	}
+	return nil
+}
+
+func (r *StackResolver) AddBlock(block types.Block) error {
+	if err := r.ensureBlocks(); err != nil {
+		return err
+	}
+
+	if block.Id != 0 {
+		// we need to check for an existing block because the name could have changed
+		// and if the name changed, it needs to be removed from the BlocksByName map
+		existingBlock, ok := r.BlocksById[block.Id]
+		if ok {
+			r.BlocksById[block.Id] = block
+			delete(r.BlocksByName, existingBlock.Name)
+		}
+	}
+
+	if block.Name != "" {
+		r.BlocksByName[block.Name] = block
+	}
+
 	return nil
 }
