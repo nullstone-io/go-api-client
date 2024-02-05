@@ -1,6 +1,7 @@
 package find
 
 import (
+	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 )
@@ -84,6 +85,30 @@ func (r *ResourceResolver) ResolveCurProviderType() (string, error) {
 		return "", err
 	}
 	return sr.Stack.ProviderType, nil
+}
+
+func (r *ResourceResolver) BackfillMissingBlocks(blocks []types.Block) error {
+	sr, err := r.ResolveStack(types.ConnectionTarget{StackId: r.CurStackId})
+	if err != nil {
+		return fmt.Errorf("unable to resolve stack: %w", err)
+	}
+
+	for _, block := range blocks {
+		block.StackId = r.CurStackId
+		if err = sr.AddBlock(block); err != nil {
+			return fmt.Errorf("unable to add block (%s) to resolver: %w", block.Name, err)
+		}
+	}
+
+	return nil
+}
+
+func (r *ResourceResolver) GetCurrentEnvs() (map[int64]types.Environment, error) {
+	sr, err := r.ResolveStack(types.ConnectionTarget{StackId: r.CurStackId})
+	if err != nil {
+		return nil, fmt.Errorf("unable to resolve stack: %w", err)
+	}
+	return sr.Envs()
 }
 
 func (r *ResourceResolver) resolveStackByName(stackName string) (*StackResolver, error) {

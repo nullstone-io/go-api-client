@@ -58,12 +58,12 @@ func (c *Client) EnvironmentsByName() EnvironmentsByName {
 	return EnvironmentsByName{Client: c}
 }
 
-func (c *Client) EnvConfigurations() EnvConfigurations {
-	return EnvConfigurations{Client: c}
+func (c *Client) EnvInfraConfigurations() EnvInfraConfigurations {
+	return EnvInfraConfigurations{Client: c}
 }
 
-func (c *Client) StackConfigurations() StackConfigurations {
-	return StackConfigurations{Client: c}
+func (c *Client) PipelineInfraConfigurations() PipelineInfraConfigurations {
+	return PipelineInfraConfigurations{Client: c}
 }
 
 func (c *Client) EnvRuns() EnvRuns {
@@ -80,6 +80,18 @@ func (c *Client) ProviderCredentials() ProviderCredentials {
 
 func (c *Client) Blocks() Blocks {
 	return Blocks{Client: c}
+}
+
+func (c *Client) BlockSyncs() BlockSyncs {
+	return BlockSyncs{Client: c}
+}
+
+func (c *Client) CapabilityCopies() CapabilityCopies {
+	return CapabilityCopies{Client: c}
+}
+
+func (c *Client) PipelineBlockSyncs() PipelineBlockSyncs {
+	return PipelineBlockSyncs{Client: c}
 }
 
 func (c *Client) Apps() Apps {
