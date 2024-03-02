@@ -16,7 +16,7 @@ func (l DeployLogs) path(stackId int64, deployId int64) string {
 }
 
 func (l DeployLogs) Watch(ctx context.Context, stackId int64, deployId int64, retryFn ws.StreamerRetryFunc) (<-chan types.Message, error) {
-	endpoint, headers, err := l.Client.Config.ConstructWsEndpoint(l.path(stackId, deployId))
+	endpoint, headers, err := l.Client.Config.ConstructWsEndpoint(ctx, l.path(stackId, deployId))
 	if err != nil {
 		return nil, err
 	}

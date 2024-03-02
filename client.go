@@ -204,6 +204,7 @@ func (c *Client) Do(method string, relativePath string, query url.Values, header
 	if err != nil {
 		return nil, fmt.Errorf("invalid request url: %w", err)
 	}
+	// TODO: Change to http.NewRequestWithContext
 	req, err := http.NewRequest(method, u.String(), bodyReader)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
@@ -211,7 +212,7 @@ func (c *Client) Do(method string, relativePath string, query url.Values, header
 	for k, v := range headers {
 		req.Header.Set(k, v)
 	}
-	if err := c.Config.AddAuthorizationHeader(req.Header); err != nil {
+	if err := c.Config.AddAuthorizationHeader(req.Context(), req.Header); err != nil {
 		return nil, err
 	}
 
@@ -231,5 +232,6 @@ func (c *Client) CreateRequest(method string, relativePath string, query url.Val
 	if err != nil {
 		return nil, err
 	}
+	// TODO: Change to http.NewRequestWithContext
 	return http.NewRequest(method, u.String(), body)
 }

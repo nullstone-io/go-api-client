@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"context"
 	"encoding/json"
 	"errors"
 	"github.com/cristalhq/jwt/v3"
@@ -12,8 +13,8 @@ var (
 
 // GetClaims attempts to read the access token and parse jwt.StandardClaims
 // If the access token is not a valid JWT, this will return NotValidJwtTokenErr
-func GetClaims(source AccessTokenSource, orgName string) (*jwt.StandardClaims, error) {
-	accessToken, err := source.GetAccessToken(orgName)
+func GetClaims(ctx context.Context, source AccessTokenSource, orgName string) (*jwt.StandardClaims, error) {
+	accessToken, err := source.GetAccessToken(ctx, orgName)
 	if err != nil {
 		return nil, err
 	}
@@ -32,8 +33,8 @@ func GetClaims(source AccessTokenSource, orgName string) (*jwt.StandardClaims, e
 
 // GetCustomClaims attempts to read the access token and parse a custom Claims json
 // If the access token is not a valid JWT, this will return NotValidJwtTokenErr
-func GetCustomClaims(source AccessTokenSource, orgName string) (*Claims, error) {
-	accessToken, err := source.GetAccessToken(orgName)
+func GetCustomClaims(ctx context.Context, source AccessTokenSource, orgName string) (*Claims, error) {
+	accessToken, err := source.GetAccessToken(ctx, orgName)
 	if err != nil {
 		return nil, err
 	}
