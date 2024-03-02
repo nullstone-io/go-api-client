@@ -3,6 +3,7 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"net/http"
 )
 
@@ -24,10 +25,10 @@ func (c CapabilityCopies) Create(stackId int64, envId int64) error {
 		EnvId: envId,
 	}
 	rawPayload, _ := json.Marshal(payload)
-	_, err := c.Client.Do(http.MethodPost, c.basePath(stackId), nil, nil, json.RawMessage(rawPayload))
+	res, err := c.Client.Do(http.MethodPost, c.basePath(stackId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return err
 	}
 
-	return nil
+	return response.Verify(res)
 }
