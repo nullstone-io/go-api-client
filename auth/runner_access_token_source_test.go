@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"context"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"testing"
@@ -25,22 +26,24 @@ func TestRunnerAccessTokenSource_GetAccessToken(t *testing.T) {
 	org1 := "acme1"
 	org2 := "acme2"
 
-	rk1, err := fakeStore.GetOrCreate(org1)
+	ctx := context.Background()
+
+	rk1, err := fakeStore.GetOrCreate(ctx, org1)
 	require.NoError(t, err)
-	rk2, err := fakeStore.GetOrCreate(org2)
+	rk2, err := fakeStore.GetOrCreate(ctx, org2)
 	require.NoError(t, err)
 
 	fakeServer.AddRunnerKey(rk1)
 	fakeServer.AddRunnerKey(rk2)
 
-	got1, err := tokenSource.GetAccessToken(org1)
+	got1, err := tokenSource.GetAccessToken(ctx, org1)
 	require.NoError(t, err, "unexpected error")
 
-	got2, err := tokenSource.GetAccessToken(org1)
+	got2, err := tokenSource.GetAccessToken(ctx, org1)
 	require.NoError(t, err, "unexpected error")
 	assert.Equal(t, got1, got2, "should be same token")
 
-	got3, err := tokenSource.GetAccessToken(org2)
+	got3, err := tokenSource.GetAccessToken(ctx, org2)
 	require.NoError(t, err, "unexpected error")
 	assert.NotEqual(t, got1, got3)
 	assert.NotEqual(t, got2, got3)

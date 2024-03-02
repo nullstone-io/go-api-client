@@ -1,12 +1,13 @@
 package auth
 
 import (
+	"context"
 	"sync"
 	"time"
 )
 
 type RunnerKeyStore interface {
-	GetOrCreate(orgName string) (*RunnerKey, error)
+	GetOrCreate(ctx context.Context, orgName string) (*RunnerKey, error)
 }
 
 var _ RunnerKeyStore = &FakeRunnerKeyStore{}
@@ -16,7 +17,7 @@ type FakeRunnerKeyStore struct {
 	mu         sync.Mutex
 }
 
-func (s *FakeRunnerKeyStore) GetOrCreate(orgName string) (*RunnerKey, error) {
+func (s *FakeRunnerKeyStore) GetOrCreate(ctx context.Context, orgName string) (*RunnerKey, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 

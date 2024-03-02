@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"context"
 	"fmt"
 	"sync"
 )
@@ -24,9 +25,9 @@ func (s *RunnerAccessTokenSource) ensure() {
 	}
 }
 
-func (s *RunnerAccessTokenSource) GetAccessToken(orgName string) (string, error) {
+func (s *RunnerAccessTokenSource) GetAccessToken(ctx context.Context, orgName string) (string, error) {
 	s.ensure()
-	runner, err := s.getOrInitialize(orgName)
+	runner, err := s.getOrInitialize(ctx, orgName)
 	if err != nil {
 		return "", err
 	}
@@ -37,7 +38,7 @@ func (s *RunnerAccessTokenSource) GetAccessToken(orgName string) (string, error)
 	return token.String(), nil
 }
 
-func (s *RunnerAccessTokenSource) getOrInitialize(orgName string) (*Runner, error) {
+func (s *RunnerAccessTokenSource) getOrInitialize(ctx context.Context, orgName string) (*Runner, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 
@@ -45,7 +46,7 @@ func (s *RunnerAccessTokenSource) getOrInitialize(orgName string) (*Runner, erro
 		return runner, nil
 	}
 
-	runner, err := NewRunner(orgName, s.RunnerKeyStore)
+	runner, err := NewRunner(ctx, orgName, s.RunnerKeyStore)
 	if err != nil {
 		return nil, fmt.Errorf("unable to initialize runner: %w", err)
 	}
