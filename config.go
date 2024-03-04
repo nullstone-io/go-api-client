@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"fmt"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
 	"gopkg.in/nullstone-io/go-api-client.v0/auth"
 	"gopkg.in/nullstone-io/go-api-client.v0/trace"
 	"net/http"
@@ -79,6 +80,7 @@ func (c *Config) AddAuthorizationHeader(ctx context.Context, headers http.Header
 }
 
 func (c *Config) CreateTransport(baseTransport http.RoundTripper) http.RoundTripper {
+	baseTransport = otelhttp.NewTransport(baseTransport)
 	if c.IsTraceEnabled {
 		return &trace.HttpTransport{BaseTransport: baseTransport}
 	}
