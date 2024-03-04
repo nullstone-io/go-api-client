@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
@@ -16,8 +17,8 @@ func (a AutogenSubdomain) path(subdomainId, envId int64) string {
 }
 
 // Get - GET /orgs/:orgName/subdomains/:subdomainId/envs/:envId/autogen_subdomain
-func (a AutogenSubdomain) Get(subdomainId, envId int64) (*types.AutogenSubdomain, error) {
-	res, err := a.Client.Do(http.MethodGet, a.path(subdomainId, envId), nil, nil, nil)
+func (a AutogenSubdomain) Get(ctx context.Context, subdomainId, envId int64) (*types.AutogenSubdomain, error) {
+	res, err := a.Client.Do(ctx, http.MethodGet, a.path(subdomainId, envId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -32,8 +33,8 @@ func (a AutogenSubdomain) Get(subdomainId, envId int64) (*types.AutogenSubdomain
 }
 
 // Create - POST /orgs/:orgName/subdomains/:subdomainId/envs/:envId/autogen_subdomain
-func (a AutogenSubdomain) Create(subdomainId, envId int64) (*types.AutogenSubdomain, error) {
-	res, err := a.Client.Do(http.MethodPost, a.path(subdomainId, envId), nil, nil, nil)
+func (a AutogenSubdomain) Create(ctx context.Context, subdomainId, envId int64) (*types.AutogenSubdomain, error) {
+	res, err := a.Client.Do(ctx, http.MethodPost, a.path(subdomainId, envId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -48,8 +49,8 @@ func (a AutogenSubdomain) Create(subdomainId, envId int64) (*types.AutogenSubdom
 }
 
 // Destroy - DELETE /orgs/:orgName/subdomains/:subdomainId/envs/:envId/autogen_subdomain
-func (a AutogenSubdomain) Destroy(subdomainId, envId int64) (bool, error) {
-	res, err := a.Client.Do(http.MethodDelete, a.path(subdomainId, envId), nil, nil, nil)
+func (a AutogenSubdomain) Destroy(ctx context.Context, subdomainId, envId int64) (bool, error) {
+	res, err := a.Client.Do(ctx, http.MethodDelete, a.path(subdomainId, envId), nil, nil, nil)
 	if err != nil {
 		return false, err
 	}

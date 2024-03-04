@@ -2,6 +2,7 @@ package api
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/auth"
@@ -186,7 +187,7 @@ func (c *Client) Events() Events {
 	return Events{Client: c}
 }
 
-func (c *Client) Do(method string, relativePath string, query url.Values, headers map[string]string, body interface{}) (*http.Response, error) {
+func (c *Client) Do(ctx context.Context, method string, relativePath string, query url.Values, headers map[string]string, body interface{}) (*http.Response, error) {
 	var bodyReader io.Reader
 	if jrm, ok := body.(json.RawMessage); ok {
 		bodyReader = bytes.NewReader(jrm)
@@ -204,8 +205,7 @@ func (c *Client) Do(method string, relativePath string, query url.Values, header
 	if err != nil {
 		return nil, fmt.Errorf("invalid request url: %w", err)
 	}
-	// TODO: Change to http.NewRequestWithContext
-	req, err := http.NewRequest(method, u.String(), bodyReader)
+	req, err := http.NewRequestWithContext(ctx, method, u.String(), bodyReader)
 	if err != nil {
 		return nil, fmt.Errorf("error creating request: %w", err)
 	}
@@ -227,11 +227,10 @@ func (c *Client) Do(method string, relativePath string, query url.Values, header
 	return res, nil
 }
 
-func (c *Client) CreateRequest(method string, relativePath string, query url.Values, body io.Reader) (*http.Request, error) {
+func (c *Client) CreateRequest(ctx context.Context, method string, relativePath string, query url.Values, body io.Reader) (*http.Request, error) {
 	u, err := c.Config.ConstructUrl(relativePath, query)
 	if err != nil {
 		return nil, err
 	}
-	// TODO: Change to http.NewRequestWithContext
-	return http.NewRequest(method, u.String(), body)
+	return http.NewRequestWithContext(ctx, method, u.String(), body)
 }

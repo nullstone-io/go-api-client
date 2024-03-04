@@ -2,6 +2,7 @@ package api
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
@@ -28,25 +29,25 @@ func (mv ModuleVersions) downloadPath(orgName, moduleName, versionName string) s
 	return fmt.Sprintf("orgs/%s/modules/%s/versions/%s/download", orgName, moduleName, versionName)
 }
 
-func (mv ModuleVersions) Get(orgName, moduleName, version string) (*types.ModuleVersion, error) {
-	res, err := mv.Client.Do(http.MethodGet, mv.path(orgName, moduleName, version), nil, nil, nil)
+func (mv ModuleVersions) Get(ctx context.Context, orgName, moduleName, version string) (*types.ModuleVersion, error) {
+	res, err := mv.Client.Do(ctx, http.MethodGet, mv.path(orgName, moduleName, version), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
 	return response.ReadJsonPtr[types.ModuleVersion](res)
 }
 
-func (mv ModuleVersions) List(orgName, moduleName string) ([]types.ModuleVersion, error) {
-	res, err := mv.Client.Do(http.MethodGet, mv.basePath(orgName, moduleName), nil, nil, nil)
+func (mv ModuleVersions) List(ctx context.Context, orgName, moduleName string) ([]types.ModuleVersion, error) {
+	res, err := mv.Client.Do(ctx, http.MethodGet, mv.basePath(orgName, moduleName), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
 	return response.ReadJsonVal[[]types.ModuleVersion](res)
 }
 
-func (mv ModuleVersions) GetDownloadInfo(orgName, moduleName string, versionName string) (*types.ModuleDownloadInfo, error) {
+func (mv ModuleVersions) GetDownloadInfo(ctx context.Context, orgName, moduleName string, versionName string) (*types.ModuleDownloadInfo, error) {
 	relativePath := mv.downloadPath(orgName, moduleName, versionName)
-	res, err := mv.Client.Do(http.MethodHead, relativePath, nil, nil, nil)
+	res, err := mv.Client.Do(ctx, http.MethodHead, relativePath, nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -85,8 +86,8 @@ func (mv ModuleVersions) GetDownloadInfo(orgName, moduleName string, versionName
 	return info, nil
 }
 
-func (mv ModuleVersions) Download(orgName, moduleName, versionName string, file io.Writer) error {
-	res, err := mv.Client.Do(http.MethodGet, mv.downloadPath(orgName, moduleName, versionName), nil, nil, nil)
+func (mv ModuleVersions) Download(ctx context.Context, orgName, moduleName, versionName string, file io.Writer) error {
+	res, err := mv.Client.Do(ctx, http.MethodGet, mv.downloadPath(orgName, moduleName, versionName), nil, nil, nil)
 	if err != nil {
 		return err
 	}
@@ -99,7 +100,7 @@ func (mv ModuleVersions) Download(orgName, moduleName, versionName string, file 
 	return nil
 }
 
-func (mv ModuleVersions) Create(orgName, moduleName, versionName string, file io.Reader) error {
+func (mv ModuleVersions) Create(ctx context.Context, orgName, moduleName, versionName string, file io.Reader) error {
 	query := url.Values{}
 	query.Set("version", versionName)
 
@@ -120,7 +121,7 @@ func (mv ModuleVersions) Create(orgName, moduleName, versionName string, file io
 
 	var headers = map[string]string{}
 	headers["Content-Type"] = writer.FormDataContentType()
-	res, err := mv.Client.Do(http.MethodPost, mv.basePath(orgName, moduleName), query, headers, body)
+	res, err := mv.Client.Do(ctx, http.MethodPost, mv.basePath(orgName, moduleName), query, headers, body)
 	if err != nil {
 		return err
 	}

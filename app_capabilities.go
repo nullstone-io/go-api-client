@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
@@ -26,8 +27,8 @@ func (e AppCapabilities) capPath(stackId, appId, envId, capId int64) string {
 }
 
 // List - GET /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities
-func (e AppCapabilities) List(stackId, appId, envId int64) ([]types.Capability, error) {
-	res, err := e.Client.Do(http.MethodGet, e.basePath(stackId, appId, envId), nil, nil, nil)
+func (e AppCapabilities) List(ctx context.Context, stackId, appId, envId int64) ([]types.Capability, error) {
+	res, err := e.Client.Do(ctx, http.MethodGet, e.basePath(stackId, appId, envId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -36,8 +37,8 @@ func (e AppCapabilities) List(stackId, appId, envId int64) ([]types.Capability, 
 }
 
 // Get - GET /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities/:id
-func (e AppCapabilities) Get(stackId, appId, envId, capId int64) (*types.Capability, error) {
-	res, err := e.Client.Do(http.MethodGet, e.capPath(stackId, appId, envId, capId), nil, nil, nil)
+func (e AppCapabilities) Get(ctx context.Context, stackId, appId, envId, capId int64) (*types.Capability, error) {
+	res, err := e.Client.Do(ctx, http.MethodGet, e.capPath(stackId, appId, envId, capId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -46,13 +47,13 @@ func (e AppCapabilities) Get(stackId, appId, envId, capId int64) (*types.Capabil
 }
 
 // Create - POST /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities
-func (e AppCapabilities) Create(stackId, appId, envId int64, capabilities []types.Capability, blocks []types.Block) ([]types.Capability, error) {
+func (e AppCapabilities) Create(ctx context.Context, stackId, appId, envId int64, capabilities []types.Capability, blocks []types.Block) ([]types.Capability, error) {
 	input := CreateCapabilitiesInput{
 		Capabilities: capabilities,
 		Blocks:       blocks,
 	}
 	rawPayload, _ := json.Marshal(input)
-	res, err := e.Client.Do(http.MethodPost, e.basePath(stackId, appId, envId), nil, nil, json.RawMessage(rawPayload))
+	res, err := e.Client.Do(ctx, http.MethodPost, e.basePath(stackId, appId, envId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -61,13 +62,13 @@ func (e AppCapabilities) Create(stackId, appId, envId int64, capabilities []type
 }
 
 // Replace - PUT /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities
-func (e AppCapabilities) Replace(stackId, appId, envId int64, capabilities []types.Capability, blocks []types.Block) ([]types.Capability, error) {
+func (e AppCapabilities) Replace(ctx context.Context, stackId, appId, envId int64, capabilities []types.Capability, blocks []types.Block) ([]types.Capability, error) {
 	input := CreateCapabilitiesInput{
 		Capabilities: capabilities,
 		Blocks:       blocks,
 	}
 	rawPayload, _ := json.Marshal(input)
-	res, err := e.Client.Do(http.MethodPut, e.basePath(stackId, appId, envId), nil, nil, json.RawMessage(rawPayload))
+	res, err := e.Client.Do(ctx, http.MethodPut, e.basePath(stackId, appId, envId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -76,9 +77,9 @@ func (e AppCapabilities) Replace(stackId, appId, envId int64, capabilities []typ
 }
 
 // Update - PUT/PATCH /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities/:id
-func (e AppCapabilities) Update(stackId, appId, envId, capId int64, capability *types.Capability) (*types.Capability, error) {
+func (e AppCapabilities) Update(ctx context.Context, stackId, appId, envId, capId int64, capability *types.Capability) (*types.Capability, error) {
 	rawPayload, _ := json.Marshal(capability)
-	res, err := e.Client.Do(http.MethodPut, e.capPath(stackId, appId, envId, capId), nil, nil, json.RawMessage(rawPayload))
+	res, err := e.Client.Do(ctx, http.MethodPut, e.capPath(stackId, appId, envId, capId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -87,8 +88,8 @@ func (e AppCapabilities) Update(stackId, appId, envId, capId int64, capability *
 }
 
 // Destroy - DELETE /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities/:id
-func (e AppCapabilities) Destroy(stackId, appId, envId, capId int64) (bool, error) {
-	res, err := e.Client.Do(http.MethodDelete, e.capPath(stackId, appId, envId, capId), nil, nil, nil)
+func (e AppCapabilities) Destroy(ctx context.Context, stackId, appId, envId, capId int64) (bool, error) {
+	res, err := e.Client.Do(ctx, http.MethodDelete, e.capPath(stackId, appId, envId, capId), nil, nil, nil)
 	if err != nil {
 		return false, err
 	}

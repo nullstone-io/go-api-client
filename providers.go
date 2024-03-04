@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
@@ -21,8 +22,8 @@ func (s Providers) providerPath(providerName string) string {
 }
 
 // List - GET /orgs/:orgName/providers
-func (s Providers) List() ([]*types.Provider, error) {
-	res, err := s.Client.Do(http.MethodGet, s.basePath(), nil, nil, nil)
+func (s Providers) List(ctx context.Context) ([]*types.Provider, error) {
+	res, err := s.Client.Do(ctx, http.MethodGet, s.basePath(), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -37,8 +38,8 @@ func (s Providers) List() ([]*types.Provider, error) {
 }
 
 // Get - GET /orgs/:orgName/providers/:name
-func (s Providers) Get(providerName string) (*types.Provider, error) {
-	res, err := s.Client.Do(http.MethodGet, s.providerPath(providerName), nil, nil, nil)
+func (s Providers) Get(ctx context.Context, providerName string) (*types.Provider, error) {
+	res, err := s.Client.Do(ctx, http.MethodGet, s.providerPath(providerName), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -53,9 +54,9 @@ func (s Providers) Get(providerName string) (*types.Provider, error) {
 }
 
 // Create - POST /orgs/:orgName/providers
-func (s Providers) Create(provider *types.Provider) (*types.Provider, error) {
+func (s Providers) Create(ctx context.Context, provider *types.Provider) (*types.Provider, error) {
 	rawPayload, _ := json.Marshal(provider)
-	res, err := s.Client.Do(http.MethodPost, s.basePath(), nil, nil, json.RawMessage(rawPayload))
+	res, err := s.Client.Do(ctx, http.MethodPost, s.basePath(), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -70,9 +71,9 @@ func (s Providers) Create(provider *types.Provider) (*types.Provider, error) {
 }
 
 // Update - PUT/PATCH /orgs/:orgName/providers/:name
-func (s Providers) Update(providerName string, provider *types.Provider) (*types.Provider, error) {
+func (s Providers) Update(ctx context.Context, providerName string, provider *types.Provider) (*types.Provider, error) {
 	rawPayload, _ := json.Marshal(provider)
-	res, err := s.Client.Do(http.MethodPut, s.providerPath(providerName), nil, nil, json.RawMessage(rawPayload))
+	res, err := s.Client.Do(ctx, http.MethodPut, s.providerPath(providerName), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -87,8 +88,8 @@ func (s Providers) Update(providerName string, provider *types.Provider) (*types
 }
 
 // Destroy - DELETE /orgs/:orgName/providers/:name
-func (s Providers) Destroy(providerName string) (bool, error) {
-	res, err := s.Client.Do(http.MethodDelete, s.providerPath(providerName), nil, nil, nil)
+func (s Providers) Destroy(ctx context.Context, providerName string) (bool, error) {
+	res, err := s.Client.Do(ctx, http.MethodDelete, s.providerPath(providerName), nil, nil, nil)
 	if err != nil {
 		return false, err
 	}

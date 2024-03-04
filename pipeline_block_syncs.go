@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
@@ -17,9 +18,9 @@ func (p PipelineBlockSyncs) basePath(stackId int64) string {
 }
 
 // Create - POST /orgs/:orgName/stacks/:stack_id/envs/:env_id/block_syncs
-func (p PipelineBlockSyncs) Create(stackId int64, payload BlockSyncPayload) ([]types.Block, error) {
+func (p PipelineBlockSyncs) Create(ctx context.Context, stackId int64, payload BlockSyncPayload) ([]types.Block, error) {
 	rawPayload, _ := json.Marshal(payload)
-	res, err := p.Client.Do(http.MethodPost, p.basePath(stackId), nil, nil, json.RawMessage(rawPayload))
+	res, err := p.Client.Do(ctx, http.MethodPost, p.basePath(stackId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}

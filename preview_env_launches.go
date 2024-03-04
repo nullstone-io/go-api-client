@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 )
@@ -14,8 +15,8 @@ func (pe PreviewEnvLaunches) envPath(stackId, envId int64) string {
 }
 
 // Create - POST /orgs/:orgName/stacks/:stack_id/preview_envs/:id/launches
-func (pe PreviewEnvLaunches) Create(stackId, envId int64) error {
-	_, err := pe.Client.Do(http.MethodPost, pe.envPath(stackId, envId), nil, nil, nil)
+func (pe PreviewEnvLaunches) Create(ctx context.Context, stackId, envId int64) error {
+	_, err := pe.Client.Do(ctx, http.MethodPost, pe.envPath(stackId, envId), nil, nil, nil)
 	if err != nil {
 		return err
 	}

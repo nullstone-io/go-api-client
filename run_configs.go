@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"github.com/google/uuid"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
@@ -16,8 +17,8 @@ func (c RunConfigs) runConfigPath(stackId int64, workspaceUid uuid.UUID) string 
 	return fmt.Sprintf("orgs/%s/stacks/%d/workspaces/%s/run-configs/latest", c.Client.Config.OrgName, stackId, workspaceUid)
 }
 
-func (c RunConfigs) GetLatest(stackId int64, workspaceUid uuid.UUID) (*types.RunConfig, error) {
-	res, err := c.Client.Do(http.MethodGet, c.runConfigPath(stackId, workspaceUid), nil, nil, nil)
+func (c RunConfigs) GetLatest(ctx context.Context, stackId int64, workspaceUid uuid.UUID) (*types.RunConfig, error) {
+	res, err := c.Client.Do(ctx, http.MethodGet, c.runConfigPath(stackId, workspaceUid), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}

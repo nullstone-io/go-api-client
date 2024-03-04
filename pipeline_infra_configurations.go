@@ -2,6 +2,7 @@ package api
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"io"
@@ -18,7 +19,7 @@ func (sc PipelineInfraConfigurations) basePath(stackId int64) string {
 	return fmt.Sprintf("/orgs/%s/stacks/%d/configuration", sc.Client.Config.OrgName, stackId)
 }
 
-func (sc PipelineInfraConfigurations) Create(stackId int64, repoName string, config map[string]string) error {
+func (sc PipelineInfraConfigurations) Create(ctx context.Context, stackId int64, repoName string, config map[string]string) error {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
@@ -46,7 +47,7 @@ func (sc PipelineInfraConfigurations) Create(stackId int64, repoName string, con
 	headers := map[string]string{
 		"Content-Type": writer.FormDataContentType(),
 	}
-	res, err := sc.Client.Do(http.MethodPost, sc.basePath(stackId), nil, headers, body)
+	res, err := sc.Client.Do(ctx, http.MethodPost, sc.basePath(stackId), nil, headers, body)
 	if err != nil {
 		return err
 	}

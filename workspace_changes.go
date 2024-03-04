@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
@@ -19,8 +20,8 @@ func (wc WorkspaceChanges) changePath(stackId, blockId, envId, changeId int64) s
 	return fmt.Sprintf("/orgs/%s/stacks/%d/blocks/%d/envs/%d/changes/%d", wc.Client.Config.OrgName, stackId, blockId, envId, changeId)
 }
 
-func (wc WorkspaceChanges) List(stackId, blockId, envId int64) (*types.WorkspaceChangeset, error) {
-	res, err := wc.Client.Do(http.MethodPost, wc.basePath(stackId, blockId, envId), nil, nil, nil)
+func (wc WorkspaceChanges) List(ctx context.Context, stackId, blockId, envId int64) (*types.WorkspaceChangeset, error) {
+	res, err := wc.Client.Do(ctx, http.MethodPost, wc.basePath(stackId, blockId, envId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -28,8 +29,8 @@ func (wc WorkspaceChanges) List(stackId, blockId, envId int64) (*types.Workspace
 	return response.ReadJsonPtr[types.WorkspaceChangeset](res)
 }
 
-func (wc WorkspaceChanges) Destroy(stackId, blockId, envId, changeId int64) error {
-	res, err := wc.Client.Do(http.MethodDelete, wc.changePath(stackId, blockId, envId, changeId), nil, nil, nil)
+func (wc WorkspaceChanges) Destroy(ctx context.Context, stackId, blockId, envId, changeId int64) error {
+	res, err := wc.Client.Do(ctx, http.MethodDelete, wc.changePath(stackId, blockId, envId, changeId), nil, nil, nil)
 	if err != nil {
 		return err
 	}

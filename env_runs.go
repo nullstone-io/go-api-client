@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
@@ -16,9 +17,9 @@ func (er EnvRuns) basePath(stackId, envId int64) string {
 	return fmt.Sprintf("/orgs/%s/stacks/%d/envs/%d/runs", er.Client.Config.OrgName, stackId, envId)
 }
 
-func (er EnvRuns) Create(stackId, envId int64, input types.CreateEnvRunInput) ([]types.Run, error) {
+func (er EnvRuns) Create(ctx context.Context, stackId, envId int64, input types.CreateEnvRunInput) ([]types.Run, error) {
 	raw, _ := json.Marshal(input)
-	res, err := er.Client.Do(http.MethodPost, er.basePath(stackId, envId), nil, nil, json.RawMessage(raw))
+	res, err := er.Client.Do(ctx, http.MethodPost, er.basePath(stackId, envId), nil, nil, json.RawMessage(raw))
 	if err != nil {
 		return nil, err
 	}

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
@@ -21,8 +22,8 @@ func (s Blocks) blockPath(stackId, blockId int64) string {
 }
 
 // List - GET /orgs/:orgName/stacks/:stack_id/blocks
-func (s Blocks) List(stackId int64) ([]types.Block, error) {
-	res, err := s.Client.Do(http.MethodGet, s.basePath(stackId), nil, nil, nil)
+func (s Blocks) List(ctx context.Context, stackId int64) ([]types.Block, error) {
+	res, err := s.Client.Do(ctx, http.MethodGet, s.basePath(stackId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -37,8 +38,8 @@ func (s Blocks) List(stackId int64) ([]types.Block, error) {
 }
 
 // Get - GET /orgs/:orgName/stacks/:stack_id/blocks/:id
-func (s Blocks) Get(stackId, blockId int64) (*types.Block, error) {
-	res, err := s.Client.Do(http.MethodGet, s.blockPath(stackId, blockId), nil, nil, nil)
+func (s Blocks) Get(ctx context.Context, stackId, blockId int64) (*types.Block, error) {
+	res, err := s.Client.Do(ctx, http.MethodGet, s.blockPath(stackId, blockId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -53,9 +54,9 @@ func (s Blocks) Get(stackId, blockId int64) (*types.Block, error) {
 }
 
 // Create - POST /orgs/:orgName/stacks/:stack_id/blocks
-func (s Blocks) Create(stackId int64, block *types.Block) (*types.Block, error) {
+func (s Blocks) Create(ctx context.Context, stackId int64, block *types.Block) (*types.Block, error) {
 	rawPayload, _ := json.Marshal(block)
-	res, err := s.Client.Do(http.MethodPost, s.basePath(stackId), nil, nil, json.RawMessage(rawPayload))
+	res, err := s.Client.Do(ctx, http.MethodPost, s.basePath(stackId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -70,9 +71,9 @@ func (s Blocks) Create(stackId int64, block *types.Block) (*types.Block, error) 
 }
 
 // Update - PUT/PATCH /orgs/:orgName/stacks/:stack_id/blocks/:id
-func (s Blocks) Update(stackId, blockId int64, block *types.Block) (*types.Block, error) {
+func (s Blocks) Update(ctx context.Context, stackId, blockId int64, block *types.Block) (*types.Block, error) {
 	rawPayload, _ := json.Marshal(block)
-	res, err := s.Client.Do(http.MethodPut, s.blockPath(stackId, blockId), nil, nil, json.RawMessage(rawPayload))
+	res, err := s.Client.Do(ctx, http.MethodPut, s.blockPath(stackId, blockId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -87,8 +88,8 @@ func (s Blocks) Update(stackId, blockId int64, block *types.Block) (*types.Block
 }
 
 // Destroy - DELETE /orgs/:orgName/stacks/:stack_id/blocks/:id
-func (s Blocks) Destroy(stackId, blockId int64) (bool, error) {
-	res, err := s.Client.Do(http.MethodDelete, s.blockPath(stackId, blockId), nil, nil, nil)
+func (s Blocks) Destroy(ctx context.Context, stackId, blockId int64) (bool, error) {
+	res, err := s.Client.Do(ctx, http.MethodDelete, s.blockPath(stackId, blockId), nil, nil, nil)
 	if err != nil {
 		return false, err
 	}

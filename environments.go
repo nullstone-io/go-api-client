@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
@@ -21,8 +22,8 @@ func (s Environments) envPath(stackId, envId int64) string {
 }
 
 // List - GET /orgs/:orgName/stacks/:stackId/envs
-func (s Environments) List(stackId int64) ([]*types.Environment, error) {
-	res, err := s.Client.Do(http.MethodGet, s.basePath(stackId), nil, nil, nil)
+func (s Environments) List(ctx context.Context, stackId int64) ([]*types.Environment, error) {
+	res, err := s.Client.Do(ctx, http.MethodGet, s.basePath(stackId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -37,8 +38,8 @@ func (s Environments) List(stackId int64) ([]*types.Environment, error) {
 }
 
 // Get - GET /orgs/:orgName/stacks/:stack_id/envs/:id
-func (s Environments) Get(stackId, envId int64) (*types.Environment, error) {
-	res, err := s.Client.Do(http.MethodGet, s.envPath(stackId, envId), nil, nil, nil)
+func (s Environments) Get(ctx context.Context, stackId, envId int64) (*types.Environment, error) {
+	res, err := s.Client.Do(ctx, http.MethodGet, s.envPath(stackId, envId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -53,9 +54,9 @@ func (s Environments) Get(stackId, envId int64) (*types.Environment, error) {
 }
 
 // Create - POST /orgs/:orgName/stacks/:stack_id/envs
-func (s Environments) Create(stackId int64, env *types.Environment) (*types.Environment, error) {
+func (s Environments) Create(ctx context.Context, stackId int64, env *types.Environment) (*types.Environment, error) {
 	rawPayload, _ := json.Marshal(env)
-	res, err := s.Client.Do(http.MethodPost, s.basePath(stackId), nil, nil, json.RawMessage(rawPayload))
+	res, err := s.Client.Do(ctx, http.MethodPost, s.basePath(stackId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -64,9 +65,9 @@ func (s Environments) Create(stackId int64, env *types.Environment) (*types.Envi
 }
 
 // Update - PUT/PATCH /orgs/:orgName/stacks/:stack_id/envs/:id
-func (s Environments) Update(stackId, envId int64, env *types.Environment) (*types.Environment, error) {
+func (s Environments) Update(ctx context.Context, stackId, envId int64, env *types.Environment) (*types.Environment, error) {
 	rawPayload, _ := json.Marshal(env)
-	res, err := s.Client.Do(http.MethodPut, s.envPath(stackId, envId), nil, nil, json.RawMessage(rawPayload))
+	res, err := s.Client.Do(ctx, http.MethodPut, s.envPath(stackId, envId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -81,8 +82,8 @@ func (s Environments) Update(stackId, envId int64, env *types.Environment) (*typ
 }
 
 // Destroy - DELETE /orgs/:orgName/stacks/:stack_id/envs/:id
-func (s Environments) Destroy(stackId, envId int64) (bool, error) {
-	res, err := s.Client.Do(http.MethodDelete, s.envPath(stackId, envId), nil, nil, nil)
+func (s Environments) Destroy(ctx context.Context, stackId, envId int64) (bool, error) {
+	res, err := s.Client.Do(ctx, http.MethodDelete, s.envPath(stackId, envId), nil, nil, nil)
 	if err != nil {
 		return false, err
 	}

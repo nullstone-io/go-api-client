@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
@@ -21,8 +22,8 @@ func (e AppPipelineCapabilities) capPath(stackId, appId, capId int64) string {
 }
 
 // List - GET /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities
-func (e AppPipelineCapabilities) List(stackId, appId int64) ([]types.Capability, error) {
-	res, err := e.Client.Do(http.MethodGet, e.basePath(stackId, appId), nil, nil, nil)
+func (e AppPipelineCapabilities) List(ctx context.Context, stackId, appId int64) ([]types.Capability, error) {
+	res, err := e.Client.Do(ctx, http.MethodGet, e.basePath(stackId, appId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -31,8 +32,8 @@ func (e AppPipelineCapabilities) List(stackId, appId int64) ([]types.Capability,
 }
 
 // Get - GET /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities/:id
-func (e AppPipelineCapabilities) Get(stackId, appId, capId int64) (*types.Capability, error) {
-	res, err := e.Client.Do(http.MethodGet, e.capPath(stackId, appId, capId), nil, nil, nil)
+func (e AppPipelineCapabilities) Get(ctx context.Context, stackId, appId, capId int64) (*types.Capability, error) {
+	res, err := e.Client.Do(ctx, http.MethodGet, e.capPath(stackId, appId, capId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -41,13 +42,13 @@ func (e AppPipelineCapabilities) Get(stackId, appId, capId int64) (*types.Capabi
 }
 
 // Create - POST /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities
-func (e AppPipelineCapabilities) Create(stackId, appId int64, capabilities []types.Capability, blocks []types.Block) ([]types.Capability, error) {
+func (e AppPipelineCapabilities) Create(ctx context.Context, stackId, appId int64, capabilities []types.Capability, blocks []types.Block) ([]types.Capability, error) {
 	input := CreateCapabilitiesInput{
 		Capabilities: capabilities,
 		Blocks:       blocks,
 	}
 	rawPayload, _ := json.Marshal(input)
-	res, err := e.Client.Do(http.MethodPost, e.basePath(stackId, appId), nil, nil, json.RawMessage(rawPayload))
+	res, err := e.Client.Do(ctx, http.MethodPost, e.basePath(stackId, appId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -56,13 +57,13 @@ func (e AppPipelineCapabilities) Create(stackId, appId int64, capabilities []typ
 }
 
 // Replace - PUT /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities
-func (e AppPipelineCapabilities) Replace(stackId, appId int64, capabilities []types.Capability, blocks []types.Block) ([]types.Capability, error) {
+func (e AppPipelineCapabilities) Replace(ctx context.Context, stackId, appId int64, capabilities []types.Capability, blocks []types.Block) ([]types.Capability, error) {
 	input := CreateCapabilitiesInput{
 		Capabilities: capabilities,
 		Blocks:       blocks,
 	}
 	rawPayload, _ := json.Marshal(input)
-	res, err := e.Client.Do(http.MethodPut, e.basePath(stackId, appId), nil, nil, json.RawMessage(rawPayload))
+	res, err := e.Client.Do(ctx, http.MethodPut, e.basePath(stackId, appId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -71,9 +72,9 @@ func (e AppPipelineCapabilities) Replace(stackId, appId int64, capabilities []ty
 }
 
 // Update - PUT/PATCH /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities/:id
-func (e AppPipelineCapabilities) Update(stackId, appId, capId int64, capability *types.Capability) (*types.Capability, error) {
+func (e AppPipelineCapabilities) Update(ctx context.Context, stackId, appId, capId int64, capability *types.Capability) (*types.Capability, error) {
 	rawPayload, _ := json.Marshal(capability)
-	res, err := e.Client.Do(http.MethodPut, e.capPath(stackId, appId, capId), nil, nil, json.RawMessage(rawPayload))
+	res, err := e.Client.Do(ctx, http.MethodPut, e.capPath(stackId, appId, capId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -82,8 +83,8 @@ func (e AppPipelineCapabilities) Update(stackId, appId, capId int64, capability 
 }
 
 // Destroy - DELETE /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities/:id
-func (e AppPipelineCapabilities) Destroy(stackId, appId, capId int64) (bool, error) {
-	res, err := e.Client.Do(http.MethodDelete, e.capPath(stackId, appId, capId), nil, nil, nil)
+func (e AppPipelineCapabilities) Destroy(ctx context.Context, stackId, appId, capId int64) (bool, error) {
+	res, err := e.Client.Do(ctx, http.MethodDelete, e.capPath(stackId, appId, capId), nil, nil, nil)
 	if err != nil {
 		return false, err
 	}

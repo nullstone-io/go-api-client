@@ -2,6 +2,7 @@ package api
 
 import (
 	"bytes"
+	"context"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
@@ -19,7 +20,7 @@ func (ec EnvInfraConfigurations) basePath(stackId, envId int64) string {
 	return fmt.Sprintf("/orgs/%s/stacks/%d/envs/%d/configuration", ec.Client.Config.OrgName, stackId, envId)
 }
 
-func (ec EnvInfraConfigurations) Create(stackId, envId int64, repoName string, config map[string]string) (*types.WorkspaceLaunchNeeds, error) {
+func (ec EnvInfraConfigurations) Create(ctx context.Context, stackId, envId int64, repoName string, config map[string]string) (*types.WorkspaceLaunchNeeds, error) {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
@@ -47,7 +48,7 @@ func (ec EnvInfraConfigurations) Create(stackId, envId int64, repoName string, c
 	headers := map[string]string{
 		"Content-Type": writer.FormDataContentType(),
 	}
-	res, err := ec.Client.Do(http.MethodPost, ec.basePath(stackId, envId), nil, headers, body)
+	res, err := ec.Client.Do(ctx, http.MethodPost, ec.basePath(stackId, envId), nil, headers, body)
 	if err != nil {
 		return nil, err
 	}

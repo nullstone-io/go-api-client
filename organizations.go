@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
@@ -16,8 +17,8 @@ func (o Organizations) basePath() string {
 }
 
 // List - GET /orgs
-func (o Organizations) List() ([]types.Organization, error) {
-	res, err := o.Client.Do(http.MethodGet, o.basePath(), nil, nil, nil)
+func (o Organizations) List(ctx context.Context) ([]types.Organization, error) {
+	res, err := o.Client.Do(ctx, http.MethodGet, o.basePath(), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
