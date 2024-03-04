@@ -1,14 +1,15 @@
 package runs
 
 import (
+	"context"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 )
 
-func Launch(cfg api.Config, stackId, appId, envId int64, commitSha string, approve bool) (*types.Run, error) {
+func Launch(ctx context.Context, cfg api.Config, stackId, appId, envId int64, commitSha string, approve bool) (*types.Run, error) {
 	client := api.Client{Config: cfg}
-	workspace, err := client.Workspaces().Get(stackId, appId, envId)
+	workspace, err := client.Workspaces().Get(ctx, stackId, appId, envId)
 	if err != nil {
 		return nil, fmt.Errorf("error looking for workspace: %w", err)
 	}
@@ -17,5 +18,5 @@ func Launch(cfg api.Config, stackId, appId, envId int64, commitSha string, appro
 	if approve {
 		isApproved = &approve
 	}
-	return Create(cfg, *workspace, commitSha, isApproved, false, "")
+	return Create(ctx, cfg, *workspace, commitSha, isApproved, false, "")
 }
