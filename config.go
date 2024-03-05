@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/auth"
 	"gopkg.in/nullstone-io/go-api-client.v0/trace"
@@ -51,7 +52,7 @@ func (c *Config) ConstructUrl(relativePath string, query url.Values) (*url.URL, 
 	return u, nil
 }
 
-func (c *Config) ConstructWsEndpoint(relativePath string) (string, http.Header, error) {
+func (c *Config) ConstructWsEndpoint(ctx context.Context, relativePath string) (string, http.Header, error) {
 	endpoint, err := url.Parse(c.BaseAddress)
 	if err != nil {
 		return "", http.Header{}, fmt.Errorf("invalid url: %w", err)
@@ -60,15 +61,15 @@ func (c *Config) ConstructWsEndpoint(relativePath string) (string, http.Header, 
 	endpoint.Path = path.Join(endpoint.Path, relativePath)
 
 	headers := http.Header{}
-	if err := c.AddAuthorizationHeader(headers); err != nil {
+	if err := c.AddAuthorizationHeader(ctx, headers); err != nil {
 		return "", nil, err
 	}
 	return endpoint.String(), headers, nil
 }
 
-func (c *Config) AddAuthorizationHeader(headers http.Header) error {
+func (c *Config) AddAuthorizationHeader(ctx context.Context, headers http.Header) error {
 	if c.AccessTokenSource != nil {
-		accessToken, err := c.AccessTokenSource.GetAccessToken(c.OrgName)
+		accessToken, err := c.AccessTokenSource.GetAccessToken(ctx, c.OrgName)
 		if err != nil {
 			return fmt.Errorf("unable to retrieve access token to authenticate request: %w", err)
 		}

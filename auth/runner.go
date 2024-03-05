@@ -1,12 +1,13 @@
 package auth
 
 import (
+	"context"
 	"fmt"
 	"github.com/cristalhq/jwt/v3"
 )
 
-func NewRunner(orgName string, store RunnerKeyStore) (*Runner, error) {
-	runnerKey, err2 := store.GetOrCreate(orgName)
+func NewRunner(ctx context.Context, orgName string, store RunnerKeyStore) (*Runner, error) {
+	runnerKey, err2 := store.GetOrCreate(ctx, orgName)
 	if err2 != nil {
 		return nil, fmt.Errorf("error retrieving or creating runner key: %w", err2)
 	}
