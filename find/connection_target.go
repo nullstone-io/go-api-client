@@ -1,6 +1,7 @@
 package find
 
 import (
+	"context"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
@@ -13,28 +14,28 @@ import (
 //	{stack}.{env}.{block}
 //	{stack}.{block}
 //	{block}
-func ConnectionTarget(cfg api.Config, sourceStackName, raw string) (*types.ConnectionTarget, error) {
+func ConnectionTarget(ctx context.Context, cfg api.Config, sourceStackName, raw string) (*types.ConnectionTarget, error) {
 	tokens := strings.SplitN(raw, ".", 3)
 	switch len(tokens) {
 	case 1: // {block}
-		return connectionTargetByStackBlock(cfg, sourceStackName, tokens[0], raw)
+		return connectionTargetByStackBlock(ctx, cfg, sourceStackName, tokens[0], raw)
 	case 2: // {stack}.{block}
-		return connectionTargetByStackBlock(cfg, tokens[0], tokens[1], raw)
+		return connectionTargetByStackBlock(ctx, cfg, tokens[0], tokens[1], raw)
 	case 3: // {stack}.{env}.{block}
-		return connectionTargetByStackEnvBlock(cfg, tokens[0], tokens[1], tokens[2], raw)
+		return connectionTargetByStackEnvBlock(ctx, cfg, tokens[0], tokens[1], tokens[2], raw)
 	default:
 		return nil, fmt.Errorf("invalid connection target %q", raw)
 	}
 }
 
-func connectionTargetByStackEnvBlock(cfg api.Config, stackName, envName, blockName, raw string) (*types.ConnectionTarget, error) {
-	ct, err := connectionTargetByStackBlock(cfg, stackName, blockName, raw)
+func connectionTargetByStackEnvBlock(ctx context.Context, cfg api.Config, stackName, envName, blockName, raw string) (*types.ConnectionTarget, error) {
+	ct, err := connectionTargetByStackBlock(ctx, cfg, stackName, blockName, raw)
 	if err != nil {
 		return nil, err
 	}
 
 	client := api.Client{Config: cfg}
-	env, err := client.EnvironmentsByName().Get(stackName, envName)
+	env, err := client.EnvironmentsByName().Get(ctx, stackName, envName)
 	if err != nil {
 		return nil, fmt.Errorf("error searching for environment %q in stack %q: %w", envName, stackName, err)
 	} else if env == nil {
@@ -45,8 +46,8 @@ func connectionTargetByStackEnvBlock(cfg api.Config, stackName, envName, blockNa
 	return ct, nil
 }
 
-func connectionTargetByStackBlock(cfg api.Config, stackName, blockName, raw string) (*types.ConnectionTarget, error) {
-	targetStack, targetBlock, err := blockByStackAndBlockName(cfg, stackName, blockName)
+func connectionTargetByStackBlock(ctx context.Context, cfg api.Config, stackName, blockName, raw string) (*types.ConnectionTarget, error) {
+	targetStack, targetBlock, err := blockByStackAndBlockName(ctx, cfg, stackName, blockName)
 	if err != nil {
 		return nil, err
 	} else if targetStack == nil {

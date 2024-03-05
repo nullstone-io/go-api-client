@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
@@ -29,8 +30,8 @@ func (s Subdomains) subdomainPath(stackId, subdomainId int64) string {
 }
 
 // List - GET /orgs/:orgName/subdomains
-func (s Subdomains) List() ([]types.Subdomain, error) {
-	res, err := s.Client.Do(http.MethodGet, s.globalPath(), nil, nil, nil)
+func (s Subdomains) List(ctx context.Context) ([]types.Subdomain, error) {
+	res, err := s.Client.Do(ctx, http.MethodGet, s.globalPath(), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -45,8 +46,8 @@ func (s Subdomains) List() ([]types.Subdomain, error) {
 }
 
 // Get - GET /orgs/:orgName/subdomains/:id
-func (s Subdomains) GlobalGet(subdomainId int64) (*types.Subdomain, error) {
-	res, err := s.Client.Do(http.MethodGet, s.globalSubdomainPath(subdomainId), nil, nil, nil)
+func (s Subdomains) GlobalGet(ctx context.Context, subdomainId int64) (*types.Subdomain, error) {
+	res, err := s.Client.Do(ctx, http.MethodGet, s.globalSubdomainPath(subdomainId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -61,8 +62,8 @@ func (s Subdomains) GlobalGet(subdomainId int64) (*types.Subdomain, error) {
 }
 
 // Get - GET /orgs/:orgName/stacks/:stackId/subdomains/:id
-func (s Subdomains) Get(stackId, subdomainId int64) (*types.Subdomain, error) {
-	res, err := s.Client.Do(http.MethodGet, s.subdomainPath(stackId, subdomainId), nil, nil, nil)
+func (s Subdomains) Get(ctx context.Context, stackId, subdomainId int64) (*types.Subdomain, error) {
+	res, err := s.Client.Do(ctx, http.MethodGet, s.subdomainPath(stackId, subdomainId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -77,9 +78,9 @@ func (s Subdomains) Get(stackId, subdomainId int64) (*types.Subdomain, error) {
 }
 
 // Create - POST /orgs/:orgName/stacks/:stackId/subdomains
-func (s Subdomains) Create(stackId int64, subdomain *types.Subdomain) (*types.Subdomain, error) {
+func (s Subdomains) Create(ctx context.Context, stackId int64, subdomain *types.Subdomain) (*types.Subdomain, error) {
 	rawPayload, _ := json.Marshal(subdomain)
-	res, err := s.Client.Do(http.MethodPost, s.basePath(stackId), nil, nil, json.RawMessage(rawPayload))
+	res, err := s.Client.Do(ctx, http.MethodPost, s.basePath(stackId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -94,9 +95,9 @@ func (s Subdomains) Create(stackId int64, subdomain *types.Subdomain) (*types.Su
 }
 
 // Update - PUT/PATCH /orgs/:orgName/stacks/:stackId/subdomains/:id
-func (s Subdomains) Update(stackId, subdomainId int64, subdomain *types.Subdomain) (*types.Subdomain, error) {
+func (s Subdomains) Update(ctx context.Context, stackId, subdomainId int64, subdomain *types.Subdomain) (*types.Subdomain, error) {
 	rawPayload, _ := json.Marshal(subdomain)
-	res, err := s.Client.Do(http.MethodPut, s.subdomainPath(stackId, subdomainId), nil, nil, json.RawMessage(rawPayload))
+	res, err := s.Client.Do(ctx, http.MethodPut, s.subdomainPath(stackId, subdomainId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -111,8 +112,8 @@ func (s Subdomains) Update(stackId, subdomainId int64, subdomain *types.Subdomai
 }
 
 // Destroy - DELETE /orgs/:orgName/stacks/:stackId/subdomains/:id
-func (s Subdomains) Destroy(stackId, subdomainId int64) (bool, error) {
-	res, err := s.Client.Do(http.MethodDelete, s.subdomainPath(stackId, subdomainId), nil, nil, nil)
+func (s Subdomains) Destroy(ctx context.Context, stackId, subdomainId int64) (bool, error) {
+	res, err := s.Client.Do(ctx, http.MethodDelete, s.subdomainPath(stackId, subdomainId), nil, nil, nil)
 	if err != nil {
 		return false, err
 	}

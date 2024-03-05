@@ -1,6 +1,7 @@
 package find
 
 import (
+	"context"
 	"errors"
 	"gopkg.in/nullstone-io/go-api-client.v0"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
@@ -21,8 +22,8 @@ type StackBlockEnv struct {
 // StackBlockEnvByName looks for a workspace by stackName, blockName, and envName
 // If stackName is "", will search for a block across all stacks
 // stackName is required if there are multiple blocks with the same name in different stacks
-func StackBlockEnvByName(cfg api.Config, stackName, blockName, envName string) (*StackBlockEnv, error) {
-	stack, block, err := StackAndBlockByName(cfg, stackName, blockName)
+func StackBlockEnvByName(ctx context.Context, cfg api.Config, stackName, blockName, envName string) (*StackBlockEnv, error) {
+	stack, block, err := StackAndBlockByName(ctx, cfg, stackName, blockName)
 	if err != nil {
 		return nil, err
 	} else if block == nil {
@@ -32,7 +33,7 @@ func StackBlockEnvByName(cfg api.Config, stackName, blockName, envName string) (
 	}
 
 	client := api.Client{Config: cfg}
-	env, err := client.EnvironmentsByName().Get(stack.Name, envName)
+	env, err := client.EnvironmentsByName().Get(ctx, stack.Name, envName)
 	if err != nil {
 		return nil, err
 	} else if env == nil {

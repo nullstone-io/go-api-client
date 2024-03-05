@@ -1,6 +1,7 @@
 package find
 
 import (
+	"context"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
@@ -22,28 +23,28 @@ type StackResolver struct {
 	blocksLoadError error
 }
 
-func (r *StackResolver) Envs() (map[int64]types.Environment, error) {
-	if err := r.ensureEnvs(); err != nil {
+func (r *StackResolver) Envs(ctx context.Context) (map[int64]types.Environment, error) {
+	if err := r.ensureEnvs(ctx); err != nil {
 		return nil, err
 	}
 	return r.EnvsById, nil
 }
 
-func (r *StackResolver) ResolveEnv(ct types.ConnectionTarget, curEnvId int64) (types.Environment, error) {
+func (r *StackResolver) ResolveEnv(ctx context.Context, ct types.ConnectionTarget, curEnvId int64) (types.Environment, error) {
 	if ct.EnvName != "" {
-		return r.ResolveEnvByName(ct.EnvName)
+		return r.ResolveEnvByName(ctx, ct.EnvName)
 	}
 	if ct.EnvId == nil {
 		ct.EnvId = &curEnvId
 	}
-	return r.ResolveEnvById(*ct.EnvId)
+	return r.ResolveEnvById(ctx, *ct.EnvId)
 }
 
-func (r *StackResolver) ResolveEnvByName(envName string) (types.Environment, error) {
+func (r *StackResolver) ResolveEnvByName(ctx context.Context, envName string) (types.Environment, error) {
 	if env, ok := r.EnvsByName[envName]; ok {
 		return env, nil
 	}
-	if err := r.ensureEnvs(); err != nil {
+	if err := r.ensureEnvs(ctx); err != nil {
 		return types.Environment{}, err
 	}
 	if env, ok := r.EnvsByName[envName]; ok {
@@ -52,11 +53,11 @@ func (r *StackResolver) ResolveEnvByName(envName string) (types.Environment, err
 	return types.Environment{}, EnvDoesNotExistError{StackName: r.Stack.Name, EnvName: envName}
 }
 
-func (r *StackResolver) ResolveEnvById(envId int64) (types.Environment, error) {
+func (r *StackResolver) ResolveEnvById(ctx context.Context, envId int64) (types.Environment, error) {
 	if env, ok := r.EnvsById[envId]; ok {
 		return env, nil
 	}
-	if err := r.ensureEnvs(); err != nil {
+	if err := r.ensureEnvs(ctx); err != nil {
 		return types.Environment{}, err
 	}
 	if env, ok := r.EnvsById[envId]; ok {
@@ -65,8 +66,8 @@ func (r *StackResolver) ResolveEnvById(envId int64) (types.Environment, error) {
 	return types.Environment{}, EnvIdDoesNotExistError{StackName: r.Stack.Name, EnvId: envId}
 }
 
-func (r *StackResolver) loadEnvs() error {
-	envs, err := r.ApiClient.Environments().List(r.Stack.Id)
+func (r *StackResolver) loadEnvs(ctx context.Context) error {
+	envs, err := r.ApiClient.Environments().List(ctx, r.Stack.Id)
 	if err != nil {
 		return fmt.Errorf("unable to fetch environments (%s/%d): %w", r.Stack.OrgName, r.Stack.Id, err)
 	}
@@ -86,33 +87,33 @@ func (r *StackResolver) loadEnvs() error {
 	return nil
 }
 
-func (r *StackResolver) ensureEnvs() error {
+func (r *StackResolver) ensureEnvs(ctx context.Context) error {
 	r.envsOnce.Do(func() {
-		r.envsLoadError = r.loadEnvs()
+		r.envsLoadError = r.loadEnvs(ctx)
 	})
 	return r.envsLoadError
 
 }
 
-func (r *StackResolver) Blocks() (map[int64]types.Block, error) {
-	if err := r.ensureBlocks(); err != nil {
+func (r *StackResolver) Blocks(ctx context.Context) (map[int64]types.Block, error) {
+	if err := r.ensureBlocks(ctx); err != nil {
 		return nil, err
 	}
 	return r.BlocksById, nil
 }
 
-func (r *StackResolver) ResolveBlock(ct types.ConnectionTarget) (types.Block, error) {
+func (r *StackResolver) ResolveBlock(ctx context.Context, ct types.ConnectionTarget) (types.Block, error) {
 	if ct.BlockName != "" {
-		return r.ResolveBlockByName(ct.BlockName)
+		return r.ResolveBlockByName(ctx, ct.BlockName)
 	}
-	return r.ResolveBlockById(ct.BlockId)
+	return r.ResolveBlockById(ctx, ct.BlockId)
 }
 
-func (r *StackResolver) ResolveBlockByName(blockName string) (types.Block, error) {
+func (r *StackResolver) ResolveBlockByName(ctx context.Context, blockName string) (types.Block, error) {
 	if block, ok := r.BlocksByName[blockName]; ok {
 		return block, nil
 	}
-	if err := r.ensureBlocks(); err != nil {
+	if err := r.ensureBlocks(ctx); err != nil {
 		return types.Block{}, err
 	}
 	if block, ok := r.BlocksByName[blockName]; ok {
@@ -121,11 +122,11 @@ func (r *StackResolver) ResolveBlockByName(blockName string) (types.Block, error
 	return types.Block{}, BlockDoesNotExistError{StackName: r.Stack.Name, BlockName: blockName}
 }
 
-func (r *StackResolver) ResolveBlockById(blockId int64) (types.Block, error) {
+func (r *StackResolver) ResolveBlockById(ctx context.Context, blockId int64) (types.Block, error) {
 	if block, ok := r.BlocksById[blockId]; ok {
 		return block, nil
 	}
-	if err := r.ensureBlocks(); err != nil {
+	if err := r.ensureBlocks(ctx); err != nil {
 		return types.Block{}, err
 	}
 	if block, ok := r.BlocksById[blockId]; ok {
@@ -134,15 +135,15 @@ func (r *StackResolver) ResolveBlockById(blockId int64) (types.Block, error) {
 	return types.Block{}, BlockIdDoesNotExistError{StackName: r.Stack.Name, BlockId: blockId}
 }
 
-func (r *StackResolver) ensureBlocks() error {
+func (r *StackResolver) ensureBlocks(ctx context.Context) error {
 	r.blocksOnce.Do(func() {
-		r.blocksLoadError = r.LoadBlocks()
+		r.blocksLoadError = r.LoadBlocks(ctx)
 	})
 	return r.blocksLoadError
 }
 
-func (r *StackResolver) LoadBlocks() error {
-	blocks, err := r.ApiClient.Blocks().List(r.Stack.Id)
+func (r *StackResolver) LoadBlocks(ctx context.Context) error {
+	blocks, err := r.ApiClient.Blocks().List(ctx, r.Stack.Id)
 	if err != nil {
 		return fmt.Errorf("unable to fetch blocks (%s/%d): %w", r.Stack.OrgName, r.Stack.Id, err)
 	}
@@ -159,8 +160,8 @@ func (r *StackResolver) LoadBlocks() error {
 	return nil
 }
 
-func (r *StackResolver) AddBlock(block types.Block) error {
-	if err := r.ensureBlocks(); err != nil {
+func (r *StackResolver) AddBlock(ctx context.Context, block types.Block) error {
+	if err := r.ensureBlocks(ctx); err != nil {
 		return err
 	}
 

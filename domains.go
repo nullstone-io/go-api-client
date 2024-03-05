@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
@@ -25,8 +26,8 @@ func (s Domains) domainPath(stackId, domainId int64) string {
 }
 
 // List - GET /orgs/:orgName/domains
-func (s Domains) List() ([]types.Domain, error) {
-	res, err := s.Client.Do(http.MethodGet, s.globalPath(), nil, nil, nil)
+func (s Domains) List(ctx context.Context) ([]types.Domain, error) {
+	res, err := s.Client.Do(ctx, http.MethodGet, s.globalPath(), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -41,8 +42,8 @@ func (s Domains) List() ([]types.Domain, error) {
 }
 
 // Get - GET /orgs/:orgName/stacks/:stackId/domains/:id
-func (s Domains) Get(stackId, domainId int64) (*types.Domain, error) {
-	res, err := s.Client.Do(http.MethodGet, s.domainPath(stackId, domainId), nil, nil, nil)
+func (s Domains) Get(ctx context.Context, stackId, domainId int64) (*types.Domain, error) {
+	res, err := s.Client.Do(ctx, http.MethodGet, s.domainPath(stackId, domainId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -57,9 +58,9 @@ func (s Domains) Get(stackId, domainId int64) (*types.Domain, error) {
 }
 
 // Create - POST /orgs/:orgName/stacks/:stackId/domains
-func (s Domains) Create(stackId int64, domain *types.Domain) (*types.Domain, error) {
+func (s Domains) Create(ctx context.Context, stackId int64, domain *types.Domain) (*types.Domain, error) {
 	rawPayload, _ := json.Marshal(domain)
-	res, err := s.Client.Do(http.MethodPost, s.basePath(stackId), nil, nil, json.RawMessage(rawPayload))
+	res, err := s.Client.Do(ctx, http.MethodPost, s.basePath(stackId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -74,9 +75,9 @@ func (s Domains) Create(stackId int64, domain *types.Domain) (*types.Domain, err
 }
 
 // Update - PUT/PATCH /orgs/:orgName/stacks/:stackId/domains/:id
-func (s Domains) Update(stackId, domainId int64, domain *types.Domain) (*types.Domain, error) {
+func (s Domains) Update(ctx context.Context, stackId, domainId int64, domain *types.Domain) (*types.Domain, error) {
 	rawPayload, _ := json.Marshal(domain)
-	res, err := s.Client.Do(http.MethodPut, s.domainPath(stackId, domainId), nil, nil, json.RawMessage(rawPayload))
+	res, err := s.Client.Do(ctx, http.MethodPut, s.domainPath(stackId, domainId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -91,8 +92,8 @@ func (s Domains) Update(stackId, domainId int64, domain *types.Domain) (*types.D
 }
 
 // Destroy - DELETE /orgs/:orgName/stacks/:stackId/domains/:id
-func (s Domains) Destroy(stackId, domainId int64) (bool, error) {
-	res, err := s.Client.Do(http.MethodDelete, s.domainPath(stackId, domainId), nil, nil, nil)
+func (s Domains) Destroy(ctx context.Context, stackId, domainId int64) (bool, error) {
+	res, err := s.Client.Do(ctx, http.MethodDelete, s.domainPath(stackId, domainId), nil, nil, nil)
 	if err != nil {
 		return false, err
 	}

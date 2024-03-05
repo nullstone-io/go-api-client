@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
@@ -20,8 +21,8 @@ func (w Workspaces) workspacePath(stackId, blockId, envId int64) string {
 }
 
 // List - GET /orgs/:orgName/stacks/:stackId/workspaces
-func (w Workspaces) List(stackId int64) ([]types.Workspace, error) {
-	res, err := w.Client.Do(http.MethodGet, w.basePath(stackId), nil, nil, nil)
+func (w Workspaces) List(ctx context.Context, stackId int64) ([]types.Workspace, error) {
+	res, err := w.Client.Do(ctx, http.MethodGet, w.basePath(stackId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -29,8 +30,8 @@ func (w Workspaces) List(stackId int64) ([]types.Workspace, error) {
 }
 
 // Get - GET /orgs/:orgName/stacks/:stackId/blocks/:blockId/envs/:envId
-func (w Workspaces) Get(stackId, blockId, envId int64) (*types.Workspace, error) {
-	res, err := w.Client.Do(http.MethodGet, w.workspacePath(stackId, blockId, envId), nil, nil, nil)
+func (w Workspaces) Get(ctx context.Context, stackId, blockId, envId int64) (*types.Workspace, error) {
+	res, err := w.Client.Do(ctx, http.MethodGet, w.workspacePath(stackId, blockId, envId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"github.com/google/uuid"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
@@ -18,12 +19,12 @@ func (w WorkspaceOutputs) path(stackId int64, workspaceUid uuid.UUID) string {
 }
 
 // GetCurrent - GET /orgs/:orgName/stacks/:stackId/workspaces/:workspaceUid/current-outputs
-func (w WorkspaceOutputs) GetCurrent(stackId int64, workspaceUid uuid.UUID, showSensitive bool) (types.Outputs, error) {
+func (w WorkspaceOutputs) GetCurrent(ctx context.Context, stackId int64, workspaceUid uuid.UUID, showSensitive bool) (types.Outputs, error) {
 	q := url.Values{}
 	if showSensitive {
 		q.Set("show_sensitive", "true")
 	}
-	res, err := w.Client.Do(http.MethodGet, w.path(stackId, workspaceUid), q, nil, nil)
+	res, err := w.Client.Do(ctx, http.MethodGet, w.path(stackId, workspaceUid), q, nil, nil)
 	if err != nil {
 		return nil, err
 	}

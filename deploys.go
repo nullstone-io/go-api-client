@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
@@ -33,17 +34,17 @@ func (d Deploys) path(stackId, appId, envId, deployId int64) string {
 	return fmt.Sprintf("orgs/%s/stacks/%d/apps/%d/envs/%d/deploys/%d", d.Client.Config.OrgName, stackId, appId, envId, deployId)
 }
 
-func (d Deploys) Create(stackId, appId, envId int64, payload DeployCreatePayload) (*types.Deploy, error) {
+func (d Deploys) Create(ctx context.Context, stackId, appId, envId int64, payload DeployCreatePayload) (*types.Deploy, error) {
 	rawPayload, _ := json.Marshal(payload)
-	res, err := d.Client.Do(http.MethodPost, d.basePath(stackId, appId, envId), nil, nil, json.RawMessage(rawPayload))
+	res, err := d.Client.Do(ctx, http.MethodPost, d.basePath(stackId, appId, envId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
 	return response.ReadJsonPtr[types.Deploy](res)
 }
 
-func (d Deploys) Get(stackId, appId, envId, deployId int64) (*types.Deploy, error) {
-	res, err := d.Client.Do(http.MethodGet, d.path(stackId, appId, envId, deployId), nil, nil, nil)
+func (d Deploys) Get(ctx context.Context, stackId, appId, envId, deployId int64) (*types.Deploy, error) {
+	res, err := d.Client.Do(ctx, http.MethodGet, d.path(stackId, appId, envId, deployId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}

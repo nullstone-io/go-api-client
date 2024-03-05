@@ -1,6 +1,7 @@
 package find
 
 import (
+	"context"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
@@ -25,17 +26,17 @@ func NewResourceResolver(apiClient *api.Client, curStackId, curEnvId int64) *Res
 	}
 }
 
-func (r *ResourceResolver) Resolve(ct types.ConnectionTarget) (types.ConnectionTarget, error) {
+func (r *ResourceResolver) Resolve(ctx context.Context, ct types.ConnectionTarget) (types.ConnectionTarget, error) {
 	result := ct
 
-	sr, err := r.ResolveStack(result)
+	sr, err := r.ResolveStack(ctx, result)
 	if err != nil {
 		return result, err
 	}
 	result.StackId = sr.Stack.Id
 	result.StackName = sr.Stack.Name
 
-	env, err := sr.ResolveEnv(result, r.CurEnvId)
+	env, err := sr.ResolveEnv(ctx, result, r.CurEnvId)
 	if err != nil {
 		return result, err
 	}
@@ -43,7 +44,7 @@ func (r *ResourceResolver) Resolve(ct types.ConnectionTarget) (types.ConnectionT
 	result.EnvId = &envId
 	result.EnvName = env.Name
 
-	block, err := sr.ResolveBlock(result)
+	block, err := sr.ResolveBlock(ctx, result)
 	if err != nil {
 		return result, err
 	}
@@ -60,42 +61,42 @@ func (r *ResourceResolver) Resolve(ct types.ConnectionTarget) (types.ConnectionT
 	return result, nil
 }
 
-func (r *ResourceResolver) FindBlock(ct types.ConnectionTarget) (types.Block, error) {
+func (r *ResourceResolver) FindBlock(ctx context.Context, ct types.ConnectionTarget) (types.Block, error) {
 	result := ct
-	sr, err := r.ResolveStack(result)
+	sr, err := r.ResolveStack(ctx, result)
 	if err != nil {
 		return types.Block{}, err
 	}
-	return sr.ResolveBlock(result)
+	return sr.ResolveBlock(ctx, result)
 }
 
-func (r *ResourceResolver) ResolveStack(ct types.ConnectionTarget) (*StackResolver, error) {
+func (r *ResourceResolver) ResolveStack(ctx context.Context, ct types.ConnectionTarget) (*StackResolver, error) {
 	if ct.StackName != "" {
-		return r.resolveStackByName(ct.StackName)
+		return r.resolveStackByName(ctx, ct.StackName)
 	}
 	if ct.StackId == 0 {
 		ct.StackId = r.CurStackId
 	}
-	return r.resolveStackById(ct.StackId)
+	return r.resolveStackById(ctx, ct.StackId)
 }
 
-func (r *ResourceResolver) ResolveCurProviderType() (string, error) {
-	sr, err := r.ResolveStack(types.ConnectionTarget{StackId: r.CurStackId})
+func (r *ResourceResolver) ResolveCurProviderType(ctx context.Context) (string, error) {
+	sr, err := r.ResolveStack(ctx, types.ConnectionTarget{StackId: r.CurStackId})
 	if err != nil {
 		return "", err
 	}
 	return sr.Stack.ProviderType, nil
 }
 
-func (r *ResourceResolver) BackfillMissingBlocks(blocks []types.Block) error {
-	sr, err := r.ResolveStack(types.ConnectionTarget{StackId: r.CurStackId})
+func (r *ResourceResolver) BackfillMissingBlocks(ctx context.Context, blocks []types.Block) error {
+	sr, err := r.ResolveStack(ctx, types.ConnectionTarget{StackId: r.CurStackId})
 	if err != nil {
 		return fmt.Errorf("unable to resolve stack: %w", err)
 	}
 
 	for _, block := range blocks {
 		block.StackId = r.CurStackId
-		if err = sr.AddBlock(block); err != nil {
+		if err = sr.AddBlock(ctx, block); err != nil {
 			return fmt.Errorf("unable to add block (%s) to resolver: %w", block.Name, err)
 		}
 	}
@@ -103,19 +104,19 @@ func (r *ResourceResolver) BackfillMissingBlocks(blocks []types.Block) error {
 	return nil
 }
 
-func (r *ResourceResolver) GetCurrentEnvs() (map[int64]types.Environment, error) {
-	sr, err := r.ResolveStack(types.ConnectionTarget{StackId: r.CurStackId})
+func (r *ResourceResolver) GetCurrentEnvs(ctx context.Context) (map[int64]types.Environment, error) {
+	sr, err := r.ResolveStack(ctx, types.ConnectionTarget{StackId: r.CurStackId})
 	if err != nil {
 		return nil, fmt.Errorf("unable to resolve stack: %w", err)
 	}
-	return sr.Envs()
+	return sr.Envs(ctx)
 }
 
-func (r *ResourceResolver) resolveStackByName(stackName string) (*StackResolver, error) {
+func (r *ResourceResolver) resolveStackByName(ctx context.Context, stackName string) (*StackResolver, error) {
 	if sr, ok := r.StacksByName[stackName]; ok {
 		return sr, nil
 	}
-	if err := r.loadStacks(); err != nil {
+	if err := r.loadStacks(ctx); err != nil {
 		return nil, err
 	}
 	if sr, ok := r.StacksByName[stackName]; ok {
@@ -124,11 +125,11 @@ func (r *ResourceResolver) resolveStackByName(stackName string) (*StackResolver,
 	return nil, StackDoesNotExistError{StackName: stackName}
 }
 
-func (r *ResourceResolver) resolveStackById(stackId int64) (*StackResolver, error) {
+func (r *ResourceResolver) resolveStackById(ctx context.Context, stackId int64) (*StackResolver, error) {
 	if sr, ok := r.StacksById[stackId]; ok {
 		return sr, nil
 	}
-	if err := r.loadStacks(); err != nil {
+	if err := r.loadStacks(ctx); err != nil {
 		return nil, err
 	}
 	if sr, ok := r.StacksById[stackId]; ok {
@@ -137,8 +138,8 @@ func (r *ResourceResolver) resolveStackById(stackId int64) (*StackResolver, erro
 	return nil, StackIdDoesNotExistError{StackId: stackId}
 }
 
-func (r *ResourceResolver) loadStacks() error {
-	stacks, err := r.ApiClient.Stacks().List()
+func (r *ResourceResolver) loadStacks(ctx context.Context) error {
+	stacks, err := r.ApiClient.Stacks().List(ctx)
 	if err != nil {
 		return err
 	}

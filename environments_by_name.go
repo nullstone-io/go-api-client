@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
@@ -16,8 +17,8 @@ func (s EnvironmentsByName) path(stackName, envName string) string {
 }
 
 // Get - GET /orgs/:orgName/stacks_by_name/:stack_name/envs/:name
-func (s EnvironmentsByName) Get(stackName, envName string) (*types.Environment, error) {
-	res, err := s.Client.Do(http.MethodGet, s.path(stackName, envName), nil, nil, nil)
+func (s EnvironmentsByName) Get(ctx context.Context, stackName, envName string) (*types.Environment, error) {
+	res, err := s.Client.Do(ctx, http.MethodGet, s.path(stackName, envName), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}

@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
@@ -16,8 +17,8 @@ func (s ProviderCredentials) path(providerName string) string {
 }
 
 // Get - GET /orgs/:orgName/providers/:name/credentials
-func (s ProviderCredentials) Get(providerName string) (*json.RawMessage, error) {
-	res, err := s.Client.Do(http.MethodGet, s.path(providerName), nil, nil, nil)
+func (s ProviderCredentials) Get(ctx context.Context, providerName string) (*json.RawMessage, error) {
+	res, err := s.Client.Do(ctx, http.MethodGet, s.path(providerName), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -32,9 +33,9 @@ func (s ProviderCredentials) Get(providerName string) (*json.RawMessage, error) 
 }
 
 // Update - PUT /orgs/:orgName/providers/:name/credentials
-func (s ProviderCredentials) Update(providerName string, credentials interface{}) (*json.RawMessage, error) {
+func (s ProviderCredentials) Update(ctx context.Context, providerName string, credentials interface{}) (*json.RawMessage, error) {
 	rawPayload, _ := json.Marshal(credentials)
-	res, err := s.Client.Do(http.MethodPut, s.path(providerName), nil, nil, json.RawMessage(rawPayload))
+	res, err := s.Client.Do(ctx, http.MethodPut, s.path(providerName), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}

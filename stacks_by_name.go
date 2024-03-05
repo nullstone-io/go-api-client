@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
@@ -16,8 +17,8 @@ func (s StacksByName) stackPath(stackName string) string {
 }
 
 // Get - GET /orgs/:orgName/stacks_by_name/:name
-func (s StacksByName) Get(stackName string) (*types.Stack, error) {
-	res, err := s.Client.Do(http.MethodGet, s.stackPath(stackName), nil, nil, nil)
+func (s StacksByName) Get(ctx context.Context, stackName string) (*types.Stack, error) {
+	res, err := s.Client.Do(ctx, http.MethodGet, s.stackPath(stackName), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}

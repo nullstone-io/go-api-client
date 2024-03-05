@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
@@ -25,8 +26,8 @@ func (a Apps) appPath(stackId, appId int64) string {
 }
 
 // List - GET /orgs/:orgName/apps
-func (a Apps) List() ([]types.Application, error) {
-	res, err := a.Client.Do(http.MethodGet, a.globalPath(), nil, nil, nil)
+func (a Apps) List(ctx context.Context) ([]types.Application, error) {
+	res, err := a.Client.Do(ctx, http.MethodGet, a.globalPath(), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -41,8 +42,8 @@ func (a Apps) List() ([]types.Application, error) {
 }
 
 // Get - GET /orgs/:orgName/stacks/:stackId/apps/:id
-func (a Apps) Get(stackId, appId int64) (*types.Application, error) {
-	res, err := a.Client.Do(http.MethodGet, a.appPath(stackId, appId), nil, nil, nil)
+func (a Apps) Get(ctx context.Context, stackId, appId int64) (*types.Application, error) {
+	res, err := a.Client.Do(ctx, http.MethodGet, a.appPath(stackId, appId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -57,9 +58,9 @@ func (a Apps) Get(stackId, appId int64) (*types.Application, error) {
 }
 
 // Create - POST /orgs/:orgName/stacks/:stackId/apps
-func (a Apps) Create(stackId int64, app *types.Application) (*types.Application, error) {
+func (a Apps) Create(ctx context.Context, stackId int64, app *types.Application) (*types.Application, error) {
 	rawPayload, _ := json.Marshal(app)
-	res, err := a.Client.Do(http.MethodPost, a.basePath(stackId), nil, nil, json.RawMessage(rawPayload))
+	res, err := a.Client.Do(ctx, http.MethodPost, a.basePath(stackId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -74,9 +75,9 @@ func (a Apps) Create(stackId int64, app *types.Application) (*types.Application,
 }
 
 // Update - PUT/PATCH /orgs/:orgName/stacks/:stackId/apps/:id
-func (a Apps) Update(stackId, appId int64, app *types.Application) (*types.Application, error) {
+func (a Apps) Update(ctx context.Context, stackId, appId int64, app *types.Application) (*types.Application, error) {
 	rawPayload, _ := json.Marshal(app)
-	res, err := a.Client.Do(http.MethodPut, a.appPath(stackId, appId), nil, nil, json.RawMessage(rawPayload))
+	res, err := a.Client.Do(ctx, http.MethodPut, a.appPath(stackId, appId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -91,8 +92,8 @@ func (a Apps) Update(stackId, appId int64, app *types.Application) (*types.Appli
 }
 
 // Destroy - DELETE /orgs/:orgName/stacks/:stackId/apps/:id
-func (a Apps) Destroy(stackId, appId int64) (bool, error) {
-	res, err := a.Client.Do(http.MethodDelete, a.appPath(stackId, appId), nil, nil, nil)
+func (a Apps) Destroy(ctx context.Context, stackId, appId int64) (bool, error) {
+	res, err := a.Client.Do(ctx, http.MethodDelete, a.appPath(stackId, appId), nil, nil, nil)
 	if err != nil {
 		return false, err
 	}

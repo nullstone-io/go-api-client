@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
@@ -15,8 +16,8 @@ func (e AppEnvs) basePath(stackId, appId int64, envName string) string {
 	return fmt.Sprintf("orgs/%s/stacks/%d/apps/%d/envs/%s", e.Client.Config.OrgName, stackId, appId, envName)
 }
 
-func (e AppEnvs) Get(stackId, appId int64, envName string) (*types.AppEnv, error) {
-	res, err := e.Client.Do(http.MethodGet, e.basePath(stackId, appId, envName), nil, nil, nil)
+func (e AppEnvs) Get(ctx context.Context, stackId, appId int64, envName string) (*types.AppEnv, error) {
+	res, err := e.Client.Do(ctx, http.MethodGet, e.basePath(stackId, appId, envName), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}

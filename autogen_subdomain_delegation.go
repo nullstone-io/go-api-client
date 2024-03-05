@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
@@ -17,9 +18,9 @@ func (d AutogenSubdomainDelegation) path(subdomainId, envId int64) string {
 }
 
 // Update - PUT /orgs/:orgName/subdomains/:subdomainId/envs/:envId/autogen_subdomain/delegation
-func (d AutogenSubdomainDelegation) Update(subdomainId, envId int64, delegation *types.AutogenSubdomain) (*types.AutogenSubdomain, error) {
+func (d AutogenSubdomainDelegation) Update(ctx context.Context, subdomainId, envId int64, delegation *types.AutogenSubdomain) (*types.AutogenSubdomain, error) {
 	rawPayload, _ := json.Marshal(delegation)
-	res, err := d.Client.Do(http.MethodPut, d.path(subdomainId, envId), nil, nil, json.RawMessage(rawPayload))
+	res, err := d.Client.Do(ctx, http.MethodPut, d.path(subdomainId, envId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
@@ -34,8 +35,8 @@ func (d AutogenSubdomainDelegation) Update(subdomainId, envId int64, delegation 
 }
 
 // Destroy - DELETE /orgs/:orgName/subdomains/:subdomainId/envs/:envId/autogen_subdomain/delegation
-func (d AutogenSubdomainDelegation) Destroy(subdomainId, envId int64) (found bool, err error) {
-	res, err := d.Client.Do(http.MethodDelete, d.path(subdomainId, envId), nil, nil, nil)
+func (d AutogenSubdomainDelegation) Destroy(ctx context.Context, subdomainId, envId int64) (found bool, err error) {
+	res, err := d.Client.Do(ctx, http.MethodDelete, d.path(subdomainId, envId), nil, nil, nil)
 	if err != nil {
 		return false, err
 	}
