@@ -1,6 +1,7 @@
 package find
 
 import (
+	"context"
 	"fmt"
 	"github.com/google/uuid"
 	"gopkg.in/nullstone-io/go-api-client.v0"
@@ -11,9 +12,9 @@ import (
 // NonTerminalRuns finds all runs for a given workspace that have not completed
 // This includes queued, resolving, initializing, awaiting-dependencies, running, and needs-approval
 // The result is sorted from oldest to newest
-func NonTerminalRuns(cfg api.Config, stackId int64, workspaceUid uuid.UUID) ([]types.Run, error) {
+func NonTerminalRuns(ctx context.Context, cfg api.Config, stackId int64, workspaceUid uuid.UUID) ([]types.Run, error) {
 	client := api.Client{Config: cfg}
-	runs, err := client.Runs().List(stackId, workspaceUid)
+	runs, err := client.Runs().List(ctx, stackId, workspaceUid)
 	if err != nil {
 		return nil, fmt.Errorf("error retrieving runs for application workspace: %w", err)
 	}

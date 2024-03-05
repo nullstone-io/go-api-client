@@ -1,6 +1,7 @@
 package find
 
 import (
+	"context"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/nullstone-io/go-api-client.v0/mocks"
@@ -62,7 +63,7 @@ func TestStackResolver_ResolveEnv(t *testing.T) {
 			StackId: stack1Id,
 			EnvId:   &env3.Id,
 		}
-		got, gotErr := sr.ResolveEnv(ct, env1.Id)
+		got, gotErr := sr.ResolveEnv(context.Background(), ct, env1.Id)
 		assert.ErrorIs(t, gotErr, EnvIdDoesNotExistError{StackName: "primary", EnvId: env3.Id})
 		assert.Equal(t, types.Environment{}, got, "env should be empty")
 	})
@@ -71,7 +72,7 @@ func TestStackResolver_ResolveEnv(t *testing.T) {
 			StackId: stack1Id,
 			EnvId:   &env1.Id,
 		}
-		got, err := sr.ResolveEnv(ct, env1.Id)
+		got, err := sr.ResolveEnv(context.Background(), ct, env1.Id)
 		assert.NoError(t, err)
 		assert.Equal(t, env1, got, "should resolve env1")
 	})
@@ -80,7 +81,7 @@ func TestStackResolver_ResolveEnv(t *testing.T) {
 			StackId: stack1Id,
 			EnvId:   &env1.Id,
 		}
-		got, err := sr.ResolveEnv(ct, env1.Id)
+		got, err := sr.ResolveEnv(context.Background(), ct, env1.Id)
 		assert.NoError(t, err)
 		assert.Equal(t, env1, got, "should resolve env1")
 	})
@@ -88,7 +89,7 @@ func TestStackResolver_ResolveEnv(t *testing.T) {
 		ct := types.ConnectionTarget{
 			StackId: stack1Id,
 		}
-		got, err := sr.ResolveEnv(ct, env1.Id)
+		got, err := sr.ResolveEnv(context.Background(), ct, env1.Id)
 		assert.NoError(t, err)
 		assert.Equal(t, env1, got, "should resolve env1")
 	})
@@ -148,7 +149,7 @@ func TestStackResolver_ResolveBlock(t *testing.T) {
 			StackId: stack1Id,
 			BlockId: block3.Id,
 		}
-		got, gotErr := sr.ResolveBlock(ct)
+		got, gotErr := sr.ResolveBlock(context.Background(), ct)
 		assert.ErrorIs(t, gotErr, BlockIdDoesNotExistError{StackName: "primary", BlockId: block3.Id})
 		assert.Equal(t, types.Block{}, got, "block should be empty")
 	})
@@ -157,7 +158,7 @@ func TestStackResolver_ResolveBlock(t *testing.T) {
 			StackId: stack1Id,
 			BlockId: block1.Id,
 		}
-		got, err := sr.ResolveBlock(ct)
+		got, err := sr.ResolveBlock(context.Background(), ct)
 		assert.NoError(t, err)
 		assert.Equal(t, block1, got, "should resolve block1")
 	})
@@ -166,7 +167,7 @@ func TestStackResolver_ResolveBlock(t *testing.T) {
 			StackId: stack1Id,
 			BlockId: block1.Id,
 		}
-		got, err := sr.ResolveBlock(ct)
+		got, err := sr.ResolveBlock(context.Background(), ct)
 		assert.NoError(t, err)
 		assert.Equal(t, block1, got, "should resolve block1")
 	})

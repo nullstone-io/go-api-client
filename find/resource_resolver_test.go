@@ -1,6 +1,7 @@
 package find
 
 import (
+	"context"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/nullstone-io/go-api-client.v0/mocks"
@@ -100,7 +101,7 @@ func TestResourceResolver(t *testing.T) {
 			EnvId:   &env3Id,
 		}
 		want := ct
-		got, err := rr.Resolve(ct)
+		got, err := rr.Resolve(context.Background(), ct)
 		assert.ErrorIs(t, err, StackIdDoesNotExistError{StackId: stack3Id})
 		assert.Equal(t, want, got)
 	})
@@ -112,7 +113,7 @@ func TestResourceResolver(t *testing.T) {
 		}
 		want := ct
 		want.StackName = stack1.Name
-		got, err := rr.Resolve(ct)
+		got, err := rr.Resolve(context.Background(), ct)
 		assert.ErrorIs(t, err, EnvIdDoesNotExistError{StackName: "primary", EnvId: env3Id})
 		assert.Equal(t, want, got)
 	})
@@ -125,7 +126,7 @@ func TestResourceResolver(t *testing.T) {
 		want := ct
 		want.StackName = stack1.Name
 		want.EnvName = env1.Name
-		got, err := rr.Resolve(ct)
+		got, err := rr.Resolve(context.Background(), ct)
 		assert.ErrorIs(t, err, BlockIdDoesNotExistError{StackName: "primary", BlockId: block3Id})
 		assert.Equal(t, want, got)
 	})
@@ -139,7 +140,7 @@ func TestResourceResolver(t *testing.T) {
 		want.StackName = stack1.Name
 		want.EnvName = env1.Name
 		want.BlockName = block1.Name
-		got, err := rr.Resolve(ct)
+		got, err := rr.Resolve(context.Background(), ct)
 		assert.NoError(t, err, "unexpected error")
 		assert.Equal(t, want, got)
 	})
@@ -153,7 +154,7 @@ func TestResourceResolver(t *testing.T) {
 		want.StackName = stack1.Name
 		want.EnvName = env1.Name
 		want.BlockName = block1.Name
-		got, err := rr.Resolve(ct)
+		got, err := rr.Resolve(context.Background(), ct)
 		assert.NoError(t, err, "unexpected error")
 		assert.Equal(t, want, got)
 	})
@@ -167,7 +168,7 @@ func TestResourceResolver(t *testing.T) {
 		want.EnvId = &env1.Id
 		want.EnvName = env1.Name
 		want.BlockName = block2.Name
-		got, err := rr.Resolve(ct)
+		got, err := rr.Resolve(context.Background(), ct)
 		assert.NoError(t, err, "unexpected error")
 		assert.Equal(t, want, got)
 	})
@@ -181,7 +182,7 @@ func TestResourceResolver(t *testing.T) {
 		want.EnvId = &env5.Id
 		want.EnvName = env5.Name
 		want.BlockName = block4.Name
-		got, err := rr2.Resolve(ct)
+		got, err := rr2.Resolve(context.Background(), ct)
 		assert.NoError(t, err, "unexpected error")
 		assert.Equal(t, want, got)
 	})
@@ -255,11 +256,11 @@ func TestResourceResolver_BackfillMissingBlocks(t *testing.T) {
 				IsShared: true,
 			},
 		}
-
-		err := rr.BackfillMissingBlocks(newBlocks)
+		ctx := context.Background()
+		err := rr.BackfillMissingBlocks(ctx, newBlocks)
 		assert.NoError(t, err)
 
-		sr, err := rr.ResolveStack(types.ConnectionTarget{StackId: stack1.Id})
+		sr, err := rr.ResolveStack(ctx, types.ConnectionTarget{StackId: stack1.Id})
 		assert.NoError(t, err)
 
 		assert.Equal(t, 3, len(sr.BlocksByName))

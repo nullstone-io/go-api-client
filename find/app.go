@@ -1,6 +1,7 @@
 package find
 
 import (
+	"context"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
@@ -34,11 +35,11 @@ func (e ErrMultipleAppsFound) Error() string {
 // App searches for an app by app name
 // If only 1 app is found, returns that app
 // If many are found, will return an error with matched app stack names
-func App(cfg api.Config, appName, stackName string) (*types.Application, error) {
+func App(ctx context.Context, cfg api.Config, appName, stackName string) (*types.Application, error) {
 	client := api.Client{Config: cfg}
 	stackId := int64(0)
 	if stackName != "" {
-		stack, err := client.StacksByName().Get(stackName)
+		stack, err := client.StacksByName().Get(ctx, stackName)
 		if err != nil {
 			return nil, fmt.Errorf("failed to find stack %q: %w", stackName, err)
 		} else if stack == nil {
@@ -46,7 +47,7 @@ func App(cfg api.Config, appName, stackName string) (*types.Application, error) 
 		}
 		stackId = stack.Id
 	}
-	allApps, err := client.Apps().List()
+	allApps, err := client.Apps().List(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("error listing applications: %w", err)
 	}
@@ -61,7 +62,7 @@ func App(cfg api.Config, appName, stackName string) (*types.Application, error) 
 	if len(matched) == 0 {
 		return nil, nil
 	} else if len(matched) > 1 {
-		stacks, err := client.Stacks().List()
+		stacks, err := client.Stacks().List(ctx)
 		if err != nil {
 			return nil, fmt.Errorf("error listing stacks: %w", err)
 		}
