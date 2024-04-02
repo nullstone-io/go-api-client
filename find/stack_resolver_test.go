@@ -63,35 +63,27 @@ func TestStackResolver_ResolveEnv(t *testing.T) {
 			StackId: stack1Id,
 			EnvId:   &env3.Id,
 		}
-		got, gotErr := sr.ResolveEnv(context.Background(), ct, env1.Id)
+		got, gotErr := sr.ResolveEnv(context.Background(), ct)
 		assert.ErrorIs(t, gotErr, EnvIdDoesNotExistError{StackName: "primary", EnvId: env3.Id})
-		assert.Equal(t, types.Environment{}, got, "env should be empty")
+		assert.Equal(t, types.Environment{}, *got, "env should be empty")
 	})
 	t.Run("needs loaded first", func(t *testing.T) {
 		ct := types.ConnectionTarget{
 			StackId: stack1Id,
 			EnvId:   &env1.Id,
 		}
-		got, err := sr.ResolveEnv(context.Background(), ct, env1.Id)
+		got, err := sr.ResolveEnv(context.Background(), ct)
 		assert.NoError(t, err)
-		assert.Equal(t, env1, got, "should resolve env1")
+		assert.Equal(t, env1, *got, "should resolve env1")
 	})
 	t.Run("already loaded", func(t *testing.T) {
 		ct := types.ConnectionTarget{
 			StackId: stack1Id,
 			EnvId:   &env1.Id,
 		}
-		got, err := sr.ResolveEnv(context.Background(), ct, env1.Id)
+		got, err := sr.ResolveEnv(context.Background(), ct)
 		assert.NoError(t, err)
-		assert.Equal(t, env1, got, "should resolve env1")
-	})
-	t.Run("loads current env", func(t *testing.T) {
-		ct := types.ConnectionTarget{
-			StackId: stack1Id,
-		}
-		got, err := sr.ResolveEnv(context.Background(), ct, env1.Id)
-		assert.NoError(t, err)
-		assert.Equal(t, env1, got, "should resolve env1")
+		assert.Equal(t, env1, *got, "should resolve env1")
 	})
 }
 

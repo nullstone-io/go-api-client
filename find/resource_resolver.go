@@ -36,13 +36,14 @@ func (r *ResourceResolver) Resolve(ctx context.Context, ct types.ConnectionTarge
 	result.StackId = sr.Stack.Id
 	result.StackName = sr.Stack.Name
 
-	env, err := sr.ResolveEnv(ctx, result, r.CurEnvId)
+	currentEnv, err := sr.ResolveEnvById(ctx, r.CurEnvId)
 	if err != nil {
 		return result, err
 	}
-	envId := env.Id
-	result.EnvId = &envId
-	result.EnvName = env.Name
+	configuredEnv, err := sr.ResolveEnv(ctx, result)
+	if err != nil {
+		return result, err
+	}
 
 	block, err := sr.ResolveBlock(ctx, result)
 	if err != nil {
@@ -51,12 +52,8 @@ func (r *ResourceResolver) Resolve(ctx context.Context, ct types.ConnectionTarge
 	result.BlockId = block.Id
 	result.BlockName = block.Name
 
-	sharedEnv := r.resolveSharedBlockEnv(ct, block, env, sr)
-	if sharedEnv != nil {
-		sharedEnvId := sharedEnv.Id
-		result.EnvId = &sharedEnvId
-		result.EnvName = sharedEnv.Name
-	}
+	sharedEnv := r.resolveSharedEnv(block, sr)
+	result = r.setEnv(result, configuredEnv, currentEnv, sharedEnv)
 
 	return result, nil
 }
@@ -154,21 +151,11 @@ func (r *ResourceResolver) loadStacks(ctx context.Context) error {
 // resolveSharedBlockEnv performs resolution of shared blocks
 // When a block is marked shared, it is created once for all preview envs and stored in a special environment (i.e. `previews-shared`)
 // We only perform this resolution under the following circumstances:
-// 1. The current env must be a preview environment
-// 2. The block is marked 'shared'
-// 3. The user did not specify an explicit environment
-// 4. Our stack contains a `previews-shared` env
-func (r *ResourceResolver) resolveSharedBlockEnv(original types.ConnectionTarget, curBlock types.Block, curEnv types.Environment, curStackResolver *StackResolver) *types.Environment {
-	if curEnv.Type != types.EnvTypePreview {
-		// Current env is not a preview env
-		return nil
-	}
+// 1. The block is marked 'shared'
+// 2. Our stack contains a `previews-shared` env
+func (r *ResourceResolver) resolveSharedEnv(curBlock types.Block, curStackResolver *StackResolver) *types.Environment {
 	if !curBlock.IsShared {
 		// Block is not marked shared
-		return nil
-	}
-	if original.EnvId != nil {
-		// User specified an explicit environment
 		return nil
 	}
 	if curStackResolver.PreviewsSharedEnvId == 0 {
@@ -178,4 +165,35 @@ func (r *ResourceResolver) resolveSharedBlockEnv(original types.ConnectionTarget
 
 	env := curStackResolver.EnvsById[curStackResolver.PreviewsSharedEnvId]
 	return &env
+}
+
+// resolveEnv determines whether an env should be set on the connection target
+//
+//	We only need to modify the env for preview envs, pipeline envs can't be normalized
+func (r *ResourceResolver) setEnv(ct types.ConnectionTarget, configuredEnv *types.Environment, currentEnv types.Environment, sharedEnv *types.Environment) types.ConnectionTarget {
+	// for pipeline environments, we don't do normalization so just return the configured env
+	//   if there is no configured env, just return the current env
+	if currentEnv.Type == types.EnvTypePipeline {
+		if configuredEnv == nil {
+			ct.EnvId = &currentEnv.Id
+			ct.EnvName = currentEnv.Name
+			return ct
+		} else {
+			ct.EnvId = &configuredEnv.Id
+			ct.EnvName = configuredEnv.Name
+			return ct
+		}
+	}
+
+	// for preview envs, if there is no shared env, we resolve to the current env
+	if sharedEnv == nil {
+		ct.EnvId = &currentEnv.Id
+		ct.EnvName = currentEnv.Name
+		return ct
+	} else {
+		// for preview envs, if there is a shared env, we resolve to the shared
+		ct.EnvId = &sharedEnv.Id
+		ct.EnvName = sharedEnv.Name
+		return ct
+	}
 }
