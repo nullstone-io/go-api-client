@@ -11,6 +11,7 @@ const (
 	CategoryApp              CategoryName = "app"
 	CategoryCapability       CategoryName = "capability"
 	CategoryDatastore        CategoryName = "datastore"
+	CategoryIngress          CategoryName = "ingress"
 	CategorySubdomain        CategoryName = "subdomain"
 	CategoryDomain           CategoryName = "domain"
 	CategoryCluster          CategoryName = "cluster"
@@ -23,6 +24,7 @@ var AllCategoryNames = []string{
 	"app",
 	"capability",
 	"datastore",
+	"ingress",
 	"subdomain",
 	"domain",
 	"cluster-namespace",
