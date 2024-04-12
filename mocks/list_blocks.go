@@ -34,4 +34,20 @@ func ListBlocks(router *mux.Router, blocks []types.Block) {
 			raw, _ := json.Marshal(result)
 			w.Write(raw)
 		})
+	router.Methods(http.MethodGet).
+		Path("/orgs/{orgName}/stacks/{stackId}/blocks/{blockId}").
+		HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			vars := mux.Vars(r)
+			orgName, rawStackId, rawBlockId := vars["orgName"], vars["stackId"], vars["blockId"]
+			stackId, _ := strconv.ParseInt(rawStackId, 10, 64)
+			blockId, _ := strconv.ParseInt(rawBlockId, 10, 64)
+
+			for _, block := range blocks {
+				if block.OrgName == orgName && block.StackId == stackId && block.Id == blockId {
+					raw, _ := json.Marshal(block)
+					w.Write(raw)
+					return
+				}
+			}
+		})
 }

@@ -34,4 +34,20 @@ func ListEnvironments(router *mux.Router, envs []types.Environment) {
 			raw, _ := json.Marshal(result)
 			w.Write(raw)
 		})
+	router.Methods(http.MethodGet).
+		Path("/orgs/{orgName}/stacks/{stackId}/envs/{envId}").
+		HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			vars := mux.Vars(r)
+			orgName, rawStackId, rawEnvId := vars["orgName"], vars["stackId"], vars["envId"]
+			stackId, _ := strconv.ParseInt(rawStackId, 10, 64)
+			envId, _ := strconv.ParseInt(rawEnvId, 10, 64)
+
+			for _, env := range envs {
+				if env.OrgName == orgName && env.StackId == stackId && env.Id == envId {
+					raw, _ := json.Marshal(env)
+					w.Write(raw)
+					return
+				}
+			}
+		})
 }
