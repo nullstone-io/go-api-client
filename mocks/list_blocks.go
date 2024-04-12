@@ -76,10 +76,10 @@ func ListBlocks(router *mux.Router, blocks []types.Block) {
 			w.Write(raw)
 		})
 	router.Methods(http.MethodGet).
-		Path("/orgs/{orgName}/stacks/{stackId}/app/{blockId}").
+		Path("/orgs/{orgName}/stacks/{stackId}/apps/{appId}").
 		HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			vars := mux.Vars(r)
-			orgName, rawStackId, rawBlockId := vars["orgName"], vars["stackId"], vars["blockId"]
+			orgName, rawStackId, rawBlockId := vars["orgName"], vars["stackId"], vars["appId"]
 			stackId, _ := strconv.ParseInt(rawStackId, 10, 64)
 			blockId, _ := strconv.ParseInt(rawBlockId, 10, 64)
 
