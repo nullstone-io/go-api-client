@@ -3,8 +3,10 @@ package api
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
+	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -19,17 +21,21 @@ func (sc PipelineInfraConfigurations) basePath(stackId int64) string {
 	return fmt.Sprintf("/orgs/%s/stacks/%d/configuration", sc.Client.Config.OrgName, stackId)
 }
 
-func (sc PipelineInfraConfigurations) Create(ctx context.Context, stackId int64, repoName string, config map[string]string) error {
+func (sc PipelineInfraConfigurations) Create(ctx context.Context, stackId int64, commitInfo types.CommitInfo, config map[string]string) error {
 	body := &bytes.Buffer{}
 	writer := multipart.NewWriter(body)
 
-	part, err := writer.CreateFormField("repoName")
+	commitInfoJson, err := json.Marshal(commitInfo)
 	if err != nil {
-		return fmt.Errorf("unable to create form field for repoName: %w", err)
+		return fmt.Errorf("unable to marshal commitInfo: %w", err)
 	}
-	_, err = io.Copy(part, strings.NewReader(repoName))
+	part, err := writer.CreateFormField("commitInfo")
 	if err != nil {
-		return fmt.Errorf("unable to copy repoName into form field: %w", err)
+		return fmt.Errorf("unable to create form field for commitInfo: %w", err)
+	}
+	_, err = io.Copy(part, bytes.NewReader(commitInfoJson))
+	if err != nil {
+		return fmt.Errorf("unable to copy commitInfo into form field: %w", err)
 	}
 
 	for k, v := range config {
