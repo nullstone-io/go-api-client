@@ -1,24 +1,17 @@
 package types
 
 const (
-	RepoInfoVcsProviderGithub = "github"
+	CommitInfoVcsProviderGithub = "github"
 )
 
-type RepoInfo struct {
-	VcsProvider string `json:"vcsProvider"`
-	Owner       string `json:"owner"`
-	Name        string `json:"name"`
-	FullName    string `json:"fullName"`
-	Url         string `json:"url"`
-}
-
 type CommitInfo struct {
-}
-
-type RefInfo struct {
+	VcsProvider string `json:"vcsProvider"`
+	RepoOwner   string `json:"repoOwner"`
+	RepoName    string `json:"repoName"`
+	Repo        string `json:"repo"`
+	RepoUrl     string `json:"repoUrl"`
 	BranchName  string `json:"branchName"`
-	RefType     string `json:"refType"`
-	RefSha      string `json:"commitSha"`
-	RefUrl      string `json:"commitUrl"`
+	CommitSha   string `json:"commitSha"`
+	CommitUrl   string `json:"commitUrl"`
 	VcsUsername string `json:"vcsUsername"`
 }
