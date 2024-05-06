@@ -5,6 +5,7 @@ const (
 )
 
 type CommitInfo struct {
+	Type        string `json:"type"`
 	VcsProvider string `json:"vcsProvider"`
 	RepoOwner   string `json:"repoOwner"`
 	RepoName    string `json:"repoName"`
