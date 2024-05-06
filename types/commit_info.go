@@ -4,6 +4,12 @@ const (
 	CommitInfoVcsProviderGithub = "github"
 )
 
+const (
+	CommitInfoTypeBranch = "branch"
+	CommitInfoTypePr     = "pr"
+	CommitInfoTypePush   = "push"
+)
+
 type CommitInfo struct {
 	Type        string `json:"type"`
 	VcsProvider string `json:"vcsProvider"`
