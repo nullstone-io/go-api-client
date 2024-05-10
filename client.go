@@ -159,6 +159,10 @@ func (c *Client) RunLogs() RunLogs {
 	return RunLogs{Client: c}
 }
 
+func (c *Client) WorkspaceWorkflows() WorkspaceWorkflows {
+	return WorkspaceWorkflows{Client: c}
+}
+
 func (c *Client) AutogenSubdomain() AutogenSubdomain {
 	return AutogenSubdomain{Client: c}
 }
