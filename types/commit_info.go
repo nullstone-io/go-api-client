@@ -21,4 +21,6 @@ type CommitInfo struct {
 	CommitSha   string `json:"commitSha"`
 	CommitUrl   string `json:"commitUrl"`
 	VcsUsername string `json:"vcsUsername"`
+	PRNumber    int    `json:"prNumber"`
+	PRId        int64  `json:"prId"`
 }
