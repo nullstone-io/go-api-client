@@ -17,7 +17,7 @@ func (w WorkspaceWorkflows) basePath(stackId, blockId, envId int64) string {
 	return fmt.Sprintf("orgs/%s/stacks/%d/blocks/%d/envs/%d/workspace_workflows", w.Client.Config.OrgName, stackId, blockId, envId)
 }
 
-func (w WorkspaceWorkflows) List(ctx context.Context, stackId, blockId, envId int64, page, pageSize *int64) ([]types.WorkspaceWorkflowStatus, error) {
+func (w WorkspaceWorkflows) List(ctx context.Context, stackId, blockId, envId int64, page, pageSize *int) ([]types.WorkspaceWorkflowStatus, error) {
 	query := url.Values{}
 	if page != nil {
 		query.Set("page", fmt.Sprint(*page))
