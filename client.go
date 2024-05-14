@@ -115,6 +115,10 @@ func (c *Client) EnvVariables() EnvVariables {
 	return EnvVariables{Client: c}
 }
 
+func (c *Client) Builds() Builds { return Builds{Client: c} }
+
+func (c *Client) BuildLogs() BuildLogs { return BuildLogs{Client: c} }
+
 func (c *Client) Deploys() Deploys {
 	return Deploys{Client: c}
 }
