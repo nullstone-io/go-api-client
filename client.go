@@ -139,6 +139,10 @@ func (c *Client) WorkspaceModule() WorkspaceModule {
 	return WorkspaceModule{Client: c}
 }
 
+func (c *Client) WorkspaceConfigs() WorkspaceConfigs {
+	return WorkspaceConfigs{Client: c}
+}
+
 func (c *Client) WorkspaceOutputs() WorkspaceOutputs {
 	return WorkspaceOutputs{Client: c}
 }
