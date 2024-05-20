@@ -143,6 +143,10 @@ func (c *Client) WorkspaceVariables() WorkspaceVariables {
 	return WorkspaceVariables{Client: c}
 }
 
+func (c *Client) WorkspaceWorkflows() WorkspaceWorkflows {
+	return WorkspaceWorkflows{Client: c}
+}
+
 func (c *Client) Runs() Runs {
 	return Runs{Client: c}
 }
