@@ -2,12 +2,14 @@ package api
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
 	"net/url"
 	"strconv"
+	"time"
 )
 
 type WorkspaceWorkflows struct {
@@ -31,4 +33,24 @@ func (ww WorkspaceWorkflows) List(ctx context.Context, stackId, blockId, envId i
 		return nil, err
 	}
 	return response.ReadJsonVal[[]types.WorkspaceWorkflow](res)
+}
+
+type CreateWorkspaceWorkflowInput struct {
+	Actions       []string  `json:"actions"`
+	CreatedAt     time.Time `json:"createdAt"`
+	CreatedBy     string    `json:"createdBy"`
+	Status        string    `json:"status"`
+	StatusMessage string    `json:"statusMessage"`
+	StatusAt      time.Time `json:"statusAt"`
+}
+
+// Deprecated
+// Used for migrations; remove once on v3 engine
+func (ww WorkspaceWorkflows) Create(ctx context.Context, stackId, blockId, envId int64, input CreateWorkspaceWorkflowInput) (*types.WorkspaceWorkflow, error) {
+	rawPayload, _ := json.Marshal(input)
+	res, err := ww.Client.Do(ctx, http.MethodPost, ww.basePath(stackId, blockId, envId), nil, nil, json.RawMessage(rawPayload))
+	if err != nil {
+		return nil, err
+	}
+	return response.ReadJsonPtr[types.WorkspaceWorkflow](res)
 }
