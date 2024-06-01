@@ -30,13 +30,18 @@ const (
 
 type IntentWorkflow struct {
 	IdModel
-	Intent  IntentWorkflowIntent `json:"intent"`
-	OrgName string               `json:"orgName"`
-	StackId int64                `json:"stackId"`
+	Intent    IntentWorkflowIntent `json:"intent"`
+	OrgName   string               `json:"orgName"`
+	StackId   int64                `json:"stackId"`
+	StackName string               `json:"stackName"`
 	// BlockId is nil because some intents are targeting an environment while some target a workspace
-	BlockId       *int64               `json:"blockId"`
-	EnvId         int64                `json:"envId"`
-	Status        IntentWorkflowStatus `json:"status"`
-	StatusMessage string               `json:"statusMessage"`
-	StatusAt      time.Time            `json:"statusAt"`
+	BlockId            *int64               `json:"blockId"`
+	BlockName          *string              `json:"blockName"`
+	EnvId              int64                `json:"envId"`
+	EnvName            string               `json:"envName"`
+	Status             IntentWorkflowStatus `json:"status"`
+	StatusMessage      string               `json:"statusMessage"`
+	StatusAt           time.Time            `json:"statusAt"`
+	IntentWorkflowId   *int64               `json:"intentWorkflowId"`
+	WorkspaceWorkflows []WorkspaceWorkflow  `json:"workspaceWorkflows"`
 }
