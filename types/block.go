@@ -1,5 +1,19 @@
 package types
 
+type BlockType string
+
+const (
+	BlockTypeApplication      BlockType = "Application"
+	BlockTypeDatastore        BlockType = "Datastore"
+	BlockTypeSubdomain        BlockType = "Subdomain"
+	BlockTypeDomain           BlockType = "Domain"
+	BlockTypeIngress          BlockType = "Ingress"
+	BlockTypeClusterNamespace BlockType = "ClusterNamespace"
+	BlockTypeCluster          BlockType = "Cluster"
+	BlockTypeNetwork          BlockType = "Network"
+	BlockTypeBlock            BlockType = "Block"
+)
+
 type Block struct {
 	IdModel
 	Type                string                      `json:"type"`
