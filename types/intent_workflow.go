@@ -35,13 +35,22 @@ type IntentWorkflow struct {
 	StackId   int64                `json:"stackId"`
 	StackName string               `json:"stackName"`
 	// BlockId is nil because some intents are targeting an environment while some target a workspace
-	BlockId            *int64               `json:"blockId"`
-	BlockName          *string              `json:"blockName"`
-	EnvId              int64                `json:"envId"`
-	EnvName            string               `json:"envName"`
-	Status             IntentWorkflowStatus `json:"status"`
-	StatusMessage      string               `json:"statusMessage"`
-	StatusAt           time.Time            `json:"statusAt"`
-	IntentWorkflowId   *int64               `json:"intentWorkflowId"`
-	WorkspaceWorkflows []WorkspaceWorkflow  `json:"workspaceWorkflows"`
+	BlockId       *int64               `json:"blockId"`
+	BlockName     *string              `json:"blockName"`
+	EnvId         int64                `json:"envId"`
+	EnvName       string               `json:"envName"`
+	Status        IntentWorkflowStatus `json:"status"`
+	StatusMessage string               `json:"statusMessage"`
+	StatusAt      time.Time            `json:"statusAt"`
+	CommitInfo    CommitInfo           `json:"commitInfo"`
+	Trigger       ExternalTrigger      `json:"trigger"`
+
+	// PrimaryWorkflow contains the WorkspaceWorkflow if this intent workflow was initiated by a single workspace
+	// If BlockId is nil, PrimaryWorkflow is nil
+	// If BlockId is not nil, PrimaryWorkflow is not nil
+	PrimaryWorkflow *WorkspaceWorkflow `json:"primaryWorkflow"`
+
+	// WorkspaceWorkflows contains all WorkspaceWorkflow in this IntentWorkflow
+	// This is not included when Listing many workflows
+	WorkspaceWorkflows []WorkspaceWorkflow `json:"workspaceWorkflows"`
 }
