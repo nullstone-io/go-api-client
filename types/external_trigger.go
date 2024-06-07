@@ -23,6 +23,8 @@ type ExternalTrigger struct {
 	// This user is dependent on the Source
 	// For example, if ExternalTriggerSourceGithub, this is the Github user
 	SourceUser ExternalTriggerUser `json:"sourceUser"`
+	// NullstoneUser is the user in Nullstone that is linked to SourceUser
+	NullstoneUser *User `json:"nullstoneUser"`
 }
 
 type ExternalTriggerUser struct {
