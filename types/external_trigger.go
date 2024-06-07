@@ -6,9 +6,9 @@ const (
 )
 
 const (
-	ExternalTriggerEventUser               = "user"
-	ExternalTriggerEventVcsPush            = "vcs-push"
-	ExternalTriggerEventVcsOpenPullRequest = "vcs-open-pull-request"
+	ExternalTriggerEventUser                 = "user"
+	ExternalTriggerEventVcsPush              = "vcs-push"
+	ExternalTriggerEventVcsPullRequestOpened = "vcs-pull-request-opened"
 )
 
 // ExternalTrigger represents the source of an external trigger performing an action against Nullstone
@@ -17,7 +17,7 @@ type ExternalTrigger struct {
 	// Examples: ExternalTriggerSourceManual, ExternalTriggerSourceGithub
 	Source string `json:"source"`
 	// Event indicates what type of event caused the ExternalTrigger
-	// Examples: ExternalTriggerEventUser, ExternalTriggerEventVcsPush, ExternalTriggerEventVcsOpenPullRequest
+	// Examples: ExternalTriggerEventUser, ExternalTriggerEventVcsPush, ExternalTriggerEventVcsPullRequestOpened
 	Event string `json:"event"`
 	// SourceUser indicates the user that caused the ExternalTrigger
 	// This user is dependent on the Source
