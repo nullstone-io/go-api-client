@@ -30,14 +30,16 @@ func (r *StackResolver) Envs(ctx context.Context) (map[int64]types.Environment, 
 	return r.EnvsById, nil
 }
 
-func (r *StackResolver) ResolveEnv(ctx context.Context, ct types.ConnectionTarget, curEnvId int64) (types.Environment, error) {
+func (r *StackResolver) ResolveEnv(ctx context.Context, ct types.ConnectionTarget) (*types.Environment, error) {
 	if ct.EnvName != "" {
-		return r.ResolveEnvByName(ctx, ct.EnvName)
+		env, err := r.ResolveEnvByName(ctx, ct.EnvName)
+		return &env, err
 	}
 	if ct.EnvId == nil {
-		ct.EnvId = &curEnvId
+		return nil, nil
 	}
-	return r.ResolveEnvById(ctx, *ct.EnvId)
+	env, err := r.ResolveEnvById(ctx, *ct.EnvId)
+	return &env, err
 }
 
 func (r *StackResolver) ResolveEnvByName(ctx context.Context, envName string) (types.Environment, error) {
