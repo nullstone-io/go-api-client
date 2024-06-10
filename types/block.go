@@ -16,17 +16,16 @@ const (
 
 type Block struct {
 	IdModel
-	Type                string       `json:"type"`
-	OrgName             string       `json:"orgName"`
-	StackId             int64        `json:"stackId"`
-	Reference           string       `json:"reference"`
-	Name                string       `json:"name"`
-	IsShared            bool         `json:"isShared"`
-	OwningRepo          string       `json:"owningRepo"`
-	DnsName             string       `json:"dnsName,omitempty"`
-	ModuleSource        string       `json:"moduleSource"`
-	ModuleSourceVersion string       `json:"moduleSourceVersion"`
-	Capabilities        []Capability `json:"capabilities"`
+	Type                string `json:"type"`
+	OrgName             string `json:"orgName"`
+	StackId             int64  `json:"stackId"`
+	Reference           string `json:"reference"`
+	Name                string `json:"name"`
+	IsShared            bool   `json:"isShared"`
+	OwningRepo          string `json:"owningRepo"`
+	DnsName             string `json:"dnsName,omitempty"`
+	ModuleSource        string `json:"moduleSource"`
+	ModuleSourceVersion string `json:"moduleSourceVersion"`
 }
 
 type Blocks []Block
@@ -50,4 +49,11 @@ func (s Blocks) FindByName(name string) *Block {
 		}
 	}
 	return nil
+}
+
+type BlockSync struct {
+	Block `json:",inline"`
+
+	CreateConnections  map[string]ConnectionTarget `json:"createConnections"`
+	CreateCapabilities []Capability                `json:"createCapabilities"`
 }
