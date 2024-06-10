@@ -95,6 +95,10 @@ func (c *Client) BlockSyncs() BlockSyncs {
 	return BlockSyncs{Client: c}
 }
 
+func (c *Client) ConnectionCopies() ConnectionCopies {
+	return ConnectionCopies{Client: c}
+}
+
 func (c *Client) CapabilityCopies() CapabilityCopies {
 	return CapabilityCopies{Client: c}
 }
