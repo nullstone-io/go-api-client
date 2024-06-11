@@ -14,8 +14,8 @@ type BlockSyncs struct {
 }
 
 type BlockSyncPayload struct {
-	Blocks   []types.Block `json:"blocks"`
-	RepoName string        `json:"repoName"`
+	Blocks   []types.BlockSync `json:"blocks"`
+	RepoName string            `json:"repoName"`
 }
 
 func (s BlockSyncs) basePath(stackId, envId int64) string {

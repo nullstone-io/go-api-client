@@ -83,8 +83,20 @@ func (c *Client) Blocks() Blocks {
 	return Blocks{Client: c}
 }
 
+func (c *Client) Connections() Connections {
+	return Connections{Client: c}
+}
+
+func (c *Client) PipelineConnections() PipelineConnections {
+	return PipelineConnections{Client: c}
+}
+
 func (c *Client) BlockSyncs() BlockSyncs {
 	return BlockSyncs{Client: c}
+}
+
+func (c *Client) ConnectionCopies() ConnectionCopies {
+	return ConnectionCopies{Client: c}
 }
 
 func (c *Client) CapabilityCopies() CapabilityCopies {
