@@ -36,6 +36,8 @@ type Config struct {
 	IsTraceEnabled bool
 	OrgName        string
 
+	InsecureSkipVerify bool
+
 	// AccessTokenSource provides a hook for authenticating requests
 	// GetAccessToken() is performed on every request using http.RoundTripper
 	AccessTokenSource auth.AccessTokenSource
@@ -79,10 +81,15 @@ func (c *Config) AddAuthorizationHeader(ctx context.Context, headers http.Header
 	return nil
 }
 
-func (c *Config) CreateTransport(baseTransport http.RoundTripper) http.RoundTripper {
-	baseTransport = otelhttp.NewTransport(baseTransport)
-	if c.IsTraceEnabled {
-		return &trace.HttpTransport{BaseTransport: baseTransport}
+func (c *Config) CreateTransport() http.RoundTripper {
+	baseTransport := http.DefaultTransport.(*http.Transport)
+	if c.InsecureSkipVerify {
+		baseTransport = baseTransport.Clone()
+		baseTransport.TLSClientConfig.InsecureSkipVerify = true
 	}
-	return baseTransport
+	transport := otelhttp.NewTransport(baseTransport)
+	if c.IsTraceEnabled {
+		return &trace.HttpTransport{BaseTransport: transport}
+	}
+	return transport
 }

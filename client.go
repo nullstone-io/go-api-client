@@ -233,7 +233,7 @@ func (c *Client) Do(ctx context.Context, method string, relativePath string, que
 	}
 
 	httpClient := &http.Client{
-		Transport: c.Config.CreateTransport(http.DefaultTransport),
+		Transport: c.Config.CreateTransport(),
 	}
 
 	res, err := httpClient.Do(req)
@@ -241,12 +241,4 @@ func (c *Client) Do(ctx context.Context, method string, relativePath string, que
 		return nil, fmt.Errorf("error issuing request: %w", err)
 	}
 	return res, nil
-}
-
-func (c *Client) CreateRequest(ctx context.Context, method string, relativePath string, query url.Values, body io.Reader) (*http.Request, error) {
-	u, err := c.Config.ConstructUrl(relativePath, query)
-	if err != nil {
-		return nil, err
-	}
-	return http.NewRequestWithContext(ctx, method, u.String(), body)
 }
