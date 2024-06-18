@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
+	"io"
 	"net/http"
 )
 
@@ -26,6 +27,13 @@ type DeployCreatePayload struct {
 	Reference  string `json:"reference"`
 }
 
+// DeployCreateResult contains the result of Deploys Create
+// The result can be one of types.Deploy or types.IntentWorkflow
+type DeployCreateResult struct {
+	Deploy         *types.Deploy
+	IntentWorkflow *types.IntentWorkflow
+}
+
 func (d Deploys) basePath(stackId, appId, envId int64) string {
 	return fmt.Sprintf("orgs/%s/stacks/%d/apps/%d/envs/%d/deploys", d.Client.Config.OrgName, stackId, appId, envId)
 }
@@ -34,13 +42,33 @@ func (d Deploys) path(stackId, appId, envId, deployId int64) string {
 	return fmt.Sprintf("orgs/%s/stacks/%d/apps/%d/envs/%d/deploys/%d", d.Client.Config.OrgName, stackId, appId, envId, deployId)
 }
 
-func (d Deploys) Create(ctx context.Context, stackId, appId, envId int64, payload DeployCreatePayload) (*types.Deploy, error) {
+func (d Deploys) Create(ctx context.Context, stackId, appId, envId int64, payload DeployCreatePayload) (*DeployCreateResult, error) {
 	rawPayload, _ := json.Marshal(payload)
 	res, err := d.Client.Do(ctx, http.MethodPost, d.basePath(stackId, appId, envId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
-	return response.ReadJsonPtr[types.Deploy](res)
+	if err := response.Verify(res); err != nil {
+		if response.IsNotFoundError(err) {
+			return nil, nil
+		}
+		return nil, err
+	}
+
+	defer res.Body.Close()
+	result := &DeployCreateResult{}
+	if raw, err := io.ReadAll(res.Body); err != nil {
+		return nil, fmt.Errorf("error reading response body: %w", err)
+	} else {
+		// Try to parse into IntentWorkflow; if it doesn't match, parse into Deploy
+		if err := json.Unmarshal(raw, &result.IntentWorkflow); err != nil || result.IntentWorkflow.Intent == "" {
+			result.IntentWorkflow = nil
+			if err := json.Unmarshal(raw, &result.Deploy); err != nil {
+				return result, fmt.Errorf("unknown response body: %w", err)
+			}
+		}
+	}
+	return result, nil
 }
 
 func (d Deploys) Get(ctx context.Context, stackId, appId, envId, deployId int64) (*types.Deploy, error) {
