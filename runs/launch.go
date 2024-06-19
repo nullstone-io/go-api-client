@@ -4,10 +4,9 @@ import (
 	"context"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0"
-	"gopkg.in/nullstone-io/go-api-client.v0/types"
 )
 
-func Launch(ctx context.Context, cfg api.Config, stackId, appId, envId int64, commitSha string, approve bool) (*types.Run, error) {
+func Launch(ctx context.Context, cfg api.Config, stackId, appId, envId int64, commitSha string, approve bool) (*api.RunCreateResult, error) {
 	client := api.Client{Config: cfg}
 	workspace, err := client.Workspaces().Get(ctx, stackId, appId, envId)
 	if err != nil {
