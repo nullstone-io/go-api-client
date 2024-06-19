@@ -24,6 +24,10 @@ func (ww WorkspaceWorkflows) path(stackId, blockId, envId, workspaceWorkflowId i
 	return fmt.Sprintf("/orgs/%s/stacks/%d/blocks/%d/envs/%d/workspace_workflows/%d", ww.Client.Config.OrgName, stackId, blockId, envId, workspaceWorkflowId)
 }
 
+func (ww WorkspaceWorkflows) activitiesPath(stackId, blockId, envId, workspaceWorkflowId int64) string {
+	return fmt.Sprintf("/orgs/%s/stacks/%d/blocks/%d/envs/%d/workspace_workflow_activities/%d", ww.Client.Config.OrgName, stackId, blockId, envId, workspaceWorkflowId)
+}
+
 func (ww WorkspaceWorkflows) List(ctx context.Context, stackId, blockId, envId int64, page, perPage int) ([]types.WorkspaceWorkflow, error) {
 	q := url.Values{}
 	if page > 0 {
@@ -45,6 +49,14 @@ func (ww WorkspaceWorkflows) Get(ctx context.Context, stackId, blockId, envId, w
 		return nil, err
 	}
 	return response.ReadJsonPtr[types.WorkspaceWorkflow](res)
+}
+
+func (ww WorkspaceWorkflows) GetActivities(ctx context.Context, stackId, blockId, envId, workspaceWorkflowId int64) (*types.WorkspaceWorkflowActivities, error) {
+	res, err := ww.Client.Do(ctx, http.MethodGet, ww.activitiesPath(stackId, blockId, envId, workspaceWorkflowId), nil, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	return response.ReadJsonPtr[types.WorkspaceWorkflowActivities](res)
 }
 
 type CreateWorkspaceWorkflowInput struct {
