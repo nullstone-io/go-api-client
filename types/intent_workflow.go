@@ -1,6 +1,9 @@
 package types
 
-import "time"
+import (
+	"slices"
+	"time"
+)
 
 type IntentWorkflowIntent string
 
@@ -49,6 +52,10 @@ type IntentWorkflow struct {
 	// If BlockId is nil, PrimaryWorkflow is nil
 	// If BlockId is not nil, PrimaryWorkflow is not nil
 	PrimaryWorkflow *WorkspaceWorkflow `json:"primaryWorkflow"`
+	// RootWorkflowIds identifies all workspace workflows that don't have any dependencies
+	// If BlockId is nil, RootWorkflowIds is not nil
+	// If BlockId is not nil, RootWorkflowIds is nil
+	RootWorkflowIds []int64 `json:"rootWorkflowIds"`
 
 	// WorkspaceWorkflows contains all WorkspaceWorkflow in this IntentWorkflow
 	// This is not included when Listing many workflows
@@ -56,10 +63,41 @@ type IntentWorkflow struct {
 }
 
 type IntentWorkflowUpdate struct {
-	Id                 int64               `json:"id"`
-	Status             *string             `json:"status,omitempty"`
-	StatusAt           *time.Time          `json:"statusAt,omitempty"`
-	StatusMessage      *string             `json:"statusMessage,omitempty"`
-	WorkspaceWorkflows []WorkspaceWorkflow `json:"workspaceWorkflows,omitempty"`
-	RootWorkflowIds    []int64             `json:"rootWorkflowIds,omitempty"`
+	Id                 int64                 `json:"id"`
+	Status             *IntentWorkflowStatus `json:"status,omitempty"`
+	StatusAt           *time.Time            `json:"statusAt,omitempty"`
+	StatusMessage      *string               `json:"statusMessage,omitempty"`
+	WorkspaceWorkflows []WorkspaceWorkflow   `json:"workspaceWorkflows,omitempty"`
+	RootWorkflowIds    []int64               `json:"rootWorkflowIds,omitempty"`
+}
+
+func (u IntentWorkflowUpdate) ApplyTo(iw IntentWorkflow) IntentWorkflow {
+	if iw.Id != u.Id {
+		return iw
+	}
+	if u.Status != nil {
+		iw.Status = *u.Status
+	}
+	if u.StatusMessage != nil {
+		iw.StatusMessage = *u.StatusMessage
+	}
+	if u.StatusAt != nil {
+		iw.StatusAt = *u.StatusAt
+	}
+	if u.RootWorkflowIds != nil {
+		iw.RootWorkflowIds = u.RootWorkflowIds
+	}
+	if u.WorkspaceWorkflows != nil {
+		for _, ww := range u.WorkspaceWorkflows {
+			existingIndex := slices.IndexFunc(iw.WorkspaceWorkflows, func(w WorkspaceWorkflow) bool {
+				return w.Id == ww.Id
+			})
+			if existingIndex > -1 {
+				iw.WorkspaceWorkflows[existingIndex] = ww
+			} else {
+				iw.WorkspaceWorkflows = append(iw.WorkspaceWorkflows, ww)
+			}
+		}
+	}
+	return iw
 }
