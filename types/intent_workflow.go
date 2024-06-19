@@ -54,3 +54,12 @@ type IntentWorkflow struct {
 	// This is not included when Listing many workflows
 	WorkspaceWorkflows []WorkspaceWorkflow `json:"workspaceWorkflows"`
 }
+
+type IntentWorkflowUpdate struct {
+	Id                 int64               `json:"id"`
+	Status             *string             `json:"status,omitempty"`
+	StatusAt           *time.Time          `json:"statusAt,omitempty"`
+	StatusMessage      *string             `json:"statusMessage,omitempty"`
+	WorkspaceWorkflows []WorkspaceWorkflow `json:"workspaceWorkflows,omitempty"`
+	RootWorkflowIds    []int64             `json:"rootWorkflowIds,omitempty"`
+}
