@@ -28,6 +28,18 @@ const (
 	WorkspaceWorkflowStatusCancelled WorkspaceWorkflowStatus = "cancelled"
 )
 
+func IsTerminalWorkspaceWorkflow(status WorkspaceWorkflowStatus) bool {
+	switch status {
+	case WorkspaceWorkflowStatusCompleted:
+		return true
+	case WorkspaceWorkflowStatusFailed:
+		return true
+	case WorkspaceWorkflowStatusCancelled:
+		return true
+	}
+	return false
+}
+
 type WorkspaceWorkflow struct {
 	IdModel
 	FriendlyAction string                  `json:"friendlyAction"`
