@@ -6,23 +6,45 @@ import (
 	"time"
 )
 
+type WorkspaceWorkflowStatus string
+
+const (
+	// WorkspaceWorkflowStatusInit indicates the workflows was added to the database
+	// These should be excluded from listing to a user
+	WorkspaceWorkflowStatusInit WorkspaceWorkflowStatus = "init"
+	// WorkspaceWorkflowStatusQueued indicates the workflow is ready to execute; waiting on a worker to execute
+	WorkspaceWorkflowStatusQueued WorkspaceWorkflowStatus = "queued"
+	// WorkspaceWorkflowStatusAwaiting indicates that this workflow is waiting for other dependencies to finish before it can run
+	WorkspaceWorkflowStatusAwaiting WorkspaceWorkflowStatus = "awaiting-dependencies"
+	// WorkspaceWorkflowStatusNeedsApproval indicates an execution inside this workflow is waiting for user approval
+	WorkspaceWorkflowStatusNeedsApproval WorkspaceWorkflowStatus = "needs-approval"
+	// WorkspaceWorkflowStatusRunning indicates the workflow is currently running
+	WorkspaceWorkflowStatusRunning WorkspaceWorkflowStatus = "running"
+	// WorkspaceWorkflowStatusCompleted indicates the workflow completed successfully
+	WorkspaceWorkflowStatusCompleted WorkspaceWorkflowStatus = "completed"
+	// WorkspaceWorkflowStatusFailed indicates the workflow failed to complete
+	WorkspaceWorkflowStatusFailed WorkspaceWorkflowStatus = "failed"
+	// WorkspaceWorkflowStatusCancelled indicates the workflow was cancelled
+	WorkspaceWorkflowStatusCancelled WorkspaceWorkflowStatus = "cancelled"
+)
+
 type WorkspaceWorkflow struct {
 	IdModel
-	FriendlyAction string          `json:"friendlyAction"`
-	Actions        []string        `json:"actions"`
-	OrgName        string          `json:"orgName"`
-	WorkspaceUid   uuid.UUID       `json:"workspaceUid"`
-	StackId        int64           `json:"stackId"`
-	StackName      string          `json:"stackName"`
-	BlockId        int64           `json:"blockId"`
-	BlockName      string          `json:"blockName"`
-	EnvId          int64           `json:"envId"`
-	EnvName        string          `json:"envName"`
-	Status         string          `json:"status"`
-	StatusMessage  string          `json:"statusMessage"`
-	StatusAt       time.Time       `json:"statusAt"`
-	CommitInfo     CommitInfo      `json:"commitInfo"`
-	Trigger        ExternalTrigger `json:"trigger"`
+	FriendlyAction string                  `json:"friendlyAction"`
+	Actions        []string                `json:"actions"`
+	OrgName        string                  `json:"orgName"`
+	WorkspaceUid   uuid.UUID               `json:"workspaceUid"`
+	StackId        int64                   `json:"stackId"`
+	StackName      string                  `json:"stackName"`
+	BlockId        int64                   `json:"blockId"`
+	BlockName      string                  `json:"blockName"`
+	EnvId          int64                   `json:"envId"`
+	EnvName        string                  `json:"envName"`
+	Status         WorkspaceWorkflowStatus `json:"status"`
+	StatusMessage  string                  `json:"statusMessage"`
+	StatusAt       time.Time               `json:"statusAt"`
+	CommitInfo     CommitInfo              `json:"commitInfo"`
+	Trigger        ExternalTrigger         `json:"trigger"`
 
 	// IntentWorkflowOrder is used to sort connections by order of dependencies
 	// Roots of the dependency tree will have a lower order number
@@ -47,12 +69,12 @@ type WorkspaceWorkflow struct {
 }
 
 type WorkspaceWorkflowUpdate struct {
-	Id             int64      `json:"id"`
-	FriendlyAction *string    `json:"friendlyAction"`
-	Actions        []string   `json:"actions,omitempty"`
-	Status         *string    `json:"status,omitempty"`
-	StatusAt       *time.Time `json:"statusAt,omitempty"`
-	StatusMessage  *string    `json:"statusMessage,omitempty"`
+	Id             int64                    `json:"id"`
+	FriendlyAction *string                  `json:"friendlyAction"`
+	Actions        []string                 `json:"actions,omitempty"`
+	Status         *WorkspaceWorkflowStatus `json:"status,omitempty"`
+	StatusAt       *time.Time               `json:"statusAt,omitempty"`
+	StatusMessage  *string                  `json:"statusMessage,omitempty"`
 	// DependencyWorkflows is not guaranteed to be a full set of all dependencies
 	// Instead, each item in this slice should be seen as "create me" or "update me"
 	DependencyWorkflows []WorkspaceWorkflow `json:"dependencyWorkflows,omitempty"`
