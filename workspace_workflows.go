@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
+	"gopkg.in/nullstone-io/go-api-client.v0/ws"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -57,6 +58,14 @@ func (ww WorkspaceWorkflows) GetActivities(ctx context.Context, stackId, blockId
 		return nil, err
 	}
 	return response.ReadJsonPtr[types.WorkspaceWorkflowActivities](res)
+}
+
+func (ww WorkspaceWorkflows) WatchGet(ctx context.Context, stackId, blockId, envId, workspaceWorkflowId int64, retryFn ws.StreamerRetryFunc) (*types.WorkspaceWorkflow, <-chan types.StreamObject[types.WorkspaceWorkflowUpdate], error) {
+	endpoint, headers, err := ww.Client.Config.ConstructWsEndpoint(ctx, ww.path(stackId, blockId, envId, workspaceWorkflowId))
+	if err != nil {
+		return nil, nil, err
+	}
+	return ws.StreamObject[types.WorkspaceWorkflow, types.WorkspaceWorkflowUpdate](ctx, endpoint, headers, retryFn)
 }
 
 type CreateWorkspaceWorkflowInput struct {
