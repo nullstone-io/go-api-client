@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
+	"gopkg.in/nullstone-io/go-api-client.v0/ws"
 	"net/http"
 )
 
@@ -34,4 +35,12 @@ func (s IntentWorkflows) Get(ctx context.Context, stackId, intentWorkflowId int6
 		return nil, err
 	}
 	return response.ReadJsonPtr[types.IntentWorkflow](res)
+}
+
+func (s IntentWorkflows) WatchGet(ctx context.Context, stackId, intentWorkflowId int64, retryFn ws.StreamerRetryFunc) (*types.IntentWorkflow, <-chan types.StreamObject[types.IntentWorkflowUpdate], error) {
+	endpoint, headers, err := s.Client.Config.ConstructWsEndpoint(ctx, s.path(stackId, intentWorkflowId))
+	if err != nil {
+		return nil, nil, err
+	}
+	return ws.StreamObject[types.IntentWorkflow, types.IntentWorkflowUpdate](ctx, endpoint, headers, retryFn)
 }
