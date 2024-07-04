@@ -40,6 +40,8 @@ type Run struct {
 	WorkspaceUid uuid.UUID `json:"workspaceUid"`
 	CommitSha    string    `json:"commitSha"`
 
+	// IsLaunch flags whether this run is provisioning a workspace for the first time or after a destroy
+	IsLaunch bool `json:"isLaunch"`
 	// IsDestroy determines whether to run a destroy plan instead of an apply plan
 	IsDestroy bool `json:"isDestroy"`
 	// DestroyDependencies is a list of dependencies that a user wants to destroy along with the primary workspace
@@ -95,6 +97,8 @@ type Run struct {
 	// This allows the engine to evict runs that do not meet the condition when the run is ready to plan/apply
 	// If empty, this run will always execute
 	Condition string `json:"condition"`
+
+	WorkspaceWorkflowId *int64 `json:"workspaceWorkflowId"`
 
 	MultiRun *MultiRun  `json:"multiRun,omitempty"`
 	Config   *RunConfig `json:"config,omitempty"`

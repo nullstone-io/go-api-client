@@ -7,7 +7,7 @@ import (
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 )
 
-func Create(ctx context.Context, cfg api.Config, workspace types.Workspace, commitSha string, isApproved *bool, isDestroy bool, destroyDeps string) (*types.Run, error) {
+func Create(ctx context.Context, cfg api.Config, workspace types.Workspace, commitSha string, isApproved *bool, isDestroy bool, destroyDeps string) (*api.RunCreateResult, error) {
 	input := types.CreateRunInput{
 		CommitSha:           commitSha,
 		IsDestroy:           isDestroy,
@@ -16,9 +16,9 @@ func Create(ctx context.Context, cfg api.Config, workspace types.Workspace, comm
 	}
 
 	client := api.Client{Config: cfg}
-	newRun, err := client.Runs().Create(ctx, workspace.StackId, workspace.Uid, input)
+	result, err := client.Runs().Create(ctx, workspace.StackId, workspace.Uid, input)
 	if err != nil {
 		return nil, fmt.Errorf("error creating run: %w", err)
 	}
-	return newRun, nil
+	return result, nil
 }
