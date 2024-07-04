@@ -5,9 +5,9 @@ import (
 )
 
 type WorkspaceDetails struct {
-	OrgName     string      `json:"orgName"`
-	Stack       Stack       `json:"stack"`
-	Environment Environment `json:"environment"`
+	OrgName string      `json:"orgName"`
+	Stack   Stack       `json:"stack"`
+	Env     Environment `json:"env"`
 	// BlockRaw is a json.RawMessage because it is a polymorphic type
 	// Use Block() to get a concrete type, but returned as "any" value
 	// Use BlockType() to get the string type
@@ -23,6 +23,12 @@ func (d WorkspaceDetails) BlockType() BlockType {
 		tmp.Type = BlockTypeBlock
 	}
 	return tmp.Type
+}
+
+func (d WorkspaceDetails) AsBlock() Block {
+	var val Block
+	json.Unmarshal(d.BlockRaw, &val)
+	return val
 }
 
 // Block parses the block into the concrete type (e.g. Block, Application, etc.)
