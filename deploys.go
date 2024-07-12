@@ -8,6 +8,8 @@ import (
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"io"
 	"net/http"
+	"net/url"
+	"time"
 )
 
 type Deploys struct {
@@ -73,6 +75,18 @@ func (d Deploys) Create(ctx context.Context, stackId, appId, envId int64, payloa
 
 func (d Deploys) Get(ctx context.Context, stackId, appId, envId, deployId int64) (*types.Deploy, error) {
 	res, err := d.Client.Do(ctx, http.MethodGet, d.path(stackId, appId, envId, deployId), nil, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	return response.ReadJsonPtr[types.Deploy](res)
+}
+
+func (d Deploys) GetLatest(ctx context.Context, stackId, appId, envId int64, since *time.Time) (*types.Deploy, error) {
+	query := url.Values{}
+	if since != nil {
+		query["since"] = []string{since.Format(time.RFC3339)}
+	}
+	res, err := d.Client.Do(ctx, http.MethodGet, d.basePath(stackId, appId, envId)+"/latest", query, nil, nil)
 	if err != nil {
 		return nil, err
 	}
