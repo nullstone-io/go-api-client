@@ -50,6 +50,9 @@ func (c *Client) Environments() Environments {
 func (c *Client) PreviewEnvs() PreviewEnvs {
 	return PreviewEnvs{Client: c}
 }
+func (c *Client) PreviewApps() PreviewApps {
+	return PreviewApps{Client: c}
+}
 func (c *Client) EnvironmentsByName() EnvironmentsByName {
 	return EnvironmentsByName{Client: c}
 }
