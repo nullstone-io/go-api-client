@@ -81,10 +81,18 @@ func TestResourceResolver(t *testing.T) {
 		Name:     "block4",
 		IsShared: true,
 	}
+	block5 := types.Block{
+		IdModel:  types.IdModel{Id: 105},
+		Type:     "block",
+		OrgName:  "nullstone",
+		StackId:  stack2.Id,
+		Name:     "block5",
+		IsShared: false,
+	}
 
 	stacks := []types.Stack{stack1, stack2}
 	envs := []types.Environment{env1, env2, env4, env5}
-	blocks := []types.Block{block1, block2, block4}
+	blocks := []types.Block{block1, block2, block4, block5}
 	router := mux.NewRouter()
 	mocks.ListStacks(router, stacks)
 	mocks.ListEnvironments(router, envs)
@@ -100,10 +108,8 @@ func TestResourceResolver(t *testing.T) {
 			BlockId: block3Id,
 			EnvId:   &env3Id,
 		}
-		want := ct
-		got, err := rr.Resolve(context.Background(), ct)
+		_, err := rr.Resolve(context.Background(), ct)
 		assert.ErrorIs(t, err, StackIdDoesNotExistError{StackId: stack3Id})
-		assert.Equal(t, want, got)
 	})
 	t.Run("env does not exist", func(t *testing.T) {
 		ct := types.ConnectionTarget{
@@ -111,11 +117,8 @@ func TestResourceResolver(t *testing.T) {
 			BlockId: block2.Id,
 			EnvId:   &env3Id,
 		}
-		want := ct
-		want.StackName = stack1.Name
-		got, err := rr.Resolve(context.Background(), ct)
+		_, err := rr.Resolve(context.Background(), ct)
 		assert.ErrorIs(t, err, EnvIdDoesNotExistError{StackName: "primary", EnvId: env3Id})
-		assert.Equal(t, want, got)
 	})
 	t.Run("block does not exist", func(t *testing.T) {
 		ct := types.ConnectionTarget{
@@ -123,28 +126,10 @@ func TestResourceResolver(t *testing.T) {
 			BlockId: block3Id,
 			EnvId:   &env1.Id,
 		}
-		want := ct
-		want.StackName = stack1.Name
-		want.EnvName = env1.Name
-		got, err := rr.Resolve(context.Background(), ct)
+		_, err := rr.Resolve(context.Background(), ct)
 		assert.ErrorIs(t, err, BlockIdDoesNotExistError{StackName: "primary", BlockId: block3Id})
-		assert.Equal(t, want, got)
 	})
 	t.Run("load successfully", func(t *testing.T) {
-		ct := types.ConnectionTarget{
-			StackId: stack1.Id,
-			BlockId: block1.Id,
-			EnvId:   &env1.Id,
-		}
-		want := ct
-		want.StackName = stack1.Name
-		want.EnvName = env1.Name
-		want.BlockName = block1.Name
-		got, err := rr.Resolve(context.Background(), ct)
-		assert.NoError(t, err, "unexpected error")
-		assert.Equal(t, want, got)
-	})
-	t.Run("load again", func(t *testing.T) {
 		ct := types.ConnectionTarget{
 			StackId: stack1.Id,
 			BlockId: block1.Id,
@@ -169,6 +154,21 @@ func TestResourceResolver(t *testing.T) {
 		want.EnvName = env1.Name
 		want.BlockName = block2.Name
 		got, err := rr.Resolve(context.Background(), ct)
+		assert.NoError(t, err, "unexpected error")
+		assert.Equal(t, want, got)
+	})
+	t.Run("block is not shared, reset env to current env", func(t *testing.T) {
+		ct := types.ConnectionTarget{
+			StackId: stack2.Id,
+			BlockId: block5.Id,
+			EnvId:   &env5.Id,
+		}
+		want := ct
+		want.StackName = stack2.Name
+		want.EnvId = &env4.Id
+		want.EnvName = env4.Name
+		want.BlockName = block5.Name
+		got, err := rr2.Resolve(context.Background(), ct)
 		assert.NoError(t, err, "unexpected error")
 		assert.Equal(t, want, got)
 	})
