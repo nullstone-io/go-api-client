@@ -47,7 +47,7 @@ func (e AppCapabilities) Get(ctx context.Context, stackId, appId, envId, capId i
 }
 
 // Create - POST /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities
-func (e AppCapabilities) Create(ctx context.Context, stackId, appId, envId int64, capabilities []types.Capability, blocks []types.Block) ([]types.Capability, error) {
+func (e AppCapabilities) Create(ctx context.Context, stackId, appId, envId int64, capabilities []types.Capability, blocks []types.Block) ([]types.Capability, *http.Response, error) {
 	input := CreateCapabilitiesInput{
 		Capabilities: capabilities,
 		Blocks:       blocks,
@@ -55,10 +55,11 @@ func (e AppCapabilities) Create(ctx context.Context, stackId, appId, envId int64
 	rawPayload, _ := json.Marshal(input)
 	res, err := e.Client.Do(ctx, http.MethodPost, e.basePath(stackId, appId, envId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
-		return nil, err
+		return nil, res, err
 	}
 
-	return response.ReadJsonVal[[]types.Capability](res)
+	result, err := response.ReadJsonVal[[]types.Capability](res)
+	return result, res, err
 }
 
 // Replace - PUT /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities
