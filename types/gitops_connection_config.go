@@ -23,3 +23,12 @@ func (s GitopsConnectionConfigs) EnabledOnBranch(branchName string) GitopsConnec
 	}
 	return result
 }
+
+func (s GitopsConnectionConfigs) GetByEnvId(envId int64) (GitopsConnectionConfig, bool) {
+	for _, cur := range s {
+		if cur.EnvId == envId {
+			return cur, true
+		}
+	}
+	return GitopsConnectionConfig{}, false
+}
