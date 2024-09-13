@@ -4,9 +4,10 @@ import (
 	"context"
 	"fmt"
 	"github.com/cristalhq/jwt/v3"
+	"time"
 )
 
-func NewRunner(ctx context.Context, orgName string, store RunnerKeyStore) (*Runner, error) {
+func NewRunner(ctx context.Context, orgName string, store RunnerKeyStore, expiresAtThreshold time.Duration) (*Runner, error) {
 	runnerKey, err2 := store.GetOrCreate(ctx, orgName)
 	if err2 != nil {
 		return nil, fmt.Errorf("error retrieving or creating runner key: %w", err2)
@@ -16,8 +17,10 @@ func NewRunner(ctx context.Context, orgName string, store RunnerKeyStore) (*Runn
 	}
 
 	return &Runner{
-		RunnerKey:     runnerKey,
-		JwtTokenCache: &JwtTokenExpiresCache{},
+		RunnerKey: runnerKey,
+		JwtTokenCache: &JwtTokenExpiresCache{
+			ExpiresAtThreshold: expiresAtThreshold,
+		},
 	}, nil
 }
 

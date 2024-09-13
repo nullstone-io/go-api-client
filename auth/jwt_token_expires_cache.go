@@ -16,8 +16,8 @@ var (
 // Every time Refresh() is called, this cache will only acquire a new access token if:
 // - access token has not been retrieved yet
 // - the access token has expired or close to expiring
-// ExpiresAtThreshold is a duration to configure a token expired before it's expired
-// A token is considered expired if `now() + ExpiresAtThreshold > Token.ExpiresAt`
+// ExpiresAtThreshold is a duration to configure a token refresh before it's expired
+// A token is considered expired if `time.Now() + ExpiresAtThreshold > Token.ExpiresAt`
 // If ExpiresAtThreshold = 0, will use default of 1s
 type JwtTokenExpiresCache struct {
 	Token              *jwt.Token
