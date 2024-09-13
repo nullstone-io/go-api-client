@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"sync"
+	"time"
 )
 
 // RunnerAccessTokenSource coordinates a trust relationship between nullstone auth server and a runner
@@ -12,6 +13,10 @@ import (
 type RunnerAccessTokenSource struct {
 	AuthServer     RunnerAccessTokenGetter
 	RunnerKeyStore RunnerKeyStore
+	// ExpiresAtThreshold is a duration to configure a token refresh before it's expired
+	// See JwtTokenExpiresCache
+	// By default, this is "0" which indicates the default of 1s
+	ExpiresAtThreshold time.Duration
 
 	cache map[string]*Runner
 	mu    sync.Mutex
@@ -46,7 +51,7 @@ func (s *RunnerAccessTokenSource) getOrInitialize(ctx context.Context, orgName s
 		return runner, nil
 	}
 
-	runner, err := NewRunner(ctx, orgName, s.RunnerKeyStore)
+	runner, err := NewRunner(ctx, orgName, s.RunnerKeyStore, s.ExpiresAtThreshold)
 	if err != nil {
 		return nil, fmt.Errorf("unable to initialize runner: %w", err)
 	}
