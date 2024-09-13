@@ -14,16 +14,6 @@ func (c GitopsConnectionConfig) IsEnabledForBranch(branchName string) bool {
 
 type GitopsConnectionConfigs []GitopsConnectionConfig
 
-func (s GitopsConnectionConfigs) EnabledOnBranch(branchName string) GitopsConnectionConfigs {
-	result := make(GitopsConnectionConfigs, 0)
-	for _, cur := range s {
-		if cur.IsEnabledForBranch(branchName) {
-			result = append(result, cur)
-		}
-	}
-	return result
-}
-
 func (s GitopsConnectionConfigs) GetByEnvId(envId int64) (GitopsConnectionConfig, bool) {
 	for _, cur := range s {
 		if cur.EnvId == envId {
