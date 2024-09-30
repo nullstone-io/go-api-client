@@ -12,6 +12,20 @@ import (
 	"time"
 )
 
+const (
+	AutomationToolCircleCI       = "circleci"
+	AutomationToolGithubActions  = "github-actions"
+	AutomationToolGitlab         = "gitlab"
+	AutomationToolBitbucket      = "bitbucket"
+	AutomationToolJenkins        = "jenkins"
+	AutomationToolTravis         = "travis"
+	AutomationToolAzurePipelines = "azure-pipeline"
+	AutomationToolAppveyor       = "appveyor"
+	AutomationToolTeamCity       = "team-city"
+	AutomationToolCodeship       = "codeship"
+	AutomationToolSemaphore      = "semaphore"
+)
+
 type Deploys struct {
 	Client *Client
 }
