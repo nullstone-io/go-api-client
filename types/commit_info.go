@@ -62,6 +62,9 @@ type CommitInfo struct {
 	PRTitle     string `json:"prTitle"`
 }
 
+// CommitUser is the VCS user that created the commit
+// This is not guaranteed to be the same as the Author
+// When using the GitHub UI to merge, the CommitUsername is actually `web-flow`
 func (i CommitInfo) CommitUser() ExternalTriggerUser {
 	return ExternalTriggerUser{
 		Id:        i.CommitUserId,
@@ -71,9 +74,11 @@ func (i CommitInfo) CommitUser() ExternalTriggerUser {
 	}
 }
 
+// Author is the VCS user that authored the commit
+// This refers to the user that originally made the code changes
 func (i CommitInfo) Author() ExternalTriggerUser {
 	return ExternalTriggerUser{
-		Id:        i.AuthorID,
+		Id:        i.AuthorId,
 		Name:      i.AuthorUsername,
 		Email:     i.AuthorEmail,
 		AvatarUrl: i.AuthorAvatarUrl,
