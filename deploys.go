@@ -12,6 +12,20 @@ import (
 	"time"
 )
 
+const (
+	AutomationToolCircleCI       = "circleci"
+	AutomationToolGithubActions  = "github-actions"
+	AutomationToolGitlab         = "gitlab"
+	AutomationToolBitbucket      = "bitbucket"
+	AutomationToolJenkins        = "jenkins"
+	AutomationToolTravis         = "travis"
+	AutomationToolAzurePipelines = "azure-pipeline"
+	AutomationToolAppveyor       = "appveyor"
+	AutomationToolTeamCity       = "team-city"
+	AutomationToolCodeship       = "codeship"
+	AutomationToolSemaphore      = "semaphore"
+)
+
 type Deploys struct {
 	Client *Client
 }
@@ -23,10 +37,11 @@ type Deploys struct {
 //		commitSha and reference are optional and get populated on the deploy no matter whether we are deploying
 //	   fromSource or by version
 type DeployCreatePayload struct {
-	FromSource bool   `json:"fromSource"`
-	CommitSha  string `json:"commitSha"`
-	Version    string `json:"version"`
-	Reference  string `json:"reference"`
+	FromSource     bool   `json:"fromSource"`
+	CommitSha      string `json:"commitSha"`
+	Version        string `json:"version"`
+	Reference      string `json:"reference"`
+	AutomationTool string `json:"automationTool"`
 }
 
 // DeployCreateResult contains the result of Deploys Create

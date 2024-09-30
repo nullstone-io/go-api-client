@@ -7,6 +7,7 @@ const (
 
 const (
 	ExternalTriggerEventUser                 = "user"
+	ExternalTriggerEventAutomation           = "automation"
 	ExternalTriggerEventVcsPush              = "vcs-push"
 	ExternalTriggerEventVcsPullRequestOpened = "vcs-pull-request-opened"
 )
