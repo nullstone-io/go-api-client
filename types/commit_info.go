@@ -35,7 +35,7 @@ type CommitInfo struct {
 	// CommitUserEmail is the email address for the VCS user that created the commit
 	// This is not guaranteed to be the same as the AuthorEmail
 	// When using the GitHub UI to merge, the CommitUsername is actually `web-flow`
-	CommitUserEmail string `json:"commitEmail"`
+	CommitUserEmail string `json:"commitUserEmail"`
 	// CommitUserAvatarUrl is the avatar url for the VCS user that created the commit
 	// This is not guaranteed to be the same as the AuthorAvatarUrl
 	// When using the GitHub UI to merge, the CommitUsername is actually `web-flow`
