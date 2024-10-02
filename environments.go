@@ -7,6 +7,8 @@ import (
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
+	"net/url"
+	"strconv"
 )
 
 type Environments struct {
@@ -38,8 +40,11 @@ func (s Environments) List(ctx context.Context, stackId int64) ([]*types.Environ
 }
 
 // Get - GET /orgs/:orgName/stacks/:stack_id/envs/:id
-func (s Environments) Get(ctx context.Context, stackId, envId int64) (*types.Environment, error) {
-	res, err := s.Client.Do(ctx, http.MethodGet, s.envPath(stackId, envId), nil, nil, nil)
+func (s Environments) Get(ctx context.Context, stackId, envId int64, includeArchived bool) (*types.Environment, error) {
+	q := url.Values{
+		"include_archived": []string{strconv.FormatBool(includeArchived)},
+	}
+	res, err := s.Client.Do(ctx, http.MethodGet, s.envPath(stackId, envId), q, nil, nil)
 	if err != nil {
 		return nil, err
 	}

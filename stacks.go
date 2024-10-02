@@ -7,6 +7,8 @@ import (
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
+	"net/url"
+	"strconv"
 )
 
 type Stacks struct {
@@ -38,8 +40,11 @@ func (s Stacks) List(ctx context.Context) ([]*types.Stack, error) {
 }
 
 // Get - GET /orgs/:orgName/stacks/:id
-func (s Stacks) Get(ctx context.Context, stackId int64) (*types.Stack, error) {
-	res, err := s.Client.Do(ctx, http.MethodGet, s.stackPath(stackId), nil, nil, nil)
+func (s Stacks) Get(ctx context.Context, stackId int64, includeArchived bool) (*types.Stack, error) {
+	q := url.Values{
+		"include_archived": []string{strconv.FormatBool(includeArchived)},
+	}
+	res, err := s.Client.Do(ctx, http.MethodGet, s.stackPath(stackId), q, nil, nil)
 	if err != nil {
 		return nil, err
 	}

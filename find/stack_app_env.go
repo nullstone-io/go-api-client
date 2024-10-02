@@ -16,7 +16,7 @@ func StackAppEnv(ctx context.Context, cfg api.Config, stackName, appName, envNam
 
 	if stackName == "" {
 		client := api.Client{Config: cfg}
-		s, err := client.Stacks().Get(ctx, app.StackId)
+		s, err := client.Stacks().Get(ctx, app.StackId, false)
 		if err != nil {
 			return nil, nil, nil, StackIdDoesNotExistError{StackId: app.StackId}
 		}
