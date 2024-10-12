@@ -7,7 +7,7 @@ import (
 type Connections map[string]Connection
 
 type Connection struct {
-	config.Connection
+	config.Connection `json:",inline"`
 
 	// Target refers to the block that fulfills the connection
 	// If the Target is in the same stack, this is just the block name
@@ -24,3 +24,5 @@ type Connection struct {
 	// Instead, this field was added to signal to the user that they should remove the connection
 	Unused bool `json:"unused"`
 }
+
+type ConnectionTargets map[string]ConnectionTarget

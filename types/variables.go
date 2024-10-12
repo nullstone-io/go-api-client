@@ -7,7 +7,7 @@ import (
 type Variables map[string]Variable
 
 type Variable struct {
-	config.Variable
+	config.Variable `json:",inline"`
 
 	// Value is the exact value set for this variable
 	// This Value can be nearly any data type and is determined by Variable Type
