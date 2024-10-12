@@ -6,6 +6,18 @@ import (
 
 type Connections map[string]Connection
 
+func (s Connections) Targets() ConnectionTargets {
+	result := ConnectionTargets{}
+	for k, c := range s {
+		if c.Reference != nil {
+			result[k] = *c.Reference
+		} else {
+			result[k] = ConnectionTarget{}
+		}
+	}
+	return result
+}
+
 type Connection struct {
 	config.Connection `json:",inline"`
 
