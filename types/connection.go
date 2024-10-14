@@ -37,3 +37,7 @@ func (c *Connection) SchemaEquals(other Connection) bool {
 		s1.Contract == s2.Contract &&
 		s1.Optional == s2.Optional
 }
+
+func (c *Connection) TargetEquals(other Connection) bool {
+	return isConnectionTargetEqual(c.Reference, other.Reference)
+}

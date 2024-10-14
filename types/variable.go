@@ -59,6 +59,10 @@ func (v *Variable) SchemaEquals(other Variable) bool {
 		isVariableValueEqual(s1.Type, s1.Default, s2.Default)
 }
 
+func (v *Variable) ValueEquals(other Variable) bool {
+	return isVariableValueEqual(v.Type, v.Value, other.Value)
+}
+
 type VariableInput struct {
 	Key   string `json:"key"`
 	Value string `json:"value"`
