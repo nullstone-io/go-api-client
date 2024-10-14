@@ -1,7 +1,12 @@
 package types
 
 import (
-	"github.com/nullstone-io/module/config"
+	"fmt"
+	"strings"
+)
+
+var (
+	_ fmt.Stringer = Connections{}
 )
 
 type Connections map[string]Connection
@@ -18,23 +23,30 @@ func (s Connections) Targets() ConnectionTargets {
 	return result
 }
 
-type Connection struct {
-	config.Connection `json:",inline"`
-
-	// Target refers to the block that fulfills the connection
-	// If the Target is in the same stack, this is just the block name
-	// If the Target is in another stack, this is the fully-qualified block name (i.e. {stack}.{env}.{block})
-	Target string `json:"target"`
-
-	// Reference refers to the block that fulfills the connection
-	// TODO: Rename to Target once Target is deprecated
-	Reference *ConnectionTarget `json:"reference"`
-
-	// Unused signals that the connection is not used by the current module version
-	// During promotion of a module into a new workspace, it's possible that the new version removes connections
-	// If we removed those connections automatically, a user could face data loss that is unrecoverable
-	// Instead, this field was added to signal to the user that they should remove the connection
-	Unused bool `json:"unused"`
+func (s Connections) String() string {
+	result := make([]string, 0)
+	for name, c := range s {
+		result = append(result, fmt.Sprintf("%s=%s", name, c.Reference.Workspace().Id()))
+	}
+	return strings.Join(result, ",")
 }
 
-type ConnectionTargets map[string]ConnectionTarget
+func (s Connections) Equal(other Connections) bool {
+	if s == nil {
+		return other == nil
+	}
+	if other == nil {
+		return false
+	}
+	if len(s) != len(other) {
+		return false
+	}
+	for k, conn := range s {
+		if otherConn, ok := other[k]; !ok {
+			return false
+		} else if !conn.Equal(otherConn) {
+			return false
+		}
+	}
+	return true
+}
