@@ -30,3 +30,12 @@ func (c CapabilityConfig) EnvPrefix() string {
 	}
 	return fmt.Sprintf("%s_", strings.ToUpper(c.Namespace))
 }
+
+func (c CapabilityConfig) Equal(b CapabilityConfig) bool {
+	return c.Source == b.Source &&
+		c.SourceVersion == b.SourceVersion &&
+		c.Namespace == b.Namespace &&
+		c.NeedsDestroyed == b.NeedsDestroyed &&
+		c.Connections.Equal(b.Connections) &&
+		c.Variables.Equal(b.Variables)
+}

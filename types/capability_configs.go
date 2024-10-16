@@ -2,6 +2,15 @@ package types
 
 type CapabilityConfigs []CapabilityConfig
 
+func (s CapabilityConfigs) FindById(id int64) *CapabilityConfig {
+	for _, c := range s {
+		if c.Id == id {
+			return &c
+		}
+	}
+	return nil
+}
+
 func (s CapabilityConfigs) ExceptNeedsDestroyed() CapabilityConfigs {
 	result := make(CapabilityConfigs, 0)
 	for _, cur := range s {
