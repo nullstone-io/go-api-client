@@ -8,14 +8,16 @@ import (
 type ChangeType string
 
 const (
-	// ModuleVersionChange - there can only be one of these; no identifier needed
-	ModuleVersionChange ChangeType = "module_version"
-	// VariableChange - use variable name (key) as identifier
-	VariableChange ChangeType = "variable"
-	// EnvVariableChange - use env variable key as identifier
-	EnvVariableChange ChangeType = "env_variable"
-	// CapabilityChange - use the capability id, it is unique within a workspace
-	CapabilityChange ChangeType = "capability"
+	// ChangeTypeModuleVersion - there can only be one of these; no identifier needed
+	ChangeTypeModuleVersion ChangeType = "module_version"
+	// ChangeTypeVariable - use variable name (key) as identifier
+	ChangeTypeVariable ChangeType = "variable"
+	// ChangeTypeEnvVariable - use env variable key as identifier
+	ChangeTypeEnvVariable ChangeType = "env_variable"
+	// ChangeTypeCapability - use the capability id, it is unique within a workspace
+	ChangeTypeCapability ChangeType = "capability"
+	// ChangeTypeConnection - use the connection key as identifier
+	ChangeTypeConnection ChangeType = "connection"
 )
 
 type ChangeAction string
@@ -24,6 +26,10 @@ const (
 	ChangeActionAdd    ChangeAction = "add"
 	ChangeActionUpdate ChangeAction = "update"
 	ChangeActionDelete ChangeAction = "delete"
+)
+
+const (
+	ChangeIdentifierModuleVersion = "module_version"
 )
 
 type WorkspaceChange struct {

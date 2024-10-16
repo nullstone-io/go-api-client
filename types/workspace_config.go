@@ -27,8 +27,8 @@ type WorkspaceConfig struct {
 	DependencyConfigs DependencyConfigs `json:"dependencyConfigs"`
 }
 
-func (d WorkspaceConfig) Clone() (WorkspaceConfig, error) {
+func (c WorkspaceConfig) Clone() (WorkspaceConfig, error) {
 	config := WorkspaceConfig{}
-	err := copier.CopyWithOption(&config, d, copier.Option{DeepCopy: true})
+	err := copier.CopyWithOption(&config, c, copier.Option{DeepCopy: true})
 	return config, err
 }
