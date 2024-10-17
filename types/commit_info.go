@@ -13,13 +13,9 @@ const (
 type CommitInfo struct {
 	Type        string `json:"type"`
 	VcsProvider string `json:"vcsProvider"`
-	RepoOwner   string `json:"repoOwner"`
-	RepoName    string `json:"repoName"`
-	// Repo is `RepoOwner/RepoName`
-	Repo       string `json:"repo"`
-	RepoUrl    string `json:"repoUrl"`
-	BranchName string `json:"branchName"`
-	CommitSha  string `json:"commitSha"`
+	Repo        Repo   `json:"repo"`
+	BranchName  string `json:"branchName"`
+	CommitSha   string `json:"commitSha"`
 	// CommitUrl is the HTML URL to browse this commit
 	CommitUrl     string `json:"commitUrl"`
 	CommitMessage string `json:"commitMessage"`
