@@ -4,6 +4,8 @@ import (
 	"strings"
 )
 
+type ConnectionTargets map[string]ConnectionTarget
+
 type ConnectionTarget struct {
 	StackId   int64  `json:"stackId,omitempty" yaml:"stack_id,omitempty"`
 	StackName string `json:"stackName,omitempty" yaml:"stack_name,omitempty"`
@@ -77,4 +79,31 @@ func (t ConnectionTarget) Workspace() WorkspaceTarget {
 		wt.EnvId = *t.EnvId
 	}
 	return wt
+}
+
+// isConnectionTargetEqual performs equality check on ConnectionTarget
+// This assumes that the ConnectionTarget has Id+Name populated for Stack/Block/Env
+func isConnectionTargetEqual(target1 *ConnectionTarget, target2 *ConnectionTarget) bool {
+	if target1 == nil {
+		if target2 == nil {
+			return true
+		}
+		return false
+	}
+	if target2 == nil {
+		return false
+	}
+	var envId1, envId2 int64
+	if target1.EnvId != nil {
+		envId1 = *target1.EnvId
+	}
+	if target2.EnvId != nil {
+		envId2 = *target2.EnvId
+	}
+	return target1.StackId == target2.StackId &&
+		target1.StackName == target2.StackName &&
+		target1.BlockId == target2.BlockId &&
+		target1.BlockName == target2.BlockName &&
+		envId1 == envId2 &&
+		target1.EnvName == target2.EnvName
 }

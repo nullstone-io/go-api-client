@@ -1,16 +1,19 @@
 module gopkg.in/nullstone-io/go-api-client.v0
 
-go 1.18
+go 1.22.0
+
+toolchain go1.22.8
 
 require (
 	github.com/cristalhq/jwt/v3 v3.1.0
 	github.com/google/uuid v1.2.0
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/websocket v1.5.0
+	github.com/jinzhu/copier v0.4.0
 	github.com/nullstone-io/module v0.2.8
 	github.com/stretchr/testify v1.8.4
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.49.0
-	golang.org/x/mod v0.5.1
+	golang.org/x/mod v0.21.0
 )
 
 require (

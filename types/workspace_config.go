@@ -1,5 +1,9 @@
 package types
 
+import (
+	"github.com/jinzhu/copier"
+)
+
 type WorkspaceConfig struct {
 	Source        string            `json:"source"`
 	SourceVersion string            `json:"sourceVersion"`
@@ -21,4 +25,10 @@ type WorkspaceConfig struct {
 	// - An application that is connected to an unlaunched "Existing Network"
 	// - An application that is connected to an unlaunched Datadog datastore via a capability
 	DependencyConfigs DependencyConfigs `json:"dependencyConfigs"`
+}
+
+func (c WorkspaceConfig) Clone() (WorkspaceConfig, error) {
+	config := WorkspaceConfig{}
+	err := copier.CopyWithOption(&config, c, copier.Option{DeepCopy: true})
+	return config, err
 }
