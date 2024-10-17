@@ -38,6 +38,7 @@ func RepoFromUrl(repoUrl string) (Repo, error) {
 			Host:  host,
 			Owner: repoTokens[0],
 			Name:  repoTokens[1],
+			Url:   repoUri.String(),
 		}, nil
 	}
 
@@ -48,6 +49,7 @@ func RepoFromUrl(repoUrl string) (Repo, error) {
 			Host:  DefaultRepoHost,
 			Owner: repoTokens[0],
 			Name:  repoTokens[1],
+			Url:   repoUri.String(),
 		}, nil
 	case 3:
 		// <repo-host>/<repo-owner>/<repo-name>
@@ -55,6 +57,7 @@ func RepoFromUrl(repoUrl string) (Repo, error) {
 			Host:  repoTokens[0],
 			Owner: repoTokens[1],
 			Name:  repoTokens[2],
+			Url:   repoUri.String(),
 		}, nil
 	default:
 		return Repo{}, fmt.Errorf("invalid repository url %q: must be [<repo-host>/]<repo-owner>/<repo-name>", repoUrl)
