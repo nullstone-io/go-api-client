@@ -11,22 +11,25 @@ const (
 )
 
 type CommitInfo struct {
-	Type        string `json:"type"`
+	Type string `json:"type"`
+
+	// VcsProvider
+	// Deprecated - Use Repo.Provider
 	VcsProvider string `json:"vcsProvider"`
 
 	// Repository contains information about the commit repository (e.g. host, owner, name)
 	Repository Repo `json:"repository"`
 	// RepoOwner
-	// Deprecated - Use Repository
+	// Deprecated - Use Repo.Owner
 	RepoOwner string `json:"repoOwner"`
 	// RepoName
-	// Deprecated - Use Repository
+	// Deprecated - Use Repo.Name
 	RepoName string `json:"repoName"`
 	// Repo is `RepoOwner/RepoName`
-	// Deprecated - Use Repository
+	// Deprecated - Use Repo.Owner/Repo.Name
 	Repo string `json:"repo"`
 	// RepoUrl
-	// Deprecated - Use Repository
+	// Deprecated - Use Repo.Url
 	RepoUrl string `json:"repoUrl"`
 
 	BranchName string `json:"branchName"`

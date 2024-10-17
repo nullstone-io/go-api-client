@@ -7,14 +7,19 @@ import (
 )
 
 const (
+	RepoProviderGithub = "github"
+)
+
+const (
 	DefaultRepoHost = "github.com"
 )
 
 type Repo struct {
-	Host  string `json:"host"`
-	Owner string `json:"owner"`
-	Name  string `json:"name"`
-	Url   string `json:"url"`
+	Provider string `json:"provider"`
+	Host     string `json:"host"`
+	Owner    string `json:"owner"`
+	Name     string `json:"name"`
+	Url      string `json:"url"`
 }
 
 func RepoFromUrl(repoUrl string) (Repo, error) {
