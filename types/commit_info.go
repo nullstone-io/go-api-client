@@ -11,19 +11,33 @@ const (
 )
 
 type CommitInfo struct {
-	Type        string `json:"type"`
+	Type string `json:"type"`
+
+	// VcsProvider
+	// Deprecated - Use Repo.Provider
 	VcsProvider string `json:"vcsProvider"`
-	RepoOwner   string `json:"repoOwner"`
-	RepoName    string `json:"repoName"`
+
+	// Repository contains information about the commit repository (e.g. host, owner, name)
+	Repository Repo `json:"repository"`
+	// RepoOwner
+	// Deprecated - Use Repo.Owner
+	RepoOwner string `json:"repoOwner"`
+	// RepoName
+	// Deprecated - Use Repo.Name
+	RepoName string `json:"repoName"`
 	// Repo is `RepoOwner/RepoName`
-	Repo       string `json:"repo"`
-	RepoUrl    string `json:"repoUrl"`
+	// Deprecated - Use Repo.Owner/Repo.Name
+	Repo string `json:"repo"`
+	// RepoUrl
+	// Deprecated - Use Repo.Url
+	RepoUrl string `json:"repoUrl"`
+
 	BranchName string `json:"branchName"`
-	CommitSha  string `json:"commitSha"`
+
+	CommitSha string `json:"commitSha"`
 	// CommitUrl is the HTML URL to browse this commit
 	CommitUrl     string `json:"commitUrl"`
 	CommitMessage string `json:"commitMessage"`
-
 	// CommitUserId is the user id for the VCS user that created the commit
 	// This is not guaranteed to be the same as the AuthorId
 	// When using the GitHub UI to merge, the CommitUsername is actually `web-flow`

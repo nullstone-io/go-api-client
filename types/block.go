@@ -23,8 +23,8 @@ type Block struct {
 	Name                string                      `json:"name"`
 	IsShared            bool                        `json:"isShared"`
 	OwningRepo          string                      `json:"owningRepo"`
-	Repo                string                      `json:"repo"`
-	Framework           string                      `json:"framework"`
+	Repo                string                      `json:"repo,omitempty"`
+	Framework           string                      `json:"framework,omitempty"`
 	DnsName             string                      `json:"dnsName,omitempty"`
 	ModuleSource        string                      `json:"moduleSource"`
 	ModuleSourceVersion string                      `json:"moduleSourceVersion"`
