@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/gorilla/mux"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"gopkg.in/nullstone-io/go-api-client.v0/mocks"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"testing"
@@ -257,22 +258,32 @@ func TestResourceResolver_BackfillMissingBlocks(t *testing.T) {
 			},
 		}
 		ctx := context.Background()
-		err := rr.BackfillMissingBlocks(ctx, newBlocks)
-		assert.NoError(t, err)
+		wantMissing := []types.Block{
+			{
+				Type:     "Block",
+				OrgName:  "nullstone",
+				StackId:  stack1.Id,
+				Name:     "block3",
+				IsShared: false,
+			},
+		}
+		gotMissing, err := rr.BackfillMissingBlocks(ctx, newBlocks)
+		require.NoError(t, err)
+		assert.Equal(t, wantMissing, gotMissing, "missing blocks result")
 
 		sr, err := rr.ResolveStack(ctx, types.ConnectionTarget{StackId: stack1.Id})
 		assert.NoError(t, err)
 
-		assert.Equal(t, 3, len(sr.BlocksByName))
-		assert.Equal(t, 2, len(sr.BlocksById))
+		assert.Equal(t, 3, len(sr.BlocksByName), "blocks by name")
+		assert.Equal(t, 2, len(sr.BlocksById), "blocks by id")
 
 		// check to make sure "block3" was added and StackId set
-		assert.Equal(t, sr.BlocksByName["block3"].StackId, stack1.Id)
+		assert.Equal(t, stack1.Id, sr.BlocksByName["block3"].StackId, "stack id is set on block3")
 
 		// check to make sure "block1" was updated because the name was the same
-		assert.Equal(t, sr.BlocksByName["block1"].IsShared, true)
+		assert.Equal(t, false, sr.BlocksByName["block1"].IsShared, "block1 is shared")
 
 		// check to make sure "block2" was updated because the id was the same
-		assert.Equal(t, sr.BlocksById[102].IsShared, true)
+		assert.Equal(t, false, sr.BlocksById[102].IsShared, "block[102] is shared")
 	})
 }

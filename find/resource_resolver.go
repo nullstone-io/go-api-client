@@ -88,20 +88,24 @@ func (r *ResourceResolver) ResolveCurProviderType(ctx context.Context) (string, 
 	return sr.Stack.ProviderType, nil
 }
 
-func (r *ResourceResolver) BackfillMissingBlocks(ctx context.Context, blocks []types.Block) error {
+func (r *ResourceResolver) BackfillMissingBlocks(ctx context.Context, blocks []types.Block) ([]types.Block, error) {
 	sr, err := r.ResolveStack(ctx, types.ConnectionTarget{StackId: r.CurStackId})
 	if err != nil {
-		return fmt.Errorf("unable to resolve stack: %w", err)
+		return nil, fmt.Errorf("unable to resolve stack: %w", err)
 	}
 
+	missing := make([]types.Block, 0)
 	for _, block := range blocks {
-		block.StackId = r.CurStackId
-		if err = sr.AddBlock(ctx, block); err != nil {
-			return fmt.Errorf("unable to add block (%s) to resolver: %w", block.Name, err)
+		if _, ok := sr.BlocksByName[block.Name]; !ok {
+			block.StackId = r.CurStackId
+			if err := sr.AddBlock(ctx, block); err != nil {
+				return nil, fmt.Errorf("unable to add block (%s) to resolver: %w", block.Name, err)
+			}
+			missing = append(missing, block)
 		}
 	}
 
-	return nil
+	return missing, nil
 }
 
 func (r *ResourceResolver) GetCurrentEnvs(ctx context.Context) (map[int64]types.Environment, error) {
