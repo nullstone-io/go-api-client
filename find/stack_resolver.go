@@ -160,24 +160,31 @@ func (r *StackResolver) LoadBlocks(ctx context.Context) error {
 	return nil
 }
 
-func (r *StackResolver) AddBlock(ctx context.Context, block types.Block) error {
+// AddBlock adds a block to the stack resolver
+// This only returns true if the block was added
+// This returns false if there is an error or the block already exists
+func (r *StackResolver) AddBlock(ctx context.Context, block types.Block) (bool, error) {
 	if err := r.ensureBlocks(ctx); err != nil {
-		return err
+		return false, err
 	}
 
 	if block.Id != 0 {
-		// we need to check for an existing block because the name could have changed
-		// and if the name changed, it needs to be removed from the BlocksByName map
-		existingBlock, ok := r.BlocksById[block.Id]
-		if ok {
-			r.BlocksById[block.Id] = block
-			delete(r.BlocksByName, existingBlock.Name)
+		if _, ok := r.BlocksById[block.Id]; ok {
+			return false, nil
+		}
+	}
+	if block.Name != "" {
+		if _, ok := r.BlocksByName[block.Name]; ok {
+			return false, nil
 		}
 	}
 
+	if block.Id != 0 {
+		r.BlocksById[block.Id] = block
+	}
 	if block.Name != "" {
 		r.BlocksByName[block.Name] = block
 	}
 
-	return nil
+	return true, nil
 }

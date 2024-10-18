@@ -96,11 +96,10 @@ func (r *ResourceResolver) BackfillMissingBlocks(ctx context.Context, blocks []t
 
 	missing := make([]types.Block, 0)
 	for _, block := range blocks {
-		if _, ok := sr.BlocksByName[block.Name]; !ok {
-			block.StackId = r.CurStackId
-			if err := sr.AddBlock(ctx, block); err != nil {
-				return nil, fmt.Errorf("unable to add block (%s) to resolver: %w", block.Name, err)
-			}
+		block.StackId = r.CurStackId
+		if added, err := sr.AddBlock(ctx, block); err != nil {
+			return nil, fmt.Errorf("unable to add block (%s) to resolver: %w", block.Name, err)
+		} else if added {
 			missing = append(missing, block)
 		}
 	}
