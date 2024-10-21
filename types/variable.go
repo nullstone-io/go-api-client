@@ -24,8 +24,12 @@ type Variable struct {
 	Unused bool `json:"unused"`
 }
 
-func (v *Variable) HasValue() bool {
-	return v != nil && v.Value != nil && !v.Unused
+// HasValue determines whether the variable has a set value or if it's unused
+// This *cannot* be a pointer receiver method
+//
+//goland:noinspection GoMixedReceiverTypes
+func (v Variable) HasValue() bool {
+	return v.Value != nil && !v.Unused
 }
 
 func (v *Variable) Redact() bool {
