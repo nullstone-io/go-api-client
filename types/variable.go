@@ -64,7 +64,15 @@ func (v *Variable) SchemaEquals(other Variable) bool {
 }
 
 func (v *Variable) ValueEquals(other Variable) bool {
-	return isVariableValueEqual(v.Type, v.Value, other.Value)
+	val1 := v.Value
+	if val1 == nil {
+		val1 = v.Default
+	}
+	val2 := other.Value
+	if val2 == nil {
+		val2 = other.Default
+	}
+	return isVariableValueEqual(v.Type, val1, val2)
 }
 
 type VariableInput struct {

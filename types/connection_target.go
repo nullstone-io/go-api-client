@@ -93,17 +93,16 @@ func isConnectionTargetEqual(target1 *ConnectionTarget, target2 *ConnectionTarge
 	if target2 == nil {
 		return false
 	}
-	var envId1, envId2 int64
-	if target1.EnvId != nil {
-		envId1 = *target1.EnvId
-	}
-	if target2.EnvId != nil {
-		envId2 = *target2.EnvId
-	}
 	return target1.StackId == target2.StackId &&
 		target1.StackName == target2.StackName &&
 		target1.BlockId == target2.BlockId &&
 		target1.BlockName == target2.BlockName &&
-		envId1 == envId2 &&
-		target1.EnvName == target2.EnvName
+		isConnectionTargetEnvEqual(*target1, *target2)
+}
+
+func isConnectionTargetEnvEqual(t1 ConnectionTarget, t2 ConnectionTarget) bool {
+	if t1.EnvId != nil && t2.EnvId != nil {
+		return *t1.EnvId == *t2.EnvId
+	}
+	return t1.EnvName == t2.EnvName
 }
