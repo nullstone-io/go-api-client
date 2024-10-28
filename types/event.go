@@ -26,4 +26,15 @@ const (
 	EventStatusDisapproved EventStatus = "disapproved"
 )
 
+type EventTarget string
+
+const (
+	EventTargetSlack          EventTarget = "slack"
+	EventTargetMicrosoftTeams EventTarget = "microsoft-teams"
+	EventTargetDiscord        EventTarget = "discord"
+	EventTargetWhatsapp       EventTarget = "whatsapp"
+	EventTargetWebhook        EventTarget = "webhook"
+	EventTargetTask           EventTarget = "task"
+)
+
 type ChannelData map[string]any
