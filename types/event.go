@@ -25,3 +25,5 @@ const (
 	EventStatusCancelled   EventStatus = "cancelled"
 	EventStatusDisapproved EventStatus = "disapproved"
 )
+
+type ChannelData map[string]any
