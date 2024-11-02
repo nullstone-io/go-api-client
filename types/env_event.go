@@ -1,6 +1,10 @@
 package types
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+	"maps"
+	"slices"
+)
 
 type EnvEvent struct {
 	Uid     uuid.UUID `json:"uid"`
@@ -25,4 +29,20 @@ type EnvEvent struct {
 	// Channels represents the channel data for each integration tool
 	// For example, this is how to configure which Slack channels to send notifications
 	Channels map[IntegrationTool]ChannelData `json:"channels"`
+}
+
+func (e EnvEvent) Normalize() {
+	slices.Sort(e.Actions)
+	slices.Sort(e.Statuses)
+	slices.Sort(e.Blocks)
+}
+
+func (e EnvEvent) IsEqual(existing EnvEvent) bool {
+	e.Normalize()
+	existing.Normalize()
+
+	return slices.Compare(e.Actions, existing.Actions) == 0 &&
+		slices.Compare(e.Statuses, existing.Statuses) == 0 &&
+		slices.Compare(e.Blocks, existing.Blocks) == 0 &&
+		maps.EqualFunc(e.Channels, existing.Channels, IsChannelDataEqual)
 }

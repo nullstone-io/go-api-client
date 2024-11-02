@@ -1,5 +1,7 @@
 package types
 
+import "reflect"
+
 type EventAction string
 
 const (
@@ -38,3 +40,7 @@ const (
 )
 
 type ChannelData map[string]any
+
+func IsChannelDataEqual(a, b ChannelData) bool {
+	return reflect.DeepEqual(a, b)
+}
