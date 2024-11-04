@@ -1,6 +1,8 @@
 package types
 
-import "reflect"
+import (
+	"github.com/google/go-cmp/cmp"
+)
 
 type EventAction string
 
@@ -42,5 +44,5 @@ const (
 type ChannelData map[string]any
 
 func IsChannelDataEqual(a, b ChannelData) bool {
-	return reflect.DeepEqual(a, b)
+	return cmp.Diff(a, b) != ""
 }

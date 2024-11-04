@@ -6,6 +6,7 @@ toolchain go1.22.8
 
 require (
 	github.com/cristalhq/jwt/v3 v3.1.0
+	github.com/google/go-cmp v0.6.0
 	github.com/google/uuid v1.2.0
 	github.com/gorilla/mux v1.8.0
 	github.com/gorilla/websocket v1.5.0

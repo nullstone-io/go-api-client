@@ -155,8 +155,11 @@ func (c *Client) Modules() Modules {
 func (c *Client) ModuleVersions() ModuleVersions {
 	return ModuleVersions{Client: c}
 }
-func (c *Client) Events() Events {
-	return Events{Client: c}
+func (c *Client) Integrations() Integrations {
+	return Integrations{Client: c}
+}
+func (c *Client) EnvEvents() EnvEvents {
+	return EnvEvents{Client: c}
 }
 
 func (c *Client) Do(ctx context.Context, method string, relativePath string, query url.Values, headers map[string]string, body interface{}) (*http.Response, error) {

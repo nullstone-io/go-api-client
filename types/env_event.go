@@ -31,13 +31,22 @@ type EnvEvent struct {
 	Channels map[IntegrationTool]ChannelData `json:"channels"`
 }
 
-func (e EnvEvent) Normalize() {
+func (e *EnvEvent) Normalize() {
+	if e.Actions == nil {
+		e.Actions = []EventAction{}
+	}
 	slices.Sort(e.Actions)
+	if e.Statuses == nil {
+		e.Statuses = []EventStatus{}
+	}
 	slices.Sort(e.Statuses)
+	if e.Blocks == nil {
+		e.Blocks = []int64{}
+	}
 	slices.Sort(e.Blocks)
 }
 
-func (e EnvEvent) IsEqual(existing EnvEvent) bool {
+func (e *EnvEvent) IsEqual(existing EnvEvent) bool {
 	e.Normalize()
 	existing.Normalize()
 
