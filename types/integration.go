@@ -17,16 +17,16 @@ type Integration struct {
 }
 
 type IntegrationStatus struct {
-	IsConnected   bool                      `json:"is_connected"`
+	IsConnected   bool                      `json:"isConnected"`
 	Error         string                    `json:"error,omitempty"`
 	Data          map[string]string         `json:"data"`
-	SlackChannels []IntegrationSlackChannel `json:"slack_channels"`
+	SlackChannels []IntegrationSlackChannel `json:"slackChannels"`
 }
 
 type IntegrationSlackChannel struct {
 	ID            string `json:"id"`
 	Name          string `json:"name"`
-	IsPrivate     bool   `json:"is_private"`
-	IsIM          bool   `json:"is_im"`
-	ContextTeamId string `json:"context_team_id"`
+	IsPrivate     bool   `json:"isPrivate"`
+	IsIM          bool   `json:"isIm"`
+	ContextTeamId string `json:"contextTeamId"`
 }
