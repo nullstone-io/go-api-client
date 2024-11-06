@@ -11,6 +11,7 @@ const (
 	ExternalTriggerEventVcsPush              = "vcs-push"
 	ExternalTriggerEventVcsPullRequestOpened = "vcs-pull-request-opened"
 	ExternalTriggerEventGitopsEnable         = "gitops-enable"
+	ExternalTriggerEventGitopsChangeBranch   = "gitops-change-branch"
 )
 
 // ExternalTrigger represents the source of an external trigger performing an action against Nullstone
