@@ -1,30 +1,36 @@
 package types
 
-import "github.com/nullstone-io/module/config"
+import (
+	"github.com/nullstone-io/module/config"
+)
 
 type Connection struct {
 	config.Connection `json:",inline"`
 
-	// Target refers to the block that fulfills the connection
-	// If the Target is in the same stack, this is just the block name
-	// If the Target is in another stack, this is the fully-qualified block name (i.e. {stack}.{env}.{block})
-	Target string `json:"target"`
+	// Target refers to the ConnectionTarget that fulfills this connection
+	// This value is input by the user via UI or IaC and is not normalized
+	Target *ConnectionTarget `json:"target"`
 
-	// Reference refers to the block that fulfills the connection
-	// TODO: Rename to Target once Target is deprecated
-	Reference *ConnectionTarget `json:"reference"`
+	// EffectiveTarget refers to the ConnectionTarget that fulfills this connection
+	// This value is a fully normalized, effective version of Target
+	EffectiveTarget *ConnectionTarget `json:"effectiveTarget"`
 
 	// Unused signals that the connection is not used by the current module version
 	// During promotion of a module into a new workspace, it's possible that the new version removes connections
 	// If we removed those connections automatically, a user could face data loss that is unrecoverable
 	// Instead, this field was added to signal to the user that they should remove the connection
 	Unused bool `json:"unused"`
+
+	// OldReference refers to the old Reference field
+	// Deprecated
+	OldReference *ConnectionTarget `json:"reference"`
 }
 
 func (c *Connection) Equal(other Connection) bool {
 	return c.SchemaEquals(other) &&
 		c.Unused == other.Unused &&
-		isConnectionTargetEqual(c.Reference, other.Reference)
+		isConnectionTargetEqual(c.Target, other.Target) &&
+		isConnectionTargetEqual(c.EffectiveTarget, other.EffectiveTarget)
 }
 
 func (c *Connection) SchemaEquals(other Connection) bool {
@@ -39,5 +45,6 @@ func (c *Connection) SchemaEquals(other Connection) bool {
 }
 
 func (c *Connection) TargetEquals(other Connection) bool {
-	return isConnectionTargetEqual(c.Reference, other.Reference)
+	return isConnectionTargetEqual(c.Target, other.Target) &&
+		isConnectionTargetEqual(c.EffectiveTarget, other.EffectiveTarget)
 }

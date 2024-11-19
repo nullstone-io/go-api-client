@@ -49,7 +49,9 @@ func TestConnection_TargetEquals(t *testing.T) {
 
 	for testName, test := range tests {
 		t.Run(testName, func(t *testing.T) {
-			got := (&Connection{Reference: test.a}).TargetEquals(Connection{Reference: test.b})
+			aconn := &Connection{EffectiveTarget: test.a}
+			bconn := &Connection{EffectiveTarget: test.b}
+			got := aconn.TargetEquals(*bconn)
 			assert.Equal(t, test.want, got)
 		})
 	}

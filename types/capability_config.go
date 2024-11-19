@@ -6,9 +6,18 @@ import (
 )
 
 type CapabilityConfig struct {
-	Id             int64       `json:"id"`
-	Name           string      `json:"name"`
-	Source         string      `json:"source"`
+	// Id is a unique identifier for all Capability objects
+	Id int64 `json:"id"`
+	// Name is a unique identifier for the Capability
+	// This is for all capabilities on a single Nullstone Application
+	Name string `json:"name"`
+	// Source refers to the module used for this workspace
+	Source string `json:"source"`
+	// SourceConstraint is a constraint or desired version for the workspace module
+	// Once resolved, SourceVersion contains the effective module version
+	SourceConstraint string `json:"sourceConstraint"`
+	// SourceVersion refers to the effective module version
+	// Variables and Connections on this WorkspaceConfig should match the schema for this module version
 	SourceVersion  string      `json:"sourceVersion"`
 	Variables      Variables   `json:"variables"`
 	Connections    Connections `json:"connections"`
