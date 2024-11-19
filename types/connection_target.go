@@ -1,7 +1,12 @@
 package types
 
 import (
+	"encoding/json"
 	"strings"
+)
+
+var (
+	_ json.Unmarshaler = &ConnectionTarget{}
 )
 
 type ConnectionTargets map[string]ConnectionTarget
@@ -13,6 +18,14 @@ type ConnectionTarget struct {
 	BlockName string `json:"blockName,omitempty" yaml:"block_name,omitempty"`
 	EnvId     *int64 `json:"envId,omitempty" yaml:"env_id,omitempty"`
 	EnvName   string `json:"envName,omitempty" yaml:"env_name,omitempty"`
+}
+
+func (t *ConnectionTarget) UnmarshalJSON(data []byte) error {
+	if data == nil {
+		return nil
+	}
+	*t = ParseConnectionTarget(string(data))
+	return nil
 }
 
 func ParseConnectionTarget(s string) ConnectionTarget {

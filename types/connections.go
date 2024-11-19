@@ -14,8 +14,8 @@ type Connections map[string]Connection
 func (s Connections) Targets() ConnectionTargets {
 	result := ConnectionTargets{}
 	for k, c := range s {
-		if c.Reference != nil {
-			result[k] = *c.Reference
+		if c.EffectiveTarget != nil {
+			result[k] = *c.EffectiveTarget
 		} else {
 			result[k] = ConnectionTarget{}
 		}
