@@ -155,6 +155,9 @@ func (c *Client) Domains() Domains {
 func (c *Client) Subdomains() Subdomains {
 	return Subdomains{Client: c}
 }
+func (c *Client) SubdomainWorkspaces() SubdomainWorkspaces {
+	return SubdomainWorkspaces{Client: c}
+}
 func (c *Client) Modules() Modules {
 	return Modules{Client: c}
 }
