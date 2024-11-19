@@ -75,6 +75,10 @@ func (v *Variable) ValueEquals(other Variable) bool {
 	return isVariableValueEqual(v.Type, val1, val2)
 }
 
+func (v *Variable) ValueEqualsDefault() bool {
+	return isVariableValueEqual(v.Type, v.Value, v.Default)
+}
+
 type VariableInput struct {
 	Key   string `json:"key"`
 	Value string `json:"value"`
