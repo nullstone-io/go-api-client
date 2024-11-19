@@ -1,13 +1,11 @@
 package types
 
-import "github.com/nullstone-io/module/config"
+import (
+	"github.com/nullstone-io/module/config"
+)
 
 type Connection struct {
 	config.Connection `json:",inline"`
-
-	// Reference refers to the block that fulfills the connection
-	// Deprecated - Use Target and EffectiveTarget
-	Reference *ConnectionTarget `json:"reference"`
 
 	// Target refers to the ConnectionTarget that fulfills this connection
 	// This value is input by the user via UI or IaC and is not normalized
@@ -22,12 +20,15 @@ type Connection struct {
 	// If we removed those connections automatically, a user could face data loss that is unrecoverable
 	// Instead, this field was added to signal to the user that they should remove the connection
 	Unused bool `json:"unused"`
+
+	// OldReference refers to the old Reference field
+	// Deprecated
+	OldReference *ConnectionTarget `json:"reference"`
 }
 
 func (c *Connection) Equal(other Connection) bool {
 	return c.SchemaEquals(other) &&
 		c.Unused == other.Unused &&
-		isConnectionTargetEqual(c.Reference, other.Reference) &&
 		isConnectionTargetEqual(c.EffectiveTarget, other.EffectiveTarget)
 }
 
@@ -43,6 +44,5 @@ func (c *Connection) SchemaEquals(other Connection) bool {
 }
 
 func (c *Connection) TargetEquals(other Connection) bool {
-	return isConnectionTargetEqual(c.Reference, other.Reference) &&
-		isConnectionTargetEqual(c.EffectiveTarget, other.EffectiveTarget)
+	return isConnectionTargetEqual(c.EffectiveTarget, other.EffectiveTarget)
 }
