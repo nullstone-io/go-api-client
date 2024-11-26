@@ -23,6 +23,9 @@ type OutputCredentials struct {
 	// Aws contains aws credentials
 	Aws *OutputCredentialsAws `json:"aws,omitempty"`
 
+	// Gcp contains gcp credentials
+	Gcp *OutputCredentialsGcp `json:"gcp,omitempty"`
+
 	// Data contains additional credential information
 	Data map[string]string `json:"data"`
 }
@@ -46,4 +49,21 @@ type OutputCredentialsAws struct {
 	// The time the credentials will expire at. Should be ignored if CanExpire
 	// is false.
 	Expires time.Time `json:"expires"`
+}
+
+type OutputCredentialsGcp struct {
+	// AccessToken is the token that authorizes and authenticates the requests.
+	AccessToken string `json:"accessToken"`
+
+	// TokenType is the type of token.
+	// The Type method returns either this or "Bearer", the default.
+	TokenType string `json:"tokenType"`
+
+	// RefreshToken is a token that's used by the application
+	// (as opposed to the user) to refresh the access token
+	// if it expires.
+	RefreshToken string `json:"refreshToken"`
+
+	// Expiry is the optional expiration time of the access token.
+	Expiry time.Time `json:"expiry,omitempty"`
 }
