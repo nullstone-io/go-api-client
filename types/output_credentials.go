@@ -65,5 +65,5 @@ type OutputCredentialsGcp struct {
 	RefreshToken string `json:"refreshToken"`
 
 	// Expiry is the optional expiration time of the access token.
-	Expiry time.Time `json:"expiry,omitempty"`
+	Expiry time.Time `json:"expiry"`
 }
