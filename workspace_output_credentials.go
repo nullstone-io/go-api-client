@@ -20,8 +20,9 @@ func (c WorkspaceOutputCredentials) path(stackId int64, workspaceUid uuid.UUID) 
 }
 
 // Create - POST /orgs/:orgName/stacks/:stackId/workspaces/:workspaceUid/output-credentials
-func (c WorkspaceOutputCredentials) Create(ctx context.Context, stackId int64, workspaceUid uuid.UUID, outputNames []string) (*types.OutputCredentials, error) {
+func (c WorkspaceOutputCredentials) Create(ctx context.Context, stackId int64, workspaceUid uuid.UUID, provider string, outputNames []string) (*types.OutputCredentials, error) {
 	q := url.Values{}
+	q.Set("provider", provider)
 	q.Set("output_names", strings.Join(outputNames, ","))
 	res, err := c.Client.Do(ctx, http.MethodPost, c.path(stackId, workspaceUid), q, nil, nil)
 	if err != nil {
