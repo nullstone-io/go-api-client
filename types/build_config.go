@@ -1,11 +1,12 @@
 package types
 
 const (
-	BuildPackageModeNone       = "none"
-	BuildPackageModeDockerfile = "dockerfile"
-	BuildPackageModeBuildpacks = "buildpacks"
-	BuildPackageModeZip        = "zip"
-	BuildPackageModeSiteAssets = "site-assets"
+	BuildPackageModeNone          = "none"
+	BuildPackageModeDockerfile    = "dockerfile"
+	BuildPackageModeBuildpacks    = "buildpacks"
+	BuildPackageModeZip           = "zip"
+	BuildPackageModeSiteAssets    = "site-assets"
+	BuildPackageModeGithubActions = "github-actions"
 )
 
 type BuildConfig struct {
@@ -27,4 +28,8 @@ type BuildConfig struct {
 
 	// Environment variables injected at build-time
 	BuildEnvVars map[string]string `json:"buildEnvVars,omitempty"`
+
+	// Github Actions configurations
+	WorkflowFileName string            `json:"workflowFileName,omitempty"`
+	WorkflowInputs   map[string]string `json:"workflowInputs,omitempty"`
 }
