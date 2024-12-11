@@ -121,6 +121,9 @@ func (c *Client) WorkspaceConfigFiles() WorkspaceConfigFiles {
 func (c *Client) WorkspaceOutputs() WorkspaceOutputs {
 	return WorkspaceOutputs{Client: c}
 }
+func (c *Client) WorkspaceOutputCredentials() WorkspaceOutputCredentials {
+	return WorkspaceOutputCredentials{Client: c}
+}
 func (c *Client) WorkspaceVariables() WorkspaceVariables {
 	return WorkspaceVariables{Client: c}
 }
