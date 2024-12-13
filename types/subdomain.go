@@ -19,13 +19,16 @@ type SubdomainWorkspace struct {
 
 	// SubdomainName refers to the subdomain name for this subdomain
 	// If Nullstone-managed, this is equal to `<dns-name>[.<env-chunk>]`
+	// This should be the FQDN without the domain name
 	SubdomainName string `json:"subdomainName"`
 
 	// DomainName refers to the domain name for this subdomain
-	// Normally, this refers to a top-level domain (TLD)
+	// Normally, this refers to a second-level domain (SLD).
+	// Example: "acme.com"
 	DomainName string `json:"domainName"`
 
 	// Fqdn refers to the fully-qualified domain name
-	// This is equal to `<subdomain-name>.<domain-name>`
+	// This is equal to `<subdomain-name>.<domain-name>.`
+	// NOTE: This has a trailing "."
 	Fqdn string `json:"fqdn"`
 }
