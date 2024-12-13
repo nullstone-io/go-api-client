@@ -14,7 +14,7 @@ type BadRequestError struct {
 
 func (e BadRequestError) Error() string {
 	buf := bytes.NewBufferString("")
-	fmt.Fprintf(buf, "[%s][%s] bad request:", e.Url, e.RequestId)
+	fmt.Fprintf(buf, "[%s][%s] bad request: %s", e.Url, e.RequestId, e.Message)
 	for _, value := range e.Details {
 		fmt.Fprintf(buf, "\n  %s", value)
 	}

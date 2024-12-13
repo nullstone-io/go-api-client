@@ -14,7 +14,7 @@ type InvalidRequestError struct {
 
 func (e InvalidRequestError) Error() string {
 	buf := bytes.NewBufferString("")
-	fmt.Fprintf(buf, "[%s][%s] invalid request:", e.Url, e.RequestId)
+	fmt.Fprintf(buf, "[%s][%s] invalid request: %s", e.Url, e.RequestId, e.Message)
 	for field, errs := range e.ValidationErrors {
 		for _, err := range errs {
 			fmt.Fprintf(buf, "\n  %s: %s", field, err)
