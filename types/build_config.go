@@ -35,6 +35,8 @@ type BuildConfig struct {
 
 	// Github Actions configurations
 	WorkflowFilename string            `json:"workflowFilename,omitempty"`
+	InitiateWorkflow bool              `json:"initiateWorkflow,omitempty"`
+	PerformPush      bool              `json:"performPush,omitempty"`
 	WorkflowInputs   map[string]string `json:"workflowInputs,omitempty"`
 
 	// Environment variables injected at build-time
