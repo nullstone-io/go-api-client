@@ -1,6 +1,11 @@
 package types
 
 const (
+	BuilderNullstone     = "nullstone"
+	BuilderGithubActions = "github-actions"
+)
+
+const (
 	BuildPackageModeNone       = "none"
 	BuildPackageModeDockerfile = "dockerfile"
 	BuildPackageModeBuildpacks = "buildpacks"
@@ -9,6 +14,9 @@ const (
 )
 
 type BuildConfig struct {
+	// Builder defines which build engine to use (currently Nullstone or Github Actions)
+	Builder string `json:"builder"`
+
 	// PackageMode tells the engine which build/package engine to use
 	// e.g., dockerfile, buildpacks
 	PackageMode string `json:"packageMode"`
@@ -24,6 +32,12 @@ type BuildConfig struct {
 
 	// Zip and Static Site configurations
 	PublishDir string `json:"publishDir,omitempty"`
+
+	// Github Actions configurations
+	WorkflowFilename string            `json:"workflowFilename,omitempty"`
+	InitiateWorkflow bool              `json:"initiateWorkflow,omitempty"`
+	PerformPush      bool              `json:"performPush,omitempty"`
+	WorkflowInputs   map[string]string `json:"workflowInputs,omitempty"`
 
 	// Environment variables injected at build-time
 	BuildEnvVars map[string]string `json:"buildEnvVars,omitempty"`
