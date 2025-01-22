@@ -25,6 +25,7 @@ type Environment struct {
 	Reference      string          `json:"reference"`
 	ProviderConfig ProviderConfig  `json:"providerConfig"`
 	PipelineOrder  *int            `json:"pipelineOrder,omitempty"`
+	CreatedBy      string          `json:"createdBy"`
 	ContextKey     string          `json:"contextKey"`
 	Status         EnvStatus       `json:"status"`
 	IsProd         bool            `json:"isProd"`
