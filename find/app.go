@@ -47,7 +47,7 @@ func App(ctx context.Context, cfg api.Config, appName, stackName string) (*types
 		}
 		stackId = stack.Id
 	}
-	allApps, err := client.Apps().List(ctx)
+	allApps, err := client.Apps().GlobalList(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("error listing applications: %w", err)
 	}
