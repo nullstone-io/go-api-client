@@ -25,20 +25,22 @@ func (a Apps) appPath(stackId, appId int64) string {
 	return fmt.Sprintf("orgs/%s/stacks/%d/apps/%d", a.Client.Config.OrgName, stackId, appId)
 }
 
-// List - GET /orgs/:orgName/apps
-func (a Apps) List(ctx context.Context) ([]types.Application, error) {
+// GlobalList - GET /orgs/:orgName/apps
+func (a Apps) GlobalList(ctx context.Context) ([]types.Application, error) {
 	res, err := a.Client.Do(ctx, http.MethodGet, a.globalPath(), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
+	return response.ReadJsonVal[[]types.Application](res)
+}
 
-	var apps []types.Application
-	if err := response.ReadJson(res, &apps); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
+// List - GET /orgs/:orgName/stacks/:stackId/apps
+func (a Apps) List(ctx context.Context, stackId int64) ([]types.Application, error) {
+	res, err := a.Client.Do(ctx, http.MethodGet, a.basePath(stackId), nil, nil, nil)
+	if err != nil {
 		return nil, err
 	}
-	return apps, nil
+	return response.ReadJsonVal[[]types.Application](res)
 }
 
 // Get - GET /orgs/:orgName/stacks/:stackId/apps/:id
