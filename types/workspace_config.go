@@ -5,13 +5,16 @@ import (
 )
 
 type WorkspaceConfig struct {
-	Source        string            `json:"source"`
-	SourceVersion string            `json:"sourceVersion"`
-	Variables     Variables         `json:"variables"`
-	EnvVariables  EnvVariables      `json:"envVariables"`
-	Connections   Connections       `json:"connections"`
-	Providers     Providers         `json:"providers"`
-	Capabilities  CapabilityConfigs `json:"capabilities"`
+	Source        string       `json:"source"`
+	SourceVersion string       `json:"sourceVersion"`
+	Variables     Variables    `json:"variables"`
+	EnvVariables  EnvVariables `json:"envVariables"`
+	Connections   Connections  `json:"connections"`
+	Providers     Providers    `json:"providers"`
+	// Capabilities
+	// Deprecated
+	Capabilities      CapabilityConfigs      `json:"capabilities"`
+	NamedCapabilities NamedCapabilityConfigs `json:"namedCapabilities"`
 
 	// Dependencies represents a list of workspace references that are necessary for this run
 	// This is saved to the run config so that a user can quickly access a list of dependencies
