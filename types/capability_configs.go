@@ -1,5 +1,8 @@
 package types
 
+// NamedCapabilityConfigs is a map of CapabilityConfig indexed by Capability.Name
+type NamedCapabilityConfigs map[string]CapabilityConfig
+
 type CapabilityConfigs []CapabilityConfig
 
 func (s CapabilityConfigs) FindById(id int64) *CapabilityConfig {
