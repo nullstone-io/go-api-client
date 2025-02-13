@@ -12,11 +12,11 @@ type WorkspaceConfig struct {
 	SourceConstraint string `json:"sourceConstraint"`
 	// SourceVersion refers to the effective module version
 	// Variables and Connections on this WorkspaceConfig should match the schema for this module version
-	SourceVersion string            `json:"sourceVersion"`
-	Variables     Variables         `json:"variables"`
-	EnvVariables  EnvVariables      `json:"envVariables"`
-	Connections   Connections       `json:"connections"`
-	Providers     Providers         `json:"providers"`
+	SourceVersion string       `json:"sourceVersion"`
+	Variables     Variables    `json:"variables"`
+	EnvVariables  EnvVariables `json:"envVariables"`
+	Connections   Connections  `json:"connections"`
+	Providers     Providers    `json:"providers"`
 	// Capabilities
 	// Deprecated
 	Capabilities      CapabilityConfigs      `json:"capabilities"`
