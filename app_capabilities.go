@@ -14,8 +14,13 @@ type AppCapabilities struct {
 }
 
 type CreateCapabilitiesInput struct {
-	Capabilities []types.Capability `json:"capabilities"`
-	Blocks       []types.Block      `json:"blocks"`
+	Capabilities []CreateCapabilityInput `json:"capabilities"`
+	Blocks       []types.Block           `json:"blocks"`
+}
+type CreateCapabilityInput struct {
+	types.Capability `json:",inline"`
+
+	GenerateName bool `json:"generateName"`
 }
 
 func (e AppCapabilities) basePath(stackId, appId, envId int64) string {
@@ -47,7 +52,7 @@ func (e AppCapabilities) Get(ctx context.Context, stackId, appId, envId, capId i
 }
 
 // Create - POST /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities
-func (e AppCapabilities) Create(ctx context.Context, stackId, appId, envId int64, capabilities []types.Capability, blocks []types.Block) ([]types.Capability, *http.Response, error) {
+func (e AppCapabilities) Create(ctx context.Context, stackId, appId, envId int64, capabilities []CreateCapabilityInput, blocks []types.Block) ([]types.Capability, *http.Response, error) {
 	input := CreateCapabilitiesInput{
 		Capabilities: capabilities,
 		Blocks:       blocks,
@@ -63,7 +68,7 @@ func (e AppCapabilities) Create(ctx context.Context, stackId, appId, envId int64
 }
 
 // Replace - PUT /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities
-func (e AppCapabilities) Replace(ctx context.Context, stackId, appId, envId int64, capabilities []types.Capability, blocks []types.Block) ([]types.Capability, error) {
+func (e AppCapabilities) Replace(ctx context.Context, stackId, appId, envId int64, capabilities []CreateCapabilityInput, blocks []types.Block) ([]types.Capability, error) {
 	input := CreateCapabilitiesInput{
 		Capabilities: capabilities,
 		Blocks:       blocks,

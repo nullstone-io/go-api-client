@@ -42,7 +42,7 @@ func (e AppPipelineCapabilities) Get(ctx context.Context, stackId, appId, capId 
 }
 
 // Create - POST /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities
-func (e AppPipelineCapabilities) Create(ctx context.Context, stackId, appId int64, capabilities []types.Capability, blocks []types.Block) ([]types.Capability, error) {
+func (e AppPipelineCapabilities) Create(ctx context.Context, stackId, appId int64, capabilities []CreateCapabilityInput, blocks []types.Block) ([]types.Capability, error) {
 	input := CreateCapabilitiesInput{
 		Capabilities: capabilities,
 		Blocks:       blocks,
@@ -57,7 +57,7 @@ func (e AppPipelineCapabilities) Create(ctx context.Context, stackId, appId int6
 }
 
 // Replace - PUT /orgs/:orgName/stacks/:stackId/apps/:app_id/capabilities
-func (e AppPipelineCapabilities) Replace(ctx context.Context, stackId, appId int64, capabilities []types.Capability, blocks []types.Block) ([]types.Capability, error) {
+func (e AppPipelineCapabilities) Replace(ctx context.Context, stackId, appId int64, capabilities []CreateCapabilityInput, blocks []types.Block) ([]types.Capability, error) {
 	input := CreateCapabilitiesInput{
 		Capabilities: capabilities,
 		Blocks:       blocks,
