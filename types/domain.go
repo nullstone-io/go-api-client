@@ -1,8 +1,7 @@
 package types
 
 type Domain struct {
-	Block
-	DnsName     string `json:"dnsName"`
+	Block       `json:",inline"`
 	Registrar   string `json:"registrar"`
 	Certificate string `json:"certificate"`
 }

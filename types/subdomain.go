@@ -3,8 +3,7 @@ package types
 import "github.com/google/uuid"
 
 type Subdomain struct {
-	Block
-	DnsName     string `json:"dnsName"`
+	Block       `json:",inline"`
 	Certificate string `json:"certificate"`
 }
 
