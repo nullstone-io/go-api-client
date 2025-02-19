@@ -26,7 +26,11 @@ func (s Connections) EffectiveTargets() ConnectionTargets {
 func (s Connections) String() string {
 	result := make([]string, 0)
 	for name, c := range s {
-		result = append(result, fmt.Sprintf("%s=%s", name, c.EffectiveTarget.Workspace().Id()))
+		id := "(none)"
+		if c.EffectiveTarget != nil {
+			id = c.EffectiveTarget.Workspace().Id()
+		}
+		result = append(result, fmt.Sprintf("%s=%s", name, id))
 	}
 	return strings.Join(result, ",")
 }
