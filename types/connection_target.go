@@ -1,9 +1,5 @@
 package types
 
-import (
-	"strings"
-)
-
 type ConnectionTargets map[string]ConnectionTarget
 
 type ConnectionTarget struct {
@@ -13,29 +9,6 @@ type ConnectionTarget struct {
 	BlockName string `json:"blockName,omitempty" yaml:"block_name,omitempty"`
 	EnvId     *int64 `json:"envId,omitempty" yaml:"env_id,omitempty"`
 	EnvName   string `json:"envName,omitempty" yaml:"env_name,omitempty"`
-}
-
-func ParseConnectionTarget(s string) ConnectionTarget {
-	tokens := strings.Split(s, ".")
-	switch len(tokens) {
-	case 1:
-		return ConnectionTarget{
-			BlockName: tokens[0],
-		}
-	case 2:
-		return ConnectionTarget{
-			StackName: tokens[0],
-			BlockName: tokens[1],
-		}
-	case 3:
-		return ConnectionTarget{
-			StackName: tokens[0],
-			EnvName:   tokens[1],
-			BlockName: tokens[2],
-		}
-	default:
-		return ConnectionTarget{}
-	}
 }
 
 // Normalize

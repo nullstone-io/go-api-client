@@ -11,11 +11,11 @@ var (
 
 type Connections map[string]Connection
 
-func (s Connections) Targets() ConnectionTargets {
+func (s Connections) EffectiveTargets() ConnectionTargets {
 	result := ConnectionTargets{}
 	for k, c := range s {
-		if c.Reference != nil {
-			result[k] = *c.Reference
+		if c.EffectiveTarget != nil {
+			result[k] = *c.EffectiveTarget
 		} else {
 			result[k] = ConnectionTarget{}
 		}
@@ -26,7 +26,11 @@ func (s Connections) Targets() ConnectionTargets {
 func (s Connections) String() string {
 	result := make([]string, 0)
 	for name, c := range s {
-		result = append(result, fmt.Sprintf("%s=%s", name, c.Reference.Workspace().Id()))
+		id := "(none)"
+		if c.EffectiveTarget != nil {
+			id = c.EffectiveTarget.Workspace().Id()
+		}
+		result = append(result, fmt.Sprintf("%s=%s", name, id))
 	}
 	return strings.Join(result, ",")
 }

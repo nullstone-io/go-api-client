@@ -5,7 +5,13 @@ import (
 )
 
 type WorkspaceConfig struct {
-	Source        string            `json:"source"`
+	// Source refers to the module used for this workspace
+	Source string `json:"source"`
+	// SourceConstraint is a constraint or desired version for the workspace module
+	// Once resolved, SourceVersion contains the effective module version
+	SourceConstraint string `json:"sourceConstraint"`
+	// SourceVersion refers to the effective module version
+	// Variables and Connections on this WorkspaceConfig should match the schema for this module version
 	SourceVersion string            `json:"sourceVersion"`
 	Variables     Variables         `json:"variables"`
 	EnvVariables  EnvVariables      `json:"envVariables"`
@@ -31,42 +37,4 @@ func (c WorkspaceConfig) Clone() (WorkspaceConfig, error) {
 	config := WorkspaceConfig{}
 	err := copier.CopyWithOption(&config, c, copier.Option{DeepCopy: true})
 	return config, err
-}
-
-func FillWorkspaceConfigMissingEnv(c *WorkspaceConfig, env Environment) {
-	envId := env.Id
-	fillRef := func(conn Connection) bool {
-		if conn.Reference == nil {
-			return false
-		}
-		filled := false
-		if conn.Reference.StackId == env.StackId {
-			if conn.Reference.EnvId == nil {
-				conn.Reference.EnvId = &envId
-				filled = true
-			}
-			if conn.Reference.EnvName == "" {
-				conn.Reference.EnvName = env.Name
-				filled = true
-			}
-		}
-		return filled
-	}
-	fillConns := func(conns Connections) bool {
-		filled := false
-		for name, conn := range conns {
-			if fillRef(conn) {
-				conns[name] = conn
-				filled = true
-			}
-		}
-		return filled
-	}
-
-	fillConns(c.Connections)
-	for i, capability := range c.Capabilities {
-		if fillConns(capability.Connections) {
-			c.Capabilities[i] = capability
-		}
-	}
 }
