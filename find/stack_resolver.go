@@ -31,13 +31,14 @@ func (r *StackResolver) Envs(ctx context.Context) (map[int64]types.Environment, 
 }
 
 func (r *StackResolver) ResolveEnv(ctx context.Context, ct types.ConnectionTarget, curEnvId int64) (types.Environment, error) {
+	// Prefer EnvId over EnvName -- it's possible for a user to rename the env
+	if ct.EnvId != nil {
+		return r.ResolveEnvById(ctx, *ct.EnvId)
+	}
 	if ct.EnvName != "" {
 		return r.ResolveEnvByName(ctx, ct.EnvName)
 	}
-	if ct.EnvId == nil {
-		ct.EnvId = &curEnvId
-	}
-	return r.ResolveEnvById(ctx, *ct.EnvId)
+	return r.ResolveEnvById(ctx, curEnvId)
 }
 
 func (r *StackResolver) ResolveEnvByName(ctx context.Context, envName string) (types.Environment, error) {
@@ -103,10 +104,14 @@ func (r *StackResolver) Blocks(ctx context.Context) (map[int64]types.Block, erro
 }
 
 func (r *StackResolver) ResolveBlock(ctx context.Context, ct types.ConnectionTarget) (types.Block, error) {
+	// Prefer BlockId over BlockName -- it's possible for a user to rename the block
+	if ct.BlockId != 0 {
+		return r.ResolveBlockById(ctx, ct.BlockId)
+	}
 	if ct.BlockName != "" {
 		return r.ResolveBlockByName(ctx, ct.BlockName)
 	}
-	return r.ResolveBlockById(ctx, ct.BlockId)
+	return types.Block{}, BlockHasNoIdentifierError{StackName: r.Stack.Name}
 }
 
 func (r *StackResolver) ResolveBlockByName(ctx context.Context, blockName string) (types.Block, error) {

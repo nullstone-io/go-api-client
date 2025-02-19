@@ -77,3 +77,12 @@ func (BlockIdDoesNotExistError) IsMissing() bool { return true }
 func (e BlockIdDoesNotExistError) Error() string {
 	return fmt.Sprintf("block %s/%d does not exist", e.StackName, e.BlockId)
 }
+
+type BlockHasNoIdentifierError struct {
+	StackName string
+}
+
+func (BlockHasNoIdentifierError) IsMissing() bool { return true }
+func (e BlockHasNoIdentifierError) Error() string {
+	return fmt.Sprintf("cannot find block in stack %s that has no Id or Name", e.StackName)
+}

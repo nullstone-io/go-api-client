@@ -9,9 +9,12 @@ type Connection struct {
 
 	// DesiredTarget refers to the ConnectionTarget that fulfills this connection
 	// This value is input by the user via UI or IaC and is not fully qualified
+	// This usually contains StackId, StackName, BlockId, and BlockName
+	// It *can* contain EnvId and EnvName if different from the owning workspace
 	DesiredTarget *ConnectionTarget `json:"desiredTarget"`
 	// EffectiveTarget refers to the ConnectionTarget that fulfills this connection
 	// This value is a fully normalized, effective version of DesiredTarget
+	// All fields must be specified
 	EffectiveTarget *ConnectionTarget `json:"effectiveTarget"`
 	// Unused signals that the connection is not used by the current module version
 	// During promotion of a module into a new workspace, it's possible that the new version removes connections
