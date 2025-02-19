@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/json"
+	"fmt"
 	"strings"
 )
 
@@ -43,8 +44,12 @@ func (t *ConnectionTargetString) UnmarshalJSON(data []byte) error {
 		t.EnvName = tmp.EnvName
 		return nil
 	}
+	var tmp2 string
+	if err := json.Unmarshal(data, &tmp2); err != nil {
+		return fmt.Errorf("invalid connection target string: %w", err)
+	}
 	// It must be a legacy string, we're going to parse the format: `[[stack.]env.]block`
-	tokens := strings.Split(string(data), ".")
+	tokens := strings.Split(tmp2, ".")
 	switch len(tokens) {
 	case 3:
 		t.StackName = tokens[0]
