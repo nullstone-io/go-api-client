@@ -71,13 +71,14 @@ func (r *ResourceResolver) FindBlock(ctx context.Context, ct types.ConnectionTar
 }
 
 func (r *ResourceResolver) ResolveStack(ctx context.Context, ct types.ConnectionTarget) (*StackResolver, error) {
+	// Prefer StackId over StackName -- it's possible for a user to rename the stack
+	if ct.StackId != 0 {
+		return r.resolveStackById(ctx, ct.StackId)
+	}
 	if ct.StackName != "" {
 		return r.resolveStackByName(ctx, ct.StackName)
 	}
-	if ct.StackId == 0 {
-		ct.StackId = r.CurStackId
-	}
-	return r.resolveStackById(ctx, ct.StackId)
+	return r.resolveStackById(ctx, r.CurStackId)
 }
 
 func (r *ResourceResolver) ResolveCurProviderType(ctx context.Context) (string, error) {
