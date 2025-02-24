@@ -22,7 +22,7 @@ func blockByStackAndBlockName(ctx context.Context, cfg api.Config, stackName, bl
 	} else if stack == nil {
 		return nil, nil, nil
 	}
-	blocks, err := client.Blocks().List(ctx, stack.Id)
+	blocks, err := client.Blocks().List(ctx, stack.Id, false)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -46,7 +46,7 @@ func blockByBlockNameNoStack(ctx context.Context, cfg api.Config, blockName stri
 	foundStackNames := make([]string, 0)
 	for _, stack := range stacks {
 		stacksById[stack.Id] = stack
-		blocks, err := client.Blocks().List(ctx, stack.Id)
+		blocks, err := client.Blocks().List(ctx, stack.Id, false)
 		if err != nil {
 			return nil, nil, fmt.Errorf("error retrieving blocks in stack (%s): %w", stack.Name, err)
 		}
