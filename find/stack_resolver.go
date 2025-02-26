@@ -148,7 +148,7 @@ func (r *StackResolver) ensureBlocks(ctx context.Context) error {
 }
 
 func (r *StackResolver) LoadBlocks(ctx context.Context) error {
-	blocks, err := r.ApiClient.Blocks().List(ctx, r.Stack.Id)
+	blocks, err := r.ApiClient.Blocks().List(ctx, r.Stack.Id, false)
 	if err != nil {
 		return fmt.Errorf("unable to fetch blocks (%s/%d): %w", r.Stack.OrgName, r.Stack.Id, err)
 	}

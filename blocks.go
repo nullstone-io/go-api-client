@@ -24,19 +24,17 @@ func (s Blocks) blockPath(stackId, blockId int64) string {
 }
 
 // List - GET /orgs/:orgName/stacks/:stack_id/blocks
-func (s Blocks) List(ctx context.Context, stackId int64) ([]types.Block, error) {
-	res, err := s.Client.Do(ctx, http.MethodGet, s.basePath(stackId), nil, nil, nil)
+func (s Blocks) List(ctx context.Context, stackId int64, includeCapabilities bool) ([]types.Block, error) {
+	var q url.Values
+	if includeCapabilities {
+		q = url.Values{"include_capabilities": []string{"true"}}
+	}
+	res, err := s.Client.Do(ctx, http.MethodGet, s.basePath(stackId), q, nil, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	var blocks []types.Block
-	if err := response.ReadJson(res, &blocks); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return blocks, nil
+	return response.ReadJsonVal[[]types.Block](res)
 }
 
 // Get - GET /orgs/:orgName/stacks/:stack_id/blocks/:id
