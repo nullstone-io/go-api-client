@@ -70,6 +70,15 @@ func (r *ResourceResolver) FindBlock(ctx context.Context, ct types.ConnectionTar
 	return sr.ResolveBlock(ctx, result)
 }
 
+func (r *ResourceResolver) FindEnv(ctx context.Context, ct types.ConnectionTarget) (types.Environment, error) {
+	result := ct
+	sr, err := r.ResolveStack(ctx, result)
+	if err != nil {
+		return types.Environment{}, err
+	}
+	return sr.ResolveEnv(ctx, result, r.CurEnvId)
+}
+
 func (r *ResourceResolver) ResolveStack(ctx context.Context, ct types.ConnectionTarget) (*StackResolver, error) {
 	// Prefer StackId over StackName -- it's possible for a user to rename the stack
 	if ct.StackId != 0 {
