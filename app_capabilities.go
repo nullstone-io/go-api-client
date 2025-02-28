@@ -62,30 +62,16 @@ func (e AppCapabilities) Create(ctx context.Context, stackId, appId, envId int64
 	return result, res, err
 }
 
-// Replace - PUT /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities
-func (e AppCapabilities) Replace(ctx context.Context, stackId, appId, envId int64, capabilities []types.Capability, blocks []types.Block) ([]types.Capability, error) {
-	input := CreateCapabilitiesInput{
-		Capabilities: capabilities,
-		Blocks:       blocks,
-	}
-	rawPayload, _ := json.Marshal(input)
-	res, err := e.Client.Do(ctx, http.MethodPut, e.basePath(stackId, appId, envId), nil, nil, json.RawMessage(rawPayload))
-	if err != nil {
-		return nil, err
-	}
-
-	return response.ReadJsonVal[[]types.Capability](res)
-}
-
-// Update - PUT/PATCH /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities/:id
-func (e AppCapabilities) Update(ctx context.Context, stackId, appId, envId, capId int64, capability *types.Capability) (*types.Capability, error) {
+// Update - PUT /orgs/:orgName/stacks/:stackId/apps/:appId/envs/:envId/capabilities/:id
+func (e AppCapabilities) Update(ctx context.Context, stackId, appId, envId, capId int64, capability types.Capability) (*types.Capability, *http.Response, error) {
 	rawPayload, _ := json.Marshal(capability)
 	res, err := e.Client.Do(ctx, http.MethodPut, e.capPath(stackId, appId, envId, capId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
-		return nil, err
+		return nil, res, err
 	}
 
-	return response.ReadJsonPtr[types.Capability](res)
+	result, err := response.ReadJsonPtr[types.Capability](res)
+	return result, res, err
 }
 
 // Destroy - DELETE /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities/:id
