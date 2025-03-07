@@ -19,6 +19,10 @@ func (s Blocks) basePath(stackId int64) string {
 	return fmt.Sprintf("orgs/%s/stacks/%d/blocks", s.Client.Config.OrgName, stackId)
 }
 
+func (s Blocks) bulkPath(stackId int64) string {
+	return fmt.Sprintf("orgs/%s/stacks/%d/blocks/bulk", s.Client.Config.OrgName, stackId)
+}
+
 func (s Blocks) blockPath(stackId, blockId int64) string {
 	return fmt.Sprintf("orgs/%s/stacks/%d/blocks/%d", s.Client.Config.OrgName, stackId, blockId)
 }
@@ -71,6 +75,17 @@ func (s Blocks) Create(ctx context.Context, stackId int64, block *types.Block) (
 		return nil, err
 	}
 	return &updatedBlock, nil
+}
+
+// CreateBulk - POST /orgs/:orgName/stacks/:stack_id/blocks/bulk
+func (s Blocks) CreateBulk(ctx context.Context, stackId int64, blocks []types.Block) ([]types.Block, error) {
+	rawPayload, _ := json.Marshal(blocks)
+	res, err := s.Client.Do(ctx, http.MethodPost, s.bulkPath(stackId), nil, nil, json.RawMessage(rawPayload))
+	if err != nil {
+		return nil, err
+	}
+
+	return response.ReadJsonVal[[]types.Block](res)
 }
 
 // Update - PUT/PATCH /orgs/:orgName/stacks/:stack_id/blocks/:id

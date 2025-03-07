@@ -21,7 +21,7 @@ func (wc WorkspaceChanges) changePath(stackId, blockId, envId, changeId int64) s
 }
 
 func (wc WorkspaceChanges) List(ctx context.Context, stackId, blockId, envId int64) (*types.WorkspaceChangeset, error) {
-	res, err := wc.Client.Do(ctx, http.MethodPost, wc.basePath(stackId, blockId, envId), nil, nil, nil)
+	res, err := wc.Client.Do(ctx, http.MethodGet, wc.basePath(stackId, blockId, envId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
