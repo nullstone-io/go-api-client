@@ -11,6 +11,18 @@ var (
 
 type Connections map[string]Connection
 
+func (s Connections) DesiredTargets() ConnectionTargets {
+	result := ConnectionTargets{}
+	for k, c := range s {
+		if c.DesiredTarget != nil {
+			result[k] = *c.DesiredTarget
+		} else {
+			result[k] = ConnectionTarget{}
+		}
+	}
+	return result
+}
+
 func (s Connections) EffectiveTargets() ConnectionTargets {
 	result := ConnectionTargets{}
 	for k, c := range s {
