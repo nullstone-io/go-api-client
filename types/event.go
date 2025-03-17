@@ -4,6 +4,25 @@ import (
 	"github.com/google/go-cmp/cmp"
 )
 
+var (
+	AllEventActions = []EventAction{
+		EventActionAppDeployed,
+		EventActionAppFirstDeployed,
+		EventActionBlockLaunched,
+		EventActionBlockUpdated,
+		EventActionBlockDestroyed,
+		EventActionBlockNeedsApproval,
+		EventActionEnvLaunched,
+		EventActionEnvDestroyed,
+	}
+	AllEventStatuses = []EventStatus{
+		EventStatusFailed,
+		EventStatusCompleted,
+		EventStatusCancelled,
+		EventStatusDisapproved,
+	}
+)
+
 type EventAction string
 
 const (
@@ -11,7 +30,7 @@ const (
 	EventActionAppDeployed EventAction = "app-deployed"
 	// EventActionAppFirstDeployed triggers when an app completes a deployment for the first time
 	EventActionAppFirstDeployed EventAction = "app-first-deployed"
-	
+
 	// EventActionBlockLaunched triggers when block infra is initially launched
 	EventActionBlockLaunched EventAction = "block-launched"
 	// EventActionBlockUpdated triggers when block infra is updated
