@@ -53,3 +53,8 @@ func (c *Connection) TargetEquals(other Connection) bool {
 	return isConnectionTargetEqual(c.DesiredTarget, other.DesiredTarget) &&
 		isConnectionTargetEqual(c.EffectiveTarget, other.EffectiveTarget)
 }
+
+type ConnectionInput struct {
+	Name          string            `json:"name"`
+	DesiredTarget *ConnectionTarget `json:"desiredTarget"`
+}
