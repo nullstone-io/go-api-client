@@ -1,6 +1,7 @@
 package types
 
 const (
+	BuilderManual        = "manual"
 	BuilderNullstone     = "nullstone"
 	BuilderGithubActions = "github-actions"
 )
