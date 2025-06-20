@@ -193,3 +193,32 @@ func (r *StackResolver) AddBlock(ctx context.Context, block types.Block) (bool, 
 
 	return true, nil
 }
+
+// AddEnv adds an env to the stack resolver
+// This only returns true if the env was added
+// This returns false if there is an error or the env already exists
+func (r *StackResolver) AddEnv(ctx context.Context, env types.Environment) (bool, error) {
+	if err := r.ensureEnvs(ctx); err != nil {
+		return false, err
+	}
+
+	if env.Id != 0 {
+		if _, ok := r.EnvsById[env.Id]; ok {
+			return false, nil
+		}
+	}
+	if env.Name != "" {
+		if _, ok := r.EnvsByName[env.Name]; ok {
+			return false, nil
+		}
+	}
+
+	if env.Id != 0 {
+		r.EnvsById[env.Id] = env
+	}
+	if env.Name != "" {
+		r.EnvsByName[env.Name] = env
+	}
+
+	return true, nil
+}
