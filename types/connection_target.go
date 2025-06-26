@@ -58,6 +58,12 @@ func (t ConnectionTarget) Workspace() WorkspaceTarget {
 	return wt
 }
 
+func (t ConnectionTarget) IsEmpty() bool {
+	return t.StackId == 0 && t.StackName == "" &&
+		t.BlockId == 0 && t.BlockName == "" &&
+		t.EnvId == nil && t.EnvName == ""
+}
+
 func (t ConnectionTarget) HasEnv() bool {
 	return t.EnvId != nil || t.EnvName != ""
 }
