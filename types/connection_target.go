@@ -58,6 +58,10 @@ func (t ConnectionTarget) Workspace() WorkspaceTarget {
 	return wt
 }
 
+func (t ConnectionTarget) HasEnv() bool {
+	return t.EnvId != nil || t.EnvName != ""
+}
+
 // isConnectionTargetEqual performs equality check on ConnectionTarget
 // This assumes that the ConnectionTarget has Id+Name populated for Stack/Block/Env
 func isConnectionTargetEqual(target1 *ConnectionTarget, target2 *ConnectionTarget) bool {

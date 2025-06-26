@@ -57,6 +57,14 @@ func TestResourceResolver(t *testing.T) {
 		StackId:   stack2.Id,
 		Reference: "teal-bear",
 	}
+	env6 := types.Environment{
+		IdModel:   types.IdModel{Id: 16},
+		Type:      types.EnvTypePipeline,
+		Name:      "dev",
+		OrgName:   "nullstone",
+		StackId:   stack2.Id,
+		Reference: "dev",
+	}
 	block1 := types.Block{
 		IdModel:  types.IdModel{Id: 101},
 		Type:     "block",
@@ -84,7 +92,7 @@ func TestResourceResolver(t *testing.T) {
 	}
 
 	stacks := []types.Stack{stack1, stack2}
-	envs := []types.Environment{env1, env2, env4, env5}
+	envs := []types.Environment{env1, env2, env4, env5, env6}
 	blocks := []types.Block{block1, block2, block4}
 	router := mux.NewRouter()
 	mocks.ListStacks(router, stacks)
@@ -184,6 +192,20 @@ func TestResourceResolver(t *testing.T) {
 		want.EnvName = env5.Name
 		want.BlockName = block4.Name
 		got, err := rr2.Resolve(context.Background(), ct)
+		assert.NoError(t, err, "unexpected error")
+		assert.Equal(t, want, got)
+	})
+	t.Run("load mirrored env if not specified", func(t *testing.T) {
+		ct := types.ConnectionTarget{
+			StackId: stack2.Id,
+			BlockId: block4.Id,
+		}
+		want := ct
+		want.StackName = stack2.Name
+		want.EnvId = &env6.Id
+		want.EnvName = env6.Name
+		want.BlockName = block4.Name
+		got, err := rr.Resolve(context.Background(), ct)
 		assert.NoError(t, err, "unexpected error")
 		assert.Equal(t, want, got)
 	})

@@ -36,6 +36,19 @@ func (r *ResourceResolver) Resolve(ctx context.Context, ct types.ConnectionTarge
 	result.StackId = sr.Stack.Id
 	result.StackName = sr.Stack.Name
 
+	if !ct.HasEnv() {
+		// If the connection target doesn't have env id or env name, we need to find the env by name in the current stack
+		curStackResolver, err := r.ResolveStack(ctx, types.ConnectionTarget{StackId: r.CurStackId})
+		if err != nil {
+			return result, err
+		}
+		matchEnv, err := curStackResolver.ResolveEnv(ctx, result, r.CurEnvId)
+		if err != nil {
+			return result, err
+		}
+		result.EnvName = matchEnv.Name
+	}
+
 	env, err := sr.ResolveEnv(ctx, result, r.CurEnvId)
 	if err != nil {
 		return result, err
