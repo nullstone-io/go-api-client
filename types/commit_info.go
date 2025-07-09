@@ -1,5 +1,7 @@
 package types
 
+import "fmt"
+
 const (
 	CommitInfoVcsProviderGithub    = "github"
 	CommitInfoVcsProviderGitlab    = "gitlab"
@@ -81,7 +83,7 @@ type CommitInfo struct {
 // CommitUser is the VCS user that created the commit
 // This is not guaranteed to be the same as the Author
 // When using the GitHub UI to merge, the CommitUsername is actually `web-flow`
-func (i CommitInfo) CommitUser() ExternalTriggerUser {
+func (i *CommitInfo) CommitUser() ExternalTriggerUser {
 	return ExternalTriggerUser{
 		Id:        i.CommitUserId,
 		Name:      i.CommitUsername,
@@ -92,11 +94,22 @@ func (i CommitInfo) CommitUser() ExternalTriggerUser {
 
 // Author is the VCS user that authored the commit
 // This refers to the user that originally made the code changes
-func (i CommitInfo) Author() ExternalTriggerUser {
+func (i *CommitInfo) Author() ExternalTriggerUser {
 	return ExternalTriggerUser{
 		Id:        i.AuthorId,
 		Name:      i.AuthorUsername,
 		Email:     i.AuthorEmail,
 		AvatarUrl: i.AuthorAvatarUrl,
+	}
+}
+
+func (i *CommitInfo) InferCommitUrl() {
+	switch i.Repository.Provider {
+	case CommitInfoVcsProviderGithub:
+		i.CommitUrl = fmt.Sprintf("%s/commit/%s", i.Repository.Url, i.CommitSha)
+	case CommitInfoVcsProviderGitlab:
+		i.CommitUrl = fmt.Sprintf("%s/-/commit/%s", i.Repository.Url, i.CommitSha)
+	case CommitInfoVcsProviderBitbucket:
+		i.CommitUrl = fmt.Sprintf("%s/commits/%s", i.Repository.Url, i.CommitSha)
 	}
 }
