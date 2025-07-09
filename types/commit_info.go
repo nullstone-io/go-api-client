@@ -1,7 +1,9 @@
 package types
 
 const (
-	CommitInfoVcsProviderGithub = "github"
+	CommitInfoVcsProviderGithub    = "github"
+	CommitInfoVcsProviderGitlab    = "gitlab"
+	CommitInfoVcsProviderBitbucket = "bitbucket"
 )
 
 const (
