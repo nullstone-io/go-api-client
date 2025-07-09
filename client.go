@@ -97,6 +97,7 @@ func (c *Client) Deploys() Deploys {
 func (c *Client) DeployLogs() DeployLogs {
 	return DeployLogs{Client: c}
 }
+func (c *Client) CodeArtifacts() CodeArtifacts { return CodeArtifacts{Client: c} }
 func (c *Client) Workspaces() Workspaces {
 	return Workspaces{Client: c}
 }

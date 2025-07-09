@@ -63,3 +63,14 @@ func RepoFromUrl(repoUrl string) (Repo, error) {
 		return Repo{}, fmt.Errorf("invalid repository url %q: must be [<repo-host>/]<repo-owner>/<repo-name>", repoUrl)
 	}
 }
+
+func (r *Repo) InferVcsProvider() {
+	switch r.Host {
+	case "github.com":
+		r.Provider = CommitInfoVcsProviderGithub
+	case "gitlab.com":
+		r.Provider = CommitInfoVcsProviderGitlab
+	case "bitbucket.org":
+		r.Provider = CommitInfoVcsProviderBitbucket
+	}
+}
