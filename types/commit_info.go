@@ -1,6 +1,9 @@
 package types
 
-import "fmt"
+import (
+	"fmt"
+	"time"
+)
 
 const (
 	CommitInfoVcsProviderGithub    = "github"
@@ -58,6 +61,8 @@ type CommitInfo struct {
 	// This is not guaranteed to be the same as the AuthorAvatarUrl
 	// When using the GitHub UI to merge, the CommitUsername is actually `web-flow`
 	CommitUserAvatarUrl string `json:"commitUserAvatarUrl"`
+	// CommitDate is the date the commit was created
+	CommitDate time.Time `json:"commitDate"`
 
 	// AuthorId is the user id for the VCS user that authored the commit
 	// This refers to the user that originally made the code changes
