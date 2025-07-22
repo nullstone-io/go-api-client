@@ -24,6 +24,7 @@ type Block struct {
 	IsShared            bool                        `json:"isShared"`
 	OwningRepo          string                      `json:"owningRepo"`
 	Repo                string                      `json:"repo,omitempty"`
+	RepoUrl             string                      `json:"repoUrl,omitempty"`
 	Framework           string                      `json:"framework,omitempty"`
 	DnsName             string                      `json:"dnsName,omitempty"`
 	ModuleSource        string                      `json:"moduleSource"`
