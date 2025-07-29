@@ -10,4 +10,5 @@ type ModuleVersion struct {
 	ModuleUid uuid.UUID       `json:"moduleUid"`
 	Version   string          `json:"version"`
 	Manifest  config.Manifest `json:"manifest"`
+	ToolName  string          `json:"toolName"`
 }
