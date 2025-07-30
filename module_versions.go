@@ -3,7 +3,6 @@ package api
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
@@ -101,29 +100,20 @@ func (mv ModuleVersions) Download(ctx context.Context, orgName, moduleName, vers
 	return nil
 }
 
-func (mv ModuleVersions) Create(ctx context.Context, orgName, moduleName string, manifest types.ModuleManifest, versionName string, file io.Reader) error {
+func (mv ModuleVersions) Create(ctx context.Context, orgName, moduleName, toolName, versionName string, file io.Reader) error {
 	query := url.Values{}
 	query.Set("version", versionName)
+	query.Set("toolName", toolName)
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
 
-	// Add the module file
 	part, err := writer.CreateFormFile("file", fmt.Sprintf("%s@%s.tgz", moduleName, versionName))
 	if err != nil {
 		return err
 	}
 	_, err = io.Copy(part, file)
 	if err != nil {
-		return err
-	}
-
-	// Add the manifest file
-	manifestPart, err := writer.CreateFormFile("manifest", ".nullstone/module.json")
-	if err != nil {
-		return err
-	}
-	if err := json.NewEncoder(manifestPart).Encode(manifest); err != nil {
 		return err
 	}
 
