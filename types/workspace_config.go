@@ -12,12 +12,15 @@ type WorkspaceConfig struct {
 	SourceConstraint string `json:"sourceConstraint"`
 	// SourceVersion refers to the effective module version
 	// Variables and Connections on this WorkspaceConfig should match the schema for this module version
-	SourceVersion string            `json:"sourceVersion"`
-	Variables     Variables         `json:"variables"`
-	EnvVariables  EnvVariables      `json:"envVariables"`
-	Connections   Connections       `json:"connections"`
-	Providers     Providers         `json:"providers"`
-	Capabilities  CapabilityConfigs `json:"capabilities"`
+	SourceVersion string `json:"sourceVersion"`
+	// SourceToolName refers to the tool used to execute this SourceVersion module
+	// Examples: terraform, opentofu
+	SourceToolName string            `json:"sourceToolName"`
+	Variables      Variables         `json:"variables"`
+	EnvVariables   EnvVariables      `json:"envVariables"`
+	Connections    Connections       `json:"connections"`
+	Providers      Providers         `json:"providers"`
+	Capabilities   CapabilityConfigs `json:"capabilities"`
 
 	// Dependencies represents a list of workspace references that are necessary for this run
 	// This is saved to the run config so that a user can quickly access a list of dependencies
