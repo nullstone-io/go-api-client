@@ -100,12 +100,14 @@ func (mv ModuleVersions) Download(ctx context.Context, orgName, moduleName, vers
 	return nil
 }
 
-func (mv ModuleVersions) Create(ctx context.Context, orgName, moduleName, versionName string, file io.Reader) error {
+func (mv ModuleVersions) Create(ctx context.Context, orgName, moduleName, toolName, versionName string, file io.Reader) error {
 	query := url.Values{}
 	query.Set("version", versionName)
+	query.Set("toolName", toolName)
 
 	body := new(bytes.Buffer)
 	writer := multipart.NewWriter(body)
+
 	part, err := writer.CreateFormFile("file", fmt.Sprintf("%s@%s.tgz", moduleName, versionName))
 	if err != nil {
 		return err
@@ -114,6 +116,7 @@ func (mv ModuleVersions) Create(ctx context.Context, orgName, moduleName, versio
 	if err != nil {
 		return err
 	}
+
 	err = writer.Close()
 	if err != nil {
 		return err
