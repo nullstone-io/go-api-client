@@ -9,6 +9,7 @@ type Module struct {
 	FriendlyName  string          `json:"friendlyName"`
 	Description   string          `json:"description"`
 	IsPublic      bool            `json:"isPublic"`
+	IsImporter    bool            `json:"isImporter"`
 	Category      CategoryName    `json:"category"`
 	Subcategory   SubcategoryName `json:"subcategory"`
 	ProviderTypes ProviderTypes   `json:"providerTypes"`
