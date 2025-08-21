@@ -44,15 +44,32 @@ func (c WorkspaceConfig) Clone() (WorkspaceConfig, error) {
 }
 
 type ExtraWorkspaceConfig struct {
+	// SubdomainNameTemplate is a template for configuring SubdomainName
+	// This allows for interpolating the following template variables:
+	//  - {{ NULLSTONE_ORG }}
+	//  - {{ NULLSTONE_STACK }}
+	//  - {{ NULLSTONE_ENV }}
+	// Valid Blocks: Subdomain
+	SubdomainNameTemplate string `json:"subdomainNameTemplate,omitempty"`
 	// SubdomainName refers to the subdomain name for this subdomain
 	// Normally, this is equivalent to `<dns-name>[.<env-chunk>]`
 	// This is the FQDN without the domain name
 	// Valid Blocks: Subdomain
 	SubdomainName string `json:"dnsName,omitempty"`
+
+	// DomainNameTemplate is a template for configuring DomainName
+	// This allows for interpolating the following template variables:
+	//  - {{ NULLSTONE_ORG }}
+	//  - {{ NULLSTONE_STACK }}
+	//  - {{ NULLSTONE_ENV }}
+	// Valid Blocks: Domain
+	DomainNameTemplate string `json:"domainNameTemplate,omitempty"`
+
 	// DomainName refers to the Subdomain's domain or the Domain's full name
 	// Normally, this refers to a second-level domain (SLD).
 	// Valid Blocks: Subdomain, Domain
 	DomainName string `json:"domainName,omitempty"`
+
 	// Fqdn refers to the fully qualified domain name
 	// This is equal to `<subdomain-name>.<domain-name>.`
 	// NOTE: This has a trailing "."
