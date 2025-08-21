@@ -15,12 +15,13 @@ type WorkspaceConfig struct {
 	SourceVersion string `json:"sourceVersion"`
 	// SourceToolName refers to the tool used to execute this SourceVersion module
 	// Examples: terraform, opentofu
-	SourceToolName string            `json:"sourceToolName"`
-	Variables      Variables         `json:"variables"`
-	EnvVariables   EnvVariables      `json:"envVariables"`
-	Connections    Connections       `json:"connections"`
-	Providers      Providers         `json:"providers"`
-	Capabilities   CapabilityConfigs `json:"capabilities"`
+	SourceToolName string               `json:"sourceToolName"`
+	Variables      Variables            `json:"variables"`
+	EnvVariables   EnvVariables         `json:"envVariables"`
+	Connections    Connections          `json:"connections"`
+	Providers      Providers            `json:"providers"`
+	Capabilities   CapabilityConfigs    `json:"capabilities"`
+	Extra          ExtraWorkspaceConfig `json:"extra"`
 
 	// Dependencies represents a list of workspace references that are necessary for this run
 	// This is saved to the run config so that a user can quickly access a list of dependencies
@@ -40,4 +41,17 @@ func (c WorkspaceConfig) Clone() (WorkspaceConfig, error) {
 	config := WorkspaceConfig{}
 	err := copier.CopyWithOption(&config, c, copier.Option{DeepCopy: true})
 	return config, err
+}
+
+type ExtraWorkspaceConfig struct {
+	// DnsName is blank for Domain blocks
+	DnsName string `json:"dnsName,omitempty"`
+	// DomainName is configured/calculated:
+	// - Domain: Configured by user
+	// - Subdomain: Pulled from DnsName of the connected Domain
+	DomainName string `json:"domainName,omitempty"`
+	// Fqdn is calculated:
+	// - Domain: Fqdn = DomainName
+	// - Subdomain: Fqdn = DnsName + "." + DomainName
+	Fqdn string `json:"fqdn,omitempty"`
 }
