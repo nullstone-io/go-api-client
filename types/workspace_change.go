@@ -19,6 +19,8 @@ const (
 	ChangeTypeCapability ChangeType = "capability"
 	// ChangeTypeConnection - use the connection key as identifier
 	ChangeTypeConnection ChangeType = "connection"
+	// ChangeTypeExtra represents a change to extra information specific to the block type
+	ChangeTypeExtra ChangeType = "extra"
 )
 
 type ChangeAction string
