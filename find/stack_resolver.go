@@ -10,6 +10,7 @@ import (
 
 type StackResolver struct {
 	ApiClient           *api.Client
+	EnvGetter           EnvGetter
 	Stack               types.Stack
 	PreviewsSharedEnvId int64
 	EnvsById            map[int64]types.Environment
@@ -68,7 +69,7 @@ func (r *StackResolver) ResolveEnvById(ctx context.Context, envId int64) (types.
 }
 
 func (r *StackResolver) loadEnvs(ctx context.Context) error {
-	envs, err := r.ApiClient.Environments().List(ctx, r.Stack.Id)
+	envs, err := r.EnvGetter.ListEnvs(ctx, r.Stack.Id)
 	if err != nil {
 		return fmt.Errorf("unable to fetch environments (%s/%d): %w", r.Stack.OrgName, r.Stack.Id, err)
 	}
@@ -79,8 +80,8 @@ func (r *StackResolver) loadEnvs(ctx context.Context) error {
 		r.EnvsByName = map[string]types.Environment{}
 	}
 	for _, env := range envs {
-		r.EnvsById[env.Id] = *env
-		r.EnvsByName[env.Name] = *env
+		r.EnvsById[env.Id] = env
+		r.EnvsByName[env.Name] = env
 		if env.Type == types.EnvTypePreviewsShared {
 			r.PreviewsSharedEnvId = env.Id
 		}

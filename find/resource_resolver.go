@@ -7,18 +7,26 @@ import (
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 )
 
+type EnvGetter interface {
+	ListEnvs(ctx context.Context, stackId int64) ([]types.Environment, error)
+	GetEnvById(ctx context.Context, stackId int64, envId int64) (*types.Environment, error)
+	GetEnvByName(ctx context.Context, stackId int64, envName string) (*types.Environment, error)
+}
+
 // ResourceResolver provides a mechanism to resolve the resulting workspace of a types.ConnectionTarget
 type ResourceResolver struct {
 	ApiClient    *api.Client
+	EnvGetter    EnvGetter
 	CurStackId   int64
 	CurEnvId     int64
 	StacksById   map[int64]*StackResolver
 	StacksByName map[string]*StackResolver
 }
 
-func NewResourceResolver(apiClient *api.Client, curStackId, curEnvId int64) *ResourceResolver {
+func NewResourceResolver(apiClient *api.Client, envGetter EnvGetter, curStackId, curEnvId int64) *ResourceResolver {
 	return &ResourceResolver{
 		ApiClient:    apiClient,
+		EnvGetter:    envGetter,
 		CurStackId:   curStackId,
 		CurEnvId:     curEnvId,
 		StacksById:   map[int64]*StackResolver{},
@@ -170,7 +178,7 @@ func (r *ResourceResolver) loadStacks(ctx context.Context) error {
 		return err
 	}
 	for _, stack := range stacks {
-		sr := &StackResolver{ApiClient: r.ApiClient, Stack: *stack}
+		sr := &StackResolver{ApiClient: r.ApiClient, EnvGetter: r.EnvGetter, Stack: *stack}
 		r.StacksById[stack.Id] = sr
 		r.StacksByName[stack.Name] = sr
 	}

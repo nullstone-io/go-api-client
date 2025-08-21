@@ -36,13 +36,13 @@ func TestStackResolver_ResolveEnv(t *testing.T) {
 		Reference: "green-monkey",
 	}
 
-	envs := []types.Environment{env1, env2}
+	envs := mocks.EnvironmentStore{Envs: []types.Environment{env1, env2}}
 	router := mux.NewRouter()
-	mocks.ListEnvironments(router, envs)
 	apiClient := mocks.Client(t, "nullstone", router)
 
 	sr := StackResolver{
 		ApiClient: apiClient,
+		EnvGetter: envs,
 		Stack: types.Stack{
 			IdModel:      types.IdModel{Id: stack1Id},
 			Reference:    "red-jaguar",
@@ -121,14 +121,16 @@ func TestStackResolver_ResolveBlock(t *testing.T) {
 		Name:     "block3",
 		IsShared: false,
 	}
-
 	blocks := []types.Block{block1, block2}
+
+	envs := mocks.EnvironmentStore{Envs: []types.Environment{}}
 	router := mux.NewRouter()
 	mocks.ListBlocks(router, blocks)
 	apiClient := mocks.Client(t, "nullstone", router)
 
 	sr := StackResolver{
 		ApiClient: apiClient,
+		EnvGetter: envs,
 		Stack: types.Stack{
 			IdModel:      types.IdModel{Id: stack1Id},
 			Reference:    "red-jaguar",

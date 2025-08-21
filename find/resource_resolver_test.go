@@ -92,16 +92,15 @@ func TestResourceResolver(t *testing.T) {
 	}
 
 	stacks := []types.Stack{stack1, stack2}
-	envs := []types.Environment{env1, env2, env4, env5, env6}
 	blocks := []types.Block{block1, block2, block4}
+	envs := mocks.EnvironmentStore{Envs: []types.Environment{env1, env2, env4, env5, env6}}
 	router := mux.NewRouter()
 	mocks.ListStacks(router, stacks)
-	mocks.ListEnvironments(router, envs)
 	mocks.ListBlocks(router, blocks)
 	apiClient := mocks.Client(t, "nullstone", router)
 
-	rr := NewResourceResolver(apiClient, stack1.Id, env1.Id)
-	rr2 := NewResourceResolver(apiClient, stack2.Id, env4.Id)
+	rr := NewResourceResolver(apiClient, envs, stack1.Id, env1.Id)
+	rr2 := NewResourceResolver(apiClient, envs, stack2.Id, env4.Id)
 
 	t.Run("stack does not exist", func(t *testing.T) {
 		ct := types.ConnectionTarget{
@@ -244,15 +243,14 @@ func TestResourceResolver_BackfillMissingBlocks(t *testing.T) {
 	}
 
 	stacks := []types.Stack{stack1}
-	envs := []types.Environment{env1}
+	envs := mocks.EnvironmentStore{Envs: []types.Environment{env1}}
 	blocks := []types.Block{block1, block2}
 	router := mux.NewRouter()
 	mocks.ListStacks(router, stacks)
-	mocks.ListEnvironments(router, envs)
 	mocks.ListBlocks(router, blocks)
 	apiClient := mocks.Client(t, "nullstone", router)
 
-	rr := NewResourceResolver(apiClient, stack1.Id, env1.Id)
+	rr := NewResourceResolver(apiClient, envs, stack1.Id, env1.Id)
 
 	t.Run("adds all blocks", func(t *testing.T) {
 		newBlocks := []types.Block{

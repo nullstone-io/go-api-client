@@ -9,7 +9,7 @@ type PreviewApp struct {
 	ContextKey string `json:"contextKey"`
 	Repo       string `json:"repo"`
 	RepoUrl    string `json:"repoUrl"`
-	
+
 	// BranchName configures this workspace to sync on push events to this branch
 	// BranchName is nil when PullRequestId is not nil
 	BranchName *string `json:"branchName"`
