@@ -44,7 +44,24 @@ func (c WorkspaceConfig) Clone() (WorkspaceConfig, error) {
 }
 
 type ExtraWorkspaceConfig struct {
+	Domain    *ExtraDomainConfig    `json:"domain,omitempty"`
 	Subdomain *ExtraSubdomainConfig `json:"subdomain,omitempty"`
+}
+
+type ExtraDomainConfig struct {
+	// DomainNameTemplate is a template for configuring DomainName
+	// This allows for interpolating the following template variables:
+	//  - {{ NULLSTONE_ORG }}
+	DomainNameTemplate string `json:"domainNameTemplate,omitempty"`
+
+	// DomainName refers to the Domain's full name
+	// Normally, this refers to a second-level domain (SLD).
+	DomainName string `json:"domainName,omitempty"`
+
+	// Fqdn refers to the fully qualified domain name
+	// This is equal to `<domain-name>.`
+	// NOTE: This has a trailing "."
+	Fqdn string `json:"fqdn,omitempty"`
 }
 
 type ExtraSubdomainConfig struct {
