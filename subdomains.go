@@ -29,6 +29,10 @@ func (s Subdomains) subdomainPath(stackId, subdomainId int64) string {
 	return fmt.Sprintf("orgs/%s/stacks/%d/subdomains/%d", s.Client.Config.OrgName, stackId, subdomainId)
 }
 
+func (s Subdomains) envPath(stackId, subdomainId, envId int64) string {
+	return fmt.Sprintf("orgs/%s/stacks/%d/subdomains/%d/envs/%d", s.Client.Config.OrgName, stackId, subdomainId, envId)
+}
+
 // List - GET /orgs/:orgName/subdomains
 func (s Subdomains) List(ctx context.Context) ([]types.Subdomain, error) {
 	res, err := s.Client.Do(ctx, http.MethodGet, s.globalPath(), nil, nil, nil)
@@ -45,7 +49,7 @@ func (s Subdomains) List(ctx context.Context) ([]types.Subdomain, error) {
 	return subdomains, nil
 }
 
-// Get - GET /orgs/:orgName/subdomains/:id
+// GlobalGet - GET /orgs/:orgName/subdomains/:id
 func (s Subdomains) GlobalGet(ctx context.Context, subdomainId int64) (*types.Subdomain, error) {
 	res, err := s.Client.Do(ctx, http.MethodGet, s.globalSubdomainPath(subdomainId), nil, nil, nil)
 	if err != nil {
@@ -123,4 +127,15 @@ func (s Subdomains) Destroy(ctx context.Context, stackId, subdomainId int64) (bo
 		return false, err
 	}
 	return true, nil
+}
+
+// ReserveNullstone - POST /orgs/:orgName/stacks/:stackId/subdomains/:subdomainId/envs/:envId/reserve_nullstone
+func (s Subdomains) ReserveNullstone(ctx context.Context, stackId, blockId, envId int64, requested string) (*types.SubdomainReservation, error) {
+	rawPayload, _ := json.Marshal(requested)
+	path := fmt.Sprintf("%s/reserve_nullstone", s.envPath(stackId, blockId, envId))
+	res, err := s.Client.Do(ctx, http.MethodPost, path, nil, nil, json.RawMessage(rawPayload))
+	if err != nil {
+		return nil, err
+	}
+	return response.ReadJsonPtr[types.SubdomainReservation](res)
 }
