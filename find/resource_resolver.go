@@ -2,7 +2,9 @@ package find
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+
 	"gopkg.in/nullstone-io/go-api-client.v0"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 )
@@ -90,6 +92,29 @@ func (r *ResourceResolver) FindEnv(ctx context.Context, ct types.ConnectionTarge
 		return types.Environment{}, err
 	}
 	return sr.ResolveEnv(ctx, result, r.CurEnvId)
+}
+
+func (r *ResourceResolver) ResolveWorkspaceDetails(ctx context.Context, ct types.ConnectionTarget) (types.WorkspaceDetails, error) {
+	wd := types.WorkspaceDetails{}
+
+	result := ct
+	sr, err := r.ResolveStack(ctx, result)
+	if err != nil {
+		return wd, err
+	}
+	wd.Stack = sr.Stack
+
+	block, err := sr.ResolveBlock(ctx, ct)
+	if err != nil {
+		return wd, err
+	}
+	wd.BlockRaw, _ = json.Marshal(block)
+	env, err := sr.ResolveEnv(ctx, ct, r.CurEnvId)
+	if err != nil {
+		return wd, err
+	}
+	wd.Env = env
+	return wd, nil
 }
 
 func (r *ResourceResolver) ResolveStack(ctx context.Context, ct types.ConnectionTarget) (*StackResolver, error) {
