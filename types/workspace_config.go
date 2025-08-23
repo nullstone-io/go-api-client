@@ -1,7 +1,9 @@
 package types
 
 import (
+	"fmt"
 	"github.com/jinzhu/copier"
+	"strings"
 )
 
 type WorkspaceConfig struct {
@@ -86,4 +88,11 @@ type ExtraSubdomainConfig struct {
 	// This is equal to `<subdomain-name>.<domain-name>.`
 	// NOTE: This has a trailing "."
 	Fqdn string `json:"fqdn,omitempty"`
+}
+
+func (c ExtraSubdomainConfig) CalculateFqdn() string {
+	fqdn := fmt.Sprintf("%s.%s.", c.SubdomainName, c.DomainName)
+	fqdn = strings.TrimSuffix(fqdn, "..")
+	fqdn = strings.TrimPrefix(fqdn, ".")
+	return fqdn
 }
