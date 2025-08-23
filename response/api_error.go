@@ -16,7 +16,14 @@ type ApiError struct {
 }
 
 func (e ApiError) Error() string {
-	return fmt.Sprintf("[%s][%s] http error (%d): %s", e.Url, e.RequestId, e.Status, e.Message)
+	return fmt.Sprintf("%s: %s", e.BaseErrorString(), e.Message)
+}
+
+func (e ApiError) BaseErrorString() string {
+	if e.RequestId != "" {
+		return fmt.Sprintf("[%s][%s]", e.RequestId, http.StatusText(e.Status))
+	}
+	return fmt.Sprintf("[%s]", http.StatusText(e.Status))
 }
 
 func BaseApiErrorFromResponse(res *http.Response) ApiError {

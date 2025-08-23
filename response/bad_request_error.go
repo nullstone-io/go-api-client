@@ -13,13 +13,9 @@ type BadRequestError struct {
 }
 
 func (e BadRequestError) Error() string {
-	buf := bytes.NewBufferString("")
-	if e.RequestId != "" {
-		fmt.Fprintf(buf, "[%s] ", e.RequestId)
-	}
-	fmt.Fprint(buf, "Bad Request: ")
+	buf := bytes.NewBufferString(e.BaseErrorString())
 	for _, value := range e.Details {
-		fmt.Fprintf(buf, "\n  %s", value)
+		fmt.Fprintf(buf, "\n  - %s", value)
 	}
 	return buf.String()
 }

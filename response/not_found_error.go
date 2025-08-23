@@ -12,10 +12,11 @@ type NotFoundError struct {
 }
 
 func (e NotFoundError) Error() string {
-	if e.Message != "" {
-		return fmt.Sprintf("[%s] not found (%s)", e.Url, e.Message)
+	msg := e.Message
+	if msg == "" {
+		msg = "not found"
 	}
-	return fmt.Sprintf("[%s] not found", e.Url)
+	return fmt.Sprintf("%s %s", e.BaseErrorString(), msg)
 }
 
 func IsNotFoundError(err error) bool {
