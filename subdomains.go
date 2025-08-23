@@ -129,10 +129,10 @@ func (s Subdomains) Destroy(ctx context.Context, stackId, subdomainId int64) (bo
 	return true, nil
 }
 
-// ReserveNullstone - POST /orgs/:orgName/stacks/:stackId/subdomains/:subdomainId/envs/:envId/reserve_nullstone
+// ReserveNullstone - POST /orgs/:orgName/stacks/:stackId/subdomains/:subdomainId/envs/:envId/nullstone_reservation
 func (s Subdomains) ReserveNullstone(ctx context.Context, stackId, blockId, envId int64, requested string) (*types.SubdomainReservation, error) {
 	rawPayload, _ := json.Marshal(requested)
-	path := fmt.Sprintf("%s/reserve_nullstone", s.envPath(stackId, blockId, envId))
+	path := fmt.Sprintf("%s/nullstone_reservation", s.envPath(stackId, blockId, envId))
 	res, err := s.Client.Do(ctx, http.MethodPost, path, nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
