@@ -2,8 +2,9 @@ package types
 
 import (
 	"fmt"
-	"github.com/jinzhu/copier"
 	"strings"
+
+	"github.com/jinzhu/copier"
 )
 
 type WorkspaceConfig struct {
@@ -66,6 +67,12 @@ type ExtraDomainConfig struct {
 	Fqdn string `json:"fqdn,omitempty"`
 }
 
+func (c ExtraDomainConfig) Equal(other ExtraDomainConfig) bool {
+	return c.DomainNameTemplate == other.DomainNameTemplate &&
+		c.DomainName == other.DomainName &&
+		c.Fqdn == other.Fqdn
+}
+
 type ExtraSubdomainConfig struct {
 	// SubdomainNameTemplate is a template for configuring SubdomainName
 	// This allows for interpolating the following template variables:
@@ -95,4 +102,11 @@ func (c ExtraSubdomainConfig) CalculateFqdn() string {
 	fqdn = strings.TrimSuffix(fqdn, "..")
 	fqdn = strings.TrimPrefix(fqdn, ".")
 	return fqdn
+}
+
+func (c ExtraSubdomainConfig) Equal(other ExtraSubdomainConfig) bool {
+	return c.SubdomainNameTemplate == other.SubdomainNameTemplate &&
+		c.SubdomainName == other.SubdomainName &&
+		c.DomainName == other.DomainName &&
+		c.Fqdn == other.Fqdn
 }
