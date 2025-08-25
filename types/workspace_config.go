@@ -85,7 +85,7 @@ type ExtraSubdomainConfig struct {
 	// SubdomainName refers to the subdomain name for this subdomain
 	// Normally, this is equivalent to `<dns-name>[.<env-chunk>]`
 	// This is the FQDN without the domain name
-	SubdomainName string `json:"dnsName,omitempty"`
+	SubdomainName string `json:"subdomainName,omitempty"`
 
 	// DomainName refers to the Subdomain's domain or the Domain's full name
 	// Normally, this refers to a second-level domain (SLD).
