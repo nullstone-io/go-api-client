@@ -1,7 +1,6 @@
 package response
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"net/http"
@@ -12,9 +11,7 @@ type UnauthorizedError struct {
 }
 
 func (e UnauthorizedError) Error() string {
-	buf := bytes.NewBufferString("")
-	fmt.Fprintf(buf, "[%s][%s] unauthorized", e.Url, e.RequestId)
-	return buf.String()
+	return fmt.Sprintf("%s unauthorized", e.BaseErrorString())
 }
 
 func UnauthorizedErrorFromResponse(res *http.Response) UnauthorizedError {

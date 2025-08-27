@@ -93,3 +93,12 @@ func isConnectionTargetEnvEqual(t1 ConnectionTarget, t2 ConnectionTarget) bool {
 	}
 	return t1.EnvName == t2.EnvName
 }
+
+func GlobalConnectionTarget(base ConnectionTarget) ConnectionTarget {
+	result := base
+	result.StackId = 0
+	result.StackName = "global"
+	result.EnvId = nil
+	result.EnvName = "global"
+	return result
+}

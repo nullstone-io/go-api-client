@@ -4,11 +4,12 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"gopkg.in/nullstone-io/go-api-client.v0/response"
-	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
 	"net/url"
 	"strconv"
+
+	"gopkg.in/nullstone-io/go-api-client.v0/response"
+	"gopkg.in/nullstone-io/go-api-client.v0/types"
 )
 
 type Blocks struct {
@@ -60,21 +61,25 @@ func (s Blocks) Get(ctx context.Context, stackId, blockId int64, includeArchived
 	return &block, nil
 }
 
+type CreateBlockInput struct {
+	types.Block `json:",inline"`
+
+	WorkspaceConfigs []CreateBlockWorkspaceInput `json:"workspaceConfigs"`
+}
+
+type CreateBlockWorkspaceInput struct {
+	EnvName string                     `json:"envName"`
+	Extra   types.ExtraWorkspaceConfig `json:"extra"`
+}
+
 // Create - POST /orgs/:orgName/stacks/:stack_id/blocks
-func (s Blocks) Create(ctx context.Context, stackId int64, block *types.Block) (*types.Block, error) {
-	rawPayload, _ := json.Marshal(block)
+func (s Blocks) Create(ctx context.Context, stackId int64, payload CreateBlockInput) (*types.Block, error) {
+	rawPayload, _ := json.Marshal(payload)
 	res, err := s.Client.Do(ctx, http.MethodPost, s.basePath(stackId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
-
-	var updatedBlock types.Block
-	if err := response.ReadJson(res, &updatedBlock); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
-		return nil, err
-	}
-	return &updatedBlock, nil
+	return response.ReadJsonPtr[types.Block](res)
 }
 
 // CreateBulk - POST /orgs/:orgName/stacks/:stack_id/blocks/bulk
