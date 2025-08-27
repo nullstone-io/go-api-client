@@ -103,6 +103,7 @@ func (r *ResourceResolver) ResolveWorkspaceDetails(ctx context.Context, ct types
 		return wd, err
 	}
 	wd.Stack = sr.Stack
+	wd.OrgName = wd.Stack.OrgName
 
 	block, err := sr.ResolveBlock(ctx, ct)
 	if err != nil {
