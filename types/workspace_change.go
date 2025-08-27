@@ -1,9 +1,10 @@
 package types
 
 import (
-	"github.com/google/uuid"
 	"reflect"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 type ChangeType string
@@ -19,8 +20,8 @@ const (
 	ChangeTypeCapability ChangeType = "capability"
 	// ChangeTypeConnection - use the connection key as identifier
 	ChangeTypeConnection ChangeType = "connection"
-	// ChangeTypeExtra represents a change to extra information specific to the block type
-	ChangeTypeExtra ChangeType = "extra"
+	// ChangeTypeExtraSubdomain - no identifier needed
+	ChangeTypeExtraSubdomain ChangeType = "extra_subdomain"
 )
 
 type ChangeAction string
