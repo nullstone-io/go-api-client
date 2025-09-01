@@ -11,7 +11,7 @@ require (
 	github.com/jinzhu/copier v0.4.0
 	github.com/nullstone-io/module v0.2.10
 	github.com/stretchr/testify v1.11.1
-	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.62.0
+	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.63.0
 	golang.org/x/mod v0.27.0
 )
 
@@ -29,9 +29,9 @@ require (
 	github.com/tmccombs/hcl2json v0.3.2-0.20201111174327-c96737926b76 // indirect
 	github.com/zclconf/go-cty v1.6.1 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
-	go.opentelemetry.io/otel v1.37.0 // indirect
-	go.opentelemetry.io/otel/metric v1.37.0 // indirect
-	go.opentelemetry.io/otel/trace v1.37.0 // indirect
+	go.opentelemetry.io/otel v1.38.0 // indirect
+	go.opentelemetry.io/otel/metric v1.38.0 // indirect
+	go.opentelemetry.io/otel/trace v1.38.0 // indirect
 	golang.org/x/text v0.3.8 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
