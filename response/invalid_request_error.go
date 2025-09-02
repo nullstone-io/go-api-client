@@ -22,6 +22,12 @@ func (e InvalidRequestError) Error() string {
 	return buf.String()
 }
 
+func (e InvalidRequestError) Payload() map[string]any {
+	payload := e.ApiError.Payload()
+	payload["validation_errors"] = e.ValidationErrors
+	return payload
+}
+
 func InvalidRequestErrorFromResponse(res *http.Response) InvalidRequestError {
 	defer res.Body.Close()
 	decoder := json.NewDecoder(res.Body)

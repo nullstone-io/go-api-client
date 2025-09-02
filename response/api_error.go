@@ -13,6 +13,7 @@ type ApiError struct {
 	Title     string `json:"title"`
 	Type      string `json:"type"`
 	Message   string `json:"message"`
+	ErrorCode int    `json:"error_code"`
 }
 
 func (e ApiError) Error() string {
@@ -24,6 +25,20 @@ func (e ApiError) BaseErrorString() string {
 		return fmt.Sprintf("[%s][%s]", e.RequestId, http.StatusText(e.Status))
 	}
 	return fmt.Sprintf("[%s]", http.StatusText(e.Status))
+}
+
+func (e ApiError) StatusCode() int {
+	return e.Status
+}
+
+func (e ApiError) Payload() map[string]any {
+	return map[string]any{
+		"title":      e.Title,
+		"type":       e.Type,
+		"code":       e.Status,
+		"message":    e.Message,
+		"error_code": e.ErrorCode,
+	}
 }
 
 func BaseApiErrorFromResponse(res *http.Response) ApiError {

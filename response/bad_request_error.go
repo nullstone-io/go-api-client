@@ -20,6 +20,12 @@ func (e BadRequestError) Error() string {
 	return buf.String()
 }
 
+func (e BadRequestError) Payload() map[string]any {
+	payload := e.ApiError.Payload()
+	payload["details"] = e.Details
+	return payload
+}
+
 func BadRequestErrorFromResponse(res *http.Response) BadRequestError {
 	defer res.Body.Close()
 	decoder := json.NewDecoder(res.Body)
