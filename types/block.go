@@ -16,20 +16,19 @@ const (
 
 type Block struct {
 	IdModel
-	Type                string                      `json:"type"`
-	OrgName             string                      `json:"orgName"`
-	StackId             int64                       `json:"stackId"`
-	Reference           string                      `json:"reference"`
-	Name                string                      `json:"name"`
-	IsShared            bool                        `json:"isShared"`
-	OwningRepo          string                      `json:"owningRepo"`
-	Repo                string                      `json:"repo,omitempty"`
-	RepoUrl             string                      `json:"repoUrl,omitempty"`
-	Framework           string                      `json:"framework,omitempty"`
-	DnsName             string                      `json:"dnsName,omitempty"`
-	ModuleSource        string                      `json:"moduleSource"`
-	ModuleSourceVersion string                      `json:"moduleSourceVersion"`
-	Connections         map[string]ConnectionTarget `json:"connections"`
+	Type                string `json:"type"`
+	OrgName             string `json:"orgName"`
+	StackId             int64  `json:"stackId"`
+	Reference           string `json:"reference"`
+	Name                string `json:"name"`
+	IsShared            bool   `json:"isShared"`
+	OwningRepo          string `json:"owningRepo"`
+	Repo                string `json:"repo,omitempty"`
+	RepoUrl             string `json:"repoUrl,omitempty"`
+	Framework           string `json:"framework,omitempty"`
+	DnsName             string `json:"dnsName,omitempty"`
+	ModuleSource        string `json:"moduleSource"`
+	ModuleSourceVersion string `json:"moduleSourceVersion"`
 }
 
 type Blocks []Block
