@@ -12,7 +12,7 @@ require (
 	github.com/nullstone-io/module v0.2.10
 	github.com/stretchr/testify v1.11.1
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.62.0
-	golang.org/x/mod v0.27.0
+	golang.org/x/mod v0.28.0
 )
 
 require (
