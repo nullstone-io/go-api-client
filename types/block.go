@@ -27,6 +27,16 @@ type Block struct {
 	RepoUrl    string `json:"repoUrl,omitempty"`
 	Framework  string `json:"framework,omitempty"`
 	DnsName    string `json:"dnsName,omitempty"`
+
+	// ModuleSource
+	// Deprecated - This has been moved to WorkspaceConfig
+	ModuleSource string `json:"moduleSource"`
+	// ModuleSourceVersion
+	// Deprecated - This has been moved to WorkspaceConfig
+	ModuleSourceVersion string `json:"moduleSourceVersion"`
+	// Connections
+	// Deprecated - This has been moved to WorkspaceConfig
+	Connections map[string]ConnectionTarget `json:"connections"`
 }
 
 type Blocks []Block
