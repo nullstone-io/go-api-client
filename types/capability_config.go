@@ -1,5 +1,7 @@
 package types
 
+import "fmt"
+
 type CapabilityConfig struct {
 	// Id is a unique identifier for all Capability objects
 	Id int64 `json:"id"`
@@ -23,18 +25,22 @@ type CapabilityConfig struct {
 	Namespace      string      `json:"namespace"`
 }
 
-func (s CapabilityConfig) ToTf() TfCapability {
+func (c CapabilityConfig) ToTf() TfCapability {
+	id := c.TfId
+	if id == "" {
+		id = fmt.Sprintf("%d", c.Id)
+	}
 	return TfCapability{
-		Id:               s.TfId,
-		TfId:             s.TfId,
-		Name:             s.Name,
-		Source:           s.Source,
-		SourceConstraint: s.SourceConstraint,
-		SourceVersion:    s.SourceVersion,
-		Variables:        s.Variables,
-		Connections:      s.Connections,
-		NeedsDestroyed:   s.NeedsDestroyed,
-		Namespace:        s.Namespace,
+		Id:               id,
+		TfId:             id,
+		Name:             c.Name,
+		Source:           c.Source,
+		SourceConstraint: c.SourceConstraint,
+		SourceVersion:    c.SourceVersion,
+		Variables:        c.Variables,
+		Connections:      c.Connections,
+		NeedsDestroyed:   c.NeedsDestroyed,
+		Namespace:        c.Namespace,
 	}
 }
 
