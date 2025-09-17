@@ -8,6 +8,9 @@ import (
 type CapabilityConfig struct {
 	// Id is a unique identifier for all Capability objects
 	Id int64 `json:"id"`
+	// TfId is a unique identifier used for creating unique Terraform resources
+	// It is unique among all capabilities in the Application Workspace
+	TfId string `json:"tfId"`
 	// Name is a unique identifier for the Capability
 	// This is for all capabilities on a single Nullstone Application
 	Name string `json:"name"`
@@ -26,11 +29,11 @@ type CapabilityConfig struct {
 }
 
 func (c CapabilityConfig) TfModuleAddr() string {
-	return fmt.Sprintf("module.cap_%d", c.Id)
+	return fmt.Sprintf("module.cap_%s", c.TfId)
 }
 
 func (c CapabilityConfig) TfModuleName() string {
-	return fmt.Sprintf("cap_%d", c.Id)
+	return fmt.Sprintf("cap_%s", c.TfId)
 }
 
 func (c CapabilityConfig) EnvPrefix() string {
