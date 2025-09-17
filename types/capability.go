@@ -11,4 +11,5 @@ type Capability struct {
 	Connections         map[string]ConnectionTarget `json:"connections,omitempty"`
 	Namespace           string                      `json:"namespace"`
 	Status              string                      `json:"status,omitempty"`
+	TfId                string                      `json:"tfId"`
 }
