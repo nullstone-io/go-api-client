@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
+
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
-	"net/http"
 )
 
 type AppCapabilities struct {
@@ -22,8 +23,8 @@ func (e AppCapabilities) basePath(stackId, appId, envId int64) string {
 	return fmt.Sprintf("orgs/%s/stacks/%d/apps/%d/envs/%d/capabilities", e.Client.Config.OrgName, stackId, appId, envId)
 }
 
-func (e AppCapabilities) capPath(stackId, appId, envId, capId int64) string {
-	return fmt.Sprintf("orgs/%s/stacks/%d/apps/%d/envs/%d/capabilities/%d", e.Client.Config.OrgName, stackId, appId, envId, capId)
+func (e AppCapabilities) capPath(stackId, appId, envId int64, capName string) string {
+	return fmt.Sprintf("orgs/%s/stacks/%d/apps/%d/envs/%d/capabilities/%s", e.Client.Config.OrgName, stackId, appId, envId, capName)
 }
 
 // List - GET /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities
@@ -37,8 +38,8 @@ func (e AppCapabilities) List(ctx context.Context, stackId, appId, envId int64) 
 }
 
 // Get - GET /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities/:id
-func (e AppCapabilities) Get(ctx context.Context, stackId, appId, envId, capId int64) (*types.Capability, error) {
-	res, err := e.Client.Do(ctx, http.MethodGet, e.capPath(stackId, appId, envId, capId), nil, nil, nil)
+func (e AppCapabilities) Get(ctx context.Context, stackId, appId, envId int64, capName string) (*types.Capability, error) {
+	res, err := e.Client.Do(ctx, http.MethodGet, e.capPath(stackId, appId, envId, capName), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -63,9 +64,9 @@ func (e AppCapabilities) Create(ctx context.Context, stackId, appId, envId int64
 }
 
 // Update - PUT /orgs/:orgName/stacks/:stackId/apps/:appId/envs/:envId/capabilities/:id
-func (e AppCapabilities) Update(ctx context.Context, stackId, appId, envId, capId int64, capability types.Capability) (*types.Capability, *http.Response, error) {
+func (e AppCapabilities) Update(ctx context.Context, stackId, appId, envId int64, capName string, capability types.Capability) (*types.Capability, *http.Response, error) {
 	rawPayload, _ := json.Marshal(capability)
-	res, err := e.Client.Do(ctx, http.MethodPut, e.capPath(stackId, appId, envId, capId), nil, nil, json.RawMessage(rawPayload))
+	res, err := e.Client.Do(ctx, http.MethodPut, e.capPath(stackId, appId, envId, capName), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, res, err
 	}
@@ -75,8 +76,8 @@ func (e AppCapabilities) Update(ctx context.Context, stackId, appId, envId, capI
 }
 
 // Destroy - DELETE /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities/:id
-func (e AppCapabilities) Destroy(ctx context.Context, stackId, appId, envId, capId int64) (bool, error) {
-	res, err := e.Client.Do(ctx, http.MethodDelete, e.capPath(stackId, appId, envId, capId), nil, nil, nil)
+func (e AppCapabilities) Destroy(ctx context.Context, stackId, appId, envId int64, capName string) (bool, error) {
+	res, err := e.Client.Do(ctx, http.MethodDelete, e.capPath(stackId, appId, envId, capName), nil, nil, nil)
 	if err != nil {
 		return false, err
 	}
