@@ -5,6 +5,17 @@ type NamedCapabilityConfigs map[string]CapabilityConfig
 
 type CapabilityConfigs []CapabilityConfig
 
+func (s CapabilityConfigs) FindByName(name string) *CapabilityConfig {
+	for _, c := range s {
+		if c.Name == name {
+			return &c
+		}
+	}
+	return nil
+}
+
+// FindById
+// Deprecated
 func (s CapabilityConfigs) FindById(id int64) *CapabilityConfig {
 	for _, c := range s {
 		if c.Id == id {
