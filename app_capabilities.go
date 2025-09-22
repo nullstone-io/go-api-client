@@ -37,7 +37,7 @@ func (e AppCapabilities) List(ctx context.Context, stackId, appId, envId int64) 
 	return response.ReadJsonVal[[]types.Capability](res)
 }
 
-// Get - GET /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities/:id
+// Get - GET /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities/:name
 func (e AppCapabilities) Get(ctx context.Context, stackId, appId, envId int64, capName string) (*types.Capability, error) {
 	res, err := e.Client.Do(ctx, http.MethodGet, e.capPath(stackId, appId, envId, capName), nil, nil, nil)
 	if err != nil {
@@ -63,7 +63,7 @@ func (e AppCapabilities) Create(ctx context.Context, stackId, appId, envId int64
 	return result, res, err
 }
 
-// Update - PUT /orgs/:orgName/stacks/:stackId/apps/:appId/envs/:envId/capabilities/:id
+// Update - PUT /orgs/:orgName/stacks/:stackId/apps/:appId/envs/:envId/capabilities/:name
 func (e AppCapabilities) Update(ctx context.Context, stackId, appId, envId int64, capName string, capability types.Capability) (*types.Capability, *http.Response, error) {
 	rawPayload, _ := json.Marshal(capability)
 	res, err := e.Client.Do(ctx, http.MethodPut, e.capPath(stackId, appId, envId, capName), nil, nil, json.RawMessage(rawPayload))
@@ -75,7 +75,7 @@ func (e AppCapabilities) Update(ctx context.Context, stackId, appId, envId int64
 	return result, res, err
 }
 
-// Destroy - DELETE /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities/:id
+// Destroy - DELETE /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities/:name
 func (e AppCapabilities) Destroy(ctx context.Context, stackId, appId, envId int64, capName string) (bool, error) {
 	res, err := e.Client.Do(ctx, http.MethodDelete, e.capPath(stackId, appId, envId, capName), nil, nil, nil)
 	if err != nil {
