@@ -6,14 +6,13 @@ import (
 )
 
 type CapabilityConfig struct {
-	// Id is a unique identifier for all Capability objects
-	Id int64 `json:"id"`
+	// Name is a unique identifier for the Capability
+	// This is unique for all capabilities on a single Nullstone Application
+	Name string `json:"name"`
+
 	// TfId is a unique identifier used for creating unique Terraform resources
 	// It is unique among all capabilities in the Application Workspace
 	TfId string `json:"tfId"`
-	// Name is a unique identifier for the Capability
-	// This is for all capabilities on a single Nullstone Application
-	Name string `json:"name"`
 	// Source refers to the module used for this workspace
 	Source string `json:"source"`
 	// SourceConstraint is a constraint or desired version for the workspace module
@@ -26,6 +25,10 @@ type CapabilityConfig struct {
 	Connections    Connections `json:"connections"`
 	NeedsDestroyed bool        `json:"needsDestroyed"`
 	Namespace      string      `json:"namespace"`
+
+	// Id is a unique identifier for all Capability objects
+	// Deprecated
+	Id int64 `json:"id"`
 }
 
 func (c CapabilityConfig) TfModuleAddr() string {
