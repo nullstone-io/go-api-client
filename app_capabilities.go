@@ -14,11 +14,6 @@ type AppCapabilities struct {
 	Client *Client
 }
 
-type CreateCapabilitiesInput struct {
-	Capabilities []types.Capability `json:"capabilities"`
-	Blocks       []types.Block      `json:"blocks"`
-}
-
 func (e AppCapabilities) basePath(stackId, appId, envId int64) string {
 	return fmt.Sprintf("orgs/%s/stacks/%d/apps/%d/envs/%d/capabilities", e.Client.Config.OrgName, stackId, appId, envId)
 }
@@ -28,27 +23,32 @@ func (e AppCapabilities) capPath(stackId, appId, envId int64, capName string) st
 }
 
 // List - GET /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities
-func (e AppCapabilities) List(ctx context.Context, stackId, appId, envId int64) ([]types.Capability, error) {
+func (e AppCapabilities) List(ctx context.Context, stackId, appId, envId int64) (types.CapabilityConfigs, error) {
 	res, err := e.Client.Do(ctx, http.MethodGet, e.basePath(stackId, appId, envId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	return response.ReadJsonVal[[]types.Capability](res)
+	return response.ReadJsonVal[types.CapabilityConfigs](res)
 }
 
 // Get - GET /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities/:name
-func (e AppCapabilities) Get(ctx context.Context, stackId, appId, envId int64, capName string) (*types.Capability, error) {
+func (e AppCapabilities) Get(ctx context.Context, stackId, appId, envId int64, capName string) (*types.CapabilityConfig, error) {
 	res, err := e.Client.Do(ctx, http.MethodGet, e.capPath(stackId, appId, envId, capName), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
 
-	return response.ReadJsonPtr[types.Capability](res)
+	return response.ReadJsonPtr[types.CapabilityConfig](res)
+}
+
+type CreateCapabilitiesInput struct {
+	Capabilities []types.Capability `json:"capabilities"`
+	Blocks       []types.Block      `json:"blocks"`
 }
 
 // Create - POST /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities
-func (e AppCapabilities) Create(ctx context.Context, stackId, appId, envId int64, capabilities []types.Capability, blocks []types.Block) ([]types.Capability, *http.Response, error) {
+func (e AppCapabilities) Create(ctx context.Context, stackId, appId, envId int64, capabilities []types.Capability, blocks []types.Block) (types.CapabilityConfigs, *http.Response, error) {
 	input := CreateCapabilitiesInput{
 		Capabilities: capabilities,
 		Blocks:       blocks,
@@ -59,19 +59,26 @@ func (e AppCapabilities) Create(ctx context.Context, stackId, appId, envId int64
 		return nil, res, err
 	}
 
-	result, err := response.ReadJsonVal[[]types.Capability](res)
+	result, err := response.ReadJsonVal[types.CapabilityConfigs](res)
 	return result, res, err
 }
 
+type UpdateCapabilityInput struct {
+	Namespace        string                  `json:"namespace"`
+	ModuleSource     string                  `json:"moduleSource"`
+	ModuleConstraint string                  `json:"moduleConstraint"`
+	Connections      types.ConnectionTargets `json:"connections"`
+}
+
 // Update - PUT /orgs/:orgName/stacks/:stackId/apps/:appId/envs/:envId/capabilities/:name
-func (e AppCapabilities) Update(ctx context.Context, stackId, appId, envId int64, capName string, capability types.Capability) (*types.Capability, *http.Response, error) {
-	rawPayload, _ := json.Marshal(capability)
+func (e AppCapabilities) Update(ctx context.Context, stackId, appId, envId int64, capName string, input UpdateCapabilityInput) (*types.CapabilityConfig, *http.Response, error) {
+	rawPayload, _ := json.Marshal(input)
 	res, err := e.Client.Do(ctx, http.MethodPut, e.capPath(stackId, appId, envId, capName), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, res, err
 	}
 
-	result, err := response.ReadJsonPtr[types.Capability](res)
+	result, err := response.ReadJsonPtr[types.CapabilityConfig](res)
 	return result, res, err
 }
 
