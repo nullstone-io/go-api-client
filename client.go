@@ -5,10 +5,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"gopkg.in/nullstone-io/go-api-client.v0/auth"
 	"io"
 	"net/http"
 	"net/url"
+
+	"gopkg.in/nullstone-io/go-api-client.v0/auth"
 )
 
 type Client struct {
@@ -101,6 +102,7 @@ func (c *Client) CodeArtifacts() CodeArtifacts { return CodeArtifacts{Client: c}
 func (c *Client) Workspaces() Workspaces {
 	return Workspaces{Client: c}
 }
+func (c *Client) WorkspaceTemplates() WorkspaceTemplates { return WorkspaceTemplates{Client: c} }
 func (c *Client) WorkspaceDetails() WorkspaceDetails {
 	return WorkspaceDetails{Client: c}
 }
