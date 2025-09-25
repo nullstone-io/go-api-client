@@ -64,7 +64,8 @@ func (s Blocks) Get(ctx context.Context, stackId, blockId int64, includeArchived
 type CreateBlockInput struct {
 	types.Block `json:",inline"`
 
-	WorkspaceConfigs []CreateBlockWorkspaceInput `json:"workspaceConfigs"`
+	WorkspaceConfigs []CreateBlockWorkspaceInput    `json:"workspaceConfigs,omitempty"`
+	Template         *types.WorkspaceTemplateConfig `json:"template,omitempty"`
 }
 
 type CreateBlockWorkspaceInput struct {
