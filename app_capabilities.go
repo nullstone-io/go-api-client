@@ -43,8 +43,9 @@ func (e AppCapabilities) Get(ctx context.Context, stackId, appId, envId int64, c
 }
 
 type CreateCapabilitiesInput struct {
-	Capabilities []CreateCapabilityInput `json:"capabilities"`
-	Blocks       []types.Block           `json:"blocks"`
+	Capabilities []CreateCapabilityInput         `json:"capabilities"`
+	Updates      []UpdateCapabilityOnCreateInput `json:"updates"`
+	Blocks       []types.Block                   `json:"blocks"`
 }
 
 type CreateCapabilityInput struct {
@@ -55,10 +56,18 @@ type CreateCapabilityInput struct {
 	Connections         types.ConnectionTargets `json:"connections"`
 }
 
+type UpdateCapabilityOnCreateInput struct {
+	// Name is used to identify and cannot be changed
+	Name string `json:"name"`
+	// Namespace is modified in the create API endpoint
+	Namespace string `json:"namespace"`
+}
+
 // Create - POST /orgs/:orgName/stacks/:stackId/apps/:app_id/envs/:env_id/capabilities
-func (e AppCapabilities) Create(ctx context.Context, stackId, appId, envId int64, capabilities []CreateCapabilityInput, blocks []types.Block) (types.CapabilityConfigs, *http.Response, error) {
+func (e AppCapabilities) Create(ctx context.Context, stackId, appId, envId int64, capabilities []CreateCapabilityInput, updates []UpdateCapabilityOnCreateInput, blocks []types.Block) (types.CapabilityConfigs, *http.Response, error) {
 	input := CreateCapabilitiesInput{
 		Capabilities: capabilities,
+		Updates:      updates,
 		Blocks:       blocks,
 	}
 	rawPayload, _ := json.Marshal(input)
