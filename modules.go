@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
+
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
-	"net/http"
 )
 
 type Modules struct {
@@ -37,11 +38,45 @@ func (m Modules) Get(ctx context.Context, orgName, moduleName string) (*types.Mo
 	return response.ReadJsonPtr[types.Module](res)
 }
 
-func (m Modules) Create(ctx context.Context, orgName string, module *types.Module) error {
-	rawPayload, _ := json.Marshal(module)
+type CreateModuleInput struct {
+	Name          string                `json:"name"`
+	FriendlyName  string                `json:"friendlyName"`
+	Description   string                `json:"description"`
+	SourceUrl     string                `json:"sourceUrl"`
+	IsPublic      bool                  `json:"isPublic"`
+	IsImporter    bool                  `json:"isImporter"`
+	Category      types.CategoryName    `json:"category"`
+	Subcategory   types.SubcategoryName `json:"subcategory"`
+	ProviderTypes types.ProviderTypes   `json:"providerTypes"`
+	Platform      string                `json:"platform"`
+	Subplatform   string                `json:"subplatform"`
+	Type          string                `json:"type"`
+	AppCategories []string              `json:"appCategories"`
+	Status        types.ModuleStatus    `json:"status"`
+}
+
+func (m Modules) Create(ctx context.Context, orgName string, input CreateModuleInput) (*types.Module, error) {
+	rawPayload, _ := json.Marshal(input)
 	res, err := m.Client.Do(ctx, http.MethodPost, m.basePath(orgName), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return response.Verify(res)
+	return response.ReadJsonPtr[types.Module](res)
+}
+
+type UpdateModuleInput struct {
+	FriendlyName *string `json:"friendlyName,omitempty"`
+	Description  *string `json:"description,omitempty"`
+	SourceUrl    *string `json:"sourceUrl,omitempty"`
+	IsImporter   *bool   `json:"isImporter,omitempty"`
+	Status       *string `json:"status,omitempty"`
+}
+
+func (m Modules) Update(ctx context.Context, orgName string, moduleName string, input UpdateModuleInput) (*types.Module, error) {
+	rawPayload, _ := json.Marshal(input)
+	res, err := m.Client.Do(ctx, http.MethodPut, m.path(orgName, moduleName), nil, nil, json.RawMessage(rawPayload))
+	if err != nil {
+		return nil, err
+	}
+	return response.ReadJsonPtr[types.Module](res)
 }
