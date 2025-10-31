@@ -63,6 +63,9 @@ func (c *Client) PipelineInfraConfigurations() PipelineInfraConfigurations {
 func (c *Client) EnvRuns() EnvRuns {
 	return EnvRuns{Client: c}
 }
+func (c *Client) CostProviders() CostProviders {
+	return CostProviders{Client: c}
+}
 func (c *Client) Providers() Providers {
 	return Providers{Client: c}
 }
