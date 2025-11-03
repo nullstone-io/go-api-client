@@ -26,6 +26,8 @@ type CapabilityConfig struct {
 	NeedsDestroyed bool        `json:"needsDestroyed"`
 	Namespace      string      `json:"namespace"`
 
+	Meta *CapabilityConfigMeta `json:"meta,omitempty"`
+
 	// Id is a unique identifier for all Capability objects
 	// Deprecated
 	Id int64 `json:"id"`
@@ -53,4 +55,11 @@ func (c CapabilityConfig) Equal(b CapabilityConfig) bool {
 		c.NeedsDestroyed == b.NeedsDestroyed &&
 		c.Connections.Equal(b.Connections) &&
 		c.Variables.Equal(b.Variables)
+}
+
+type CapabilityConfigMeta struct {
+	Subcategory SubcategoryName `json:"subcategory"`
+	Platform    string          `json:"platform"`
+	Subplatform string          `json:"subplatform"`
+	OutputNames []string        `json:"outputNames"`
 }
