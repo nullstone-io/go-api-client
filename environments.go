@@ -4,15 +4,21 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"gopkg.in/nullstone-io/go-api-client.v0/response"
-	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
 	"net/url"
 	"strconv"
+	"strings"
+
+	"gopkg.in/nullstone-io/go-api-client.v0/response"
+	"gopkg.in/nullstone-io/go-api-client.v0/types"
 )
 
 type Environments struct {
 	Client *Client
+}
+
+func (s Environments) orgPath() string {
+	return fmt.Sprintf("orgs/%s/envs", s.Client.Config.OrgName)
 }
 
 func (s Environments) basePath(stackId int64) string {
@@ -21,6 +27,32 @@ func (s Environments) basePath(stackId int64) string {
 
 func (s Environments) envPath(stackId, envId int64) string {
 	return fmt.Sprintf("orgs/%s/stacks/%d/envs/%d", s.Client.Config.OrgName, stackId, envId)
+}
+
+// GlobalList - GET /orgs/:orgName/envs
+func (s Environments) GlobalList(ctx context.Context, envTypes []types.EnvironmentType, page, limit int, search string) ([]*types.Environment, error) {
+	q := url.Values{}
+	if page > 0 {
+		q.Set("page", strconv.Itoa(page))
+	}
+	if limit > 0 {
+		q.Set("limit", strconv.Itoa(limit))
+	}
+	if len(envTypes) > 0 {
+		envTypeStrings := make([]string, 0)
+		for _, envType := range envTypes {
+			envTypeStrings = append(envTypeStrings, string(envType))
+		}
+		q.Set("type", strings.Join(envTypeStrings, ","))
+	}
+	if search != "" {
+		q.Set("search", search)
+	}
+	res, err := s.Client.Do(ctx, http.MethodGet, s.orgPath(), q, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	return response.ReadJsonVal[[]*types.Environment](res)
 }
 
 // List - GET /orgs/:orgName/stacks/:stackId/envs
