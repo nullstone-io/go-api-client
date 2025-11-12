@@ -29,6 +29,10 @@ func (s Environments) envPath(stackId, envId int64) string {
 	return fmt.Sprintf("orgs/%s/stacks/%d/envs/%d", s.Client.Config.OrgName, stackId, envId)
 }
 
+func (s Environments) envActivityPath(stackId, envId int64) string {
+	return fmt.Sprintf("orgs/%s/stacks/%d/envs/%d/activity", s.Client.Config.OrgName, stackId, envId)
+}
+
 // GlobalList - GET /orgs/:orgName/envs
 func (s Environments) GlobalList(ctx context.Context, envTypes []types.EnvironmentType, page, limit int, search string) (*Paginated[types.EnvironmentWithStack], error) {
 	q := url.Values{}
@@ -101,21 +105,30 @@ func (s Environments) Create(ctx context.Context, stackId int64, env *types.Envi
 	return response.ReadJsonPtr[types.Environment](res)
 }
 
+type UpdateEnvironmentInput struct {
+	Name           *string               `json:"name,omitempty"`
+	IsProd         *bool                 `json:"isProd,omitempty"`
+	PipelineOrder  *int                  `json:"pipelineOrder,omitempty"`
+	ProviderConfig *types.ProviderConfig `json:"providerConfig,omitempty"`
+}
+
 // Update - PUT/PATCH /orgs/:orgName/stacks/:stack_id/envs/:id
-func (s Environments) Update(ctx context.Context, stackId, envId int64, env *types.Environment) (*types.Environment, error) {
-	rawPayload, _ := json.Marshal(env)
+func (s Environments) Update(ctx context.Context, stackId, envId int64, input UpdateEnvironmentInput) (*types.Environment, error) {
+	rawPayload, _ := json.Marshal(input)
 	res, err := s.Client.Do(ctx, http.MethodPut, s.envPath(stackId, envId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
+	return response.ReadJsonPtr[types.Environment](res)
+}
 
-	var updatedEnv types.Environment
-	if err := response.ReadJson(res, &updatedEnv); response.IsNotFoundError(err) {
-		return nil, nil
-	} else if err != nil {
+// UpdateActivity - PUT /orgs/:orgName/stacks/:stack_id/envs/:id/activity
+func (s Environments) UpdateActivity(ctx context.Context, stackId, envId int64) (*types.Environment, error) {
+	res, err := s.Client.Do(ctx, http.MethodPut, s.envActivityPath(stackId, envId), nil, nil, nil)
+	if err != nil {
 		return nil, err
 	}
-	return &updatedEnv, nil
+	return response.ReadJsonPtr[types.Environment](res)
 }
 
 // Destroy - DELETE /orgs/:orgName/stacks/:stack_id/envs/:id
