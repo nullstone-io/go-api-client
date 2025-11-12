@@ -30,3 +30,8 @@ type Environment struct {
 	Status         EnvStatus       `json:"status"`
 	IsProd         bool            `json:"isProd"`
 }
+
+type EnvironmentWithStack struct {
+	Environment `json:",inline"`
+	StackName   string `json:"stackName"`
+}

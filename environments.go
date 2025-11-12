@@ -30,7 +30,7 @@ func (s Environments) envPath(stackId, envId int64) string {
 }
 
 // GlobalList - GET /orgs/:orgName/envs
-func (s Environments) GlobalList(ctx context.Context, envTypes []types.EnvironmentType, page, limit int, search string) ([]*types.Environment, error) {
+func (s Environments) GlobalList(ctx context.Context, envTypes []types.EnvironmentType, page, limit int, search string) (*Paginated[types.EnvironmentWithStack], error) {
 	q := url.Values{}
 	if page > 0 {
 		q.Set("page", strconv.Itoa(page))
@@ -52,7 +52,7 @@ func (s Environments) GlobalList(ctx context.Context, envTypes []types.Environme
 	if err != nil {
 		return nil, err
 	}
-	return response.ReadJsonVal[[]*types.Environment](res)
+	return response.ReadJsonPtr[Paginated[types.EnvironmentWithStack]](res)
 }
 
 // List - GET /orgs/:orgName/stacks/:stackId/envs
