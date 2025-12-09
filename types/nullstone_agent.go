@@ -7,8 +7,8 @@ type NullstoneAgent struct {
 
 type NullstoneAgentInfoAws struct {
 	AccountId string `json:"accountId"`
-	RoleName  string `json:"roleName"`
-	RoleArn   string `json:"roleArn"`
+	UserName  string `json:"userName"`
+	UserArn   string `json:"userArn"`
 }
 
 type NullstoneAgentInfoGcp struct {
