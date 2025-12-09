@@ -1,16 +1,14 @@
 package types
 
-import "fmt"
-
 const (
-	GcpAuthTypeServiceAccount             = "serviceAccount"
-	GcpAuthTypeWorkloadIdentityFederation = "workloadIdentityFederation"
+	GcpAuthTypeServiceAccount              = "serviceAccount"
+	GcpAuthTypeServiceAccountImpersonation = "serviceAccountImpersonation"
 )
 
 type GcpCredentials struct {
-	AuthType          string               `json:"authType"`
-	ServiceAccountKey GcpServiceAccountKey `json:"serviceAccount"`
-	WorkloadIdentity  GcpWorkloadIdentity  `json:"workloadIdentity"`
+	AuthType          string                         `json:"authType"`
+	ServiceAccountKey GcpServiceAccountKey           `json:"serviceAccount"`
+	Impersonation     GcpServiceAccountImpersonation `json:"impersonation"`
 }
 
 type GcpServiceAccountKey struct {
@@ -26,16 +24,7 @@ type GcpServiceAccountKey struct {
 	ClientX509CertUrl       string `json:"client_x509_cert_url"`
 }
 
-type GcpWorkloadIdentity struct {
-	ProjectNumber       string `json:"projectNumber"`
-	ProjectId           string `json:"projectId"`
-	ServiceAccountEmail string `json:"serviceAccountEmail"`
-
-	IdentityPoolId         string `json:"identityPoolId"`
-	IdentityPoolProviderId string `json:"identityPoolProviderId"`
-}
-
-// Audience should be a reference to the user's Workload Identity Pool Provider
-func (i GcpWorkloadIdentity) Audience() string {
-	return fmt.Sprintf("//iam.googleapis.com/projects/%s/locations/global/workloadIdentityPools/%s/providers/%s", i.ProjectNumber, i.IdentityPoolId, i.IdentityPoolProviderId)
+type GcpServiceAccountImpersonation struct {
+	ProjectId           string `json:"project_id"`
+	ServiceAccountEmail string `json:"service_account_email"`
 }
