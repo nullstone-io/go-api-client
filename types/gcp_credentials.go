@@ -1,12 +1,14 @@
 package types
 
 const (
-	GcpAuthTypeServiceAccount = "serviceAccount"
+	GcpAuthTypeServiceAccount              = "serviceAccount"
+	GcpAuthTypeServiceAccountImpersonation = "serviceAccountImpersonation"
 )
 
 type GcpCredentials struct {
-	AuthType          string               `json:"authType"`
-	ServiceAccountKey GcpServiceAccountKey `json:"serviceAccount"`
+	AuthType          string                         `json:"authType"`
+	ServiceAccountKey GcpServiceAccountKey           `json:"serviceAccount"`
+	Impersonation     GcpServiceAccountImpersonation `json:"impersonation"`
 }
 
 type GcpServiceAccountKey struct {
@@ -20,4 +22,9 @@ type GcpServiceAccountKey struct {
 	TokenUri                string `json:"token_uri"`
 	AuthProviderX509CertUrl string `json:"auth_provider_x509_cert_url"`
 	ClientX509CertUrl       string `json:"client_x509_cert_url"`
+}
+
+type GcpServiceAccountImpersonation struct {
+	ProjectId           string `json:"project_id"`
+	ServiceAccountEmail string `json:"service_account_email"`
 }

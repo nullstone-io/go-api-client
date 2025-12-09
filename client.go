@@ -177,6 +177,7 @@ func (c *Client) Integrations() Integrations {
 func (c *Client) EnvEvents() EnvEvents {
 	return EnvEvents{Client: c}
 }
+func (c *Client) NullstoneAgent() NullstoneAgent { return NullstoneAgent{Client: c} }
 
 func (c *Client) Do(ctx context.Context, method string, relativePath string, query url.Values, headers map[string]string, body interface{}) (*http.Response, error) {
 	var bodyReader io.Reader
