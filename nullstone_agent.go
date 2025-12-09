@@ -12,10 +12,10 @@ type NullstoneAgent struct {
 	Client *Client
 }
 
-func (a NullstoneAgent) Get(ctx context.Context) (*types.NullstoneAgentInfo, error) {
+func (a NullstoneAgent) Get(ctx context.Context) (*types.NullstoneAgent, error) {
 	res, err := a.Client.Do(ctx, http.MethodGet, "nullstone_agent", nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
-	return response.ReadJsonPtr[types.NullstoneAgentInfo](res)
+	return response.ReadJsonPtr[types.NullstoneAgent](res)
 }

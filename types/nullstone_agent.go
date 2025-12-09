@@ -1,16 +1,17 @@
 package types
 
-type NullstoneAgentInfo struct {
+type NullstoneAgent struct {
 	Aws NullstoneAgentInfoAws
 	Gcp NullstoneAgentInfoGcp
 }
 
 type NullstoneAgentInfoAws struct {
-	RoleAccountId string `json:"roleAccountId"`
-	RoleName      string `json:"roleName"`
-	RoleArn       string `json:"roleArn"`
+	AccountId string `json:"accountId"`
+	RoleName  string `json:"roleName"`
+	RoleArn   string `json:"roleArn"`
 }
 
 type NullstoneAgentInfoGcp struct {
+	ProjectId           string `json:"projectId"`
 	ServiceAccountEmail string `json:"serviceAccountEmail"`
 }
