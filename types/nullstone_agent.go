@@ -1,8 +1,8 @@
 package types
 
 type NullstoneAgent struct {
-	Aws NullstoneAgentInfoAws
-	Gcp NullstoneAgentInfoGcp
+	Aws NullstoneAgentInfoAws `json:"aws"`
+	Gcp NullstoneAgentInfoGcp `json:"gcp"`
 }
 
 type NullstoneAgentInfoAws struct {
