@@ -4,11 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
+	"net/http"
+	"time"
+
 	"github.com/google/uuid"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
-	"io"
-	"net/http"
 )
 
 type Runs struct {
@@ -46,7 +48,27 @@ func (r Runs) Get(ctx context.Context, stackId int64, runUid uuid.UUID) (*types.
 	return response.ReadJsonPtr[types.Run](res)
 }
 
-func (r Runs) Create(ctx context.Context, stackId int64, workspaceUid uuid.UUID, input types.CreateRunInput) (*RunCreateResult, error) {
+type CreateRunInput struct {
+	CommitSha string `json:"commitSha"`
+
+	// Create a run that destroys this workspace
+	IsDestroy bool `json:"isDestroy"`
+
+	// DestroyDependencies allows the user to identify which dependencies to destroy along with the block
+	// IsDestroy must be enabled for this field to have an effect
+	// `*` indicates attempt to destroy the workspace and its dependencies
+	// ``  indicates attempt to destroy only the specified workspace
+	// `<stack-id>/<block-id>/<env-id>,...` indicates a comma-delimited list of dependencies to destroy with the workspace
+	DestroyDependencies string `json:"destroyDependencies"`
+
+	IsApproved     *bool     `json:"isApproved"`
+	LatestUpdateAt time.Time `json:"latestUpdateAt"`
+
+	// Deprecated
+	Version *int64 `json:"version"`
+}
+
+func (r Runs) Create(ctx context.Context, stackId int64, workspaceUid uuid.UUID, input CreateRunInput) (*RunCreateResult, error) {
 	raw, _ := json.Marshal(input)
 	res, err := r.Client.Do(ctx, http.MethodPost, r.basePath(stackId, workspaceUid), nil, nil, json.RawMessage(raw))
 	if err != nil {

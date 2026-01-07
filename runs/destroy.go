@@ -3,10 +3,12 @@ package runs
 import (
 	"context"
 	"fmt"
+	"time"
+
 	"gopkg.in/nullstone-io/go-api-client.v0"
 )
 
-func Destroy(ctx context.Context, cfg api.Config, stackId, appId, envId int64, commitSha string, deps string, approve bool) (*api.RunCreateResult, error) {
+func Destroy(ctx context.Context, cfg api.Config, stackId, appId, envId int64, commitSha string, latestUpdateAt time.Time, deps string, approve bool) (*api.RunCreateResult, error) {
 	client := api.Client{Config: cfg}
 	workspace, err := client.Workspaces().Get(ctx, stackId, appId, envId)
 	if err != nil {
@@ -19,5 +21,5 @@ func Destroy(ctx context.Context, cfg api.Config, stackId, appId, envId int64, c
 	if approve {
 		isApproved = &approve
 	}
-	return Create(ctx, cfg, *workspace, commitSha, isApproved, true, deps)
+	return Create(ctx, cfg, *workspace, commitSha, isApproved, latestUpdateAt, true, deps)
 }
