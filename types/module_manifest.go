@@ -18,4 +18,6 @@ type ModuleManifest struct {
 	ToolName string `yaml:"tool_name" json:"toolName"`
 	// Includes is a list of filename globs that will add files to the module when packaging
 	Includes []string `yaml:"include" json:"includes"`
+	// SourceUrl is the repository URL containing the module source code
+	SourceUrl string `yaml:"source_url" json:"sourceUrl"`
 }
