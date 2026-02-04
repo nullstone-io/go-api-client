@@ -16,6 +16,7 @@ type Module struct {
 	Subplatform   string          `json:"subplatform"`
 	Type          string          `json:"type"`
 	AppCategories []string        `json:"appCategories"`
+	SourceUrl     string          `json:"sourceUrl"`
 	Status        ModuleStatus    `json:"status"`
 
 	Versions      ModuleVersions `json:"versions,omitempty"`
