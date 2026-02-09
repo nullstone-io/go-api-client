@@ -13,5 +13,11 @@ type ModuleManifest struct {
 	Type          string   `yaml:"type" json:"type"`
 	AppCategories []string `yaml:"appCategories" json:"appCategories"`
 	IsPublic      bool     `yaml:"is_public" json:"isPublic"`
-	ToolName      string   `yaml:"tool_name" json:"toolName"`
+	// ToolName is the name of the tool that this module is for
+	// Exmaples: terraform, opentofu
+	ToolName string `yaml:"tool_name" json:"toolName"`
+	// Includes is a list of filename globs that will add files to the module when packaging
+	Includes []string `yaml:"include" json:"includes"`
+	// SourceUrl is the repository URL containing the module source code
+	SourceUrl string `yaml:"source_url" json:"sourceUrl"`
 }

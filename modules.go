@@ -4,9 +4,10 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
+
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
-	"net/http"
 )
 
 type Modules struct {
@@ -37,11 +38,44 @@ func (m Modules) Get(ctx context.Context, orgName, moduleName string) (*types.Mo
 	return response.ReadJsonPtr[types.Module](res)
 }
 
-func (m Modules) Create(ctx context.Context, orgName string, module *types.Module) error {
-	rawPayload, _ := json.Marshal(module)
+type CreateModuleInput struct {
+	Name          string   `json:"name"`
+	FriendlyName  string   `json:"friendlyName"`
+	Description   string   `json:"description"`
+	IsPublic      bool     `json:"isPublic"`
+	Category      string   `json:"category"`
+	Subcategory   string   `json:"subcategory"`
+	ProviderTypes []string `json:"providerTypes"`
+	Platform      string   `json:"platform"`
+	Subplatform   string   `json:"subplatform"`
+	Type          string   `json:"type"`
+	AppCategories []string `json:"appCategories"`
+	SourceUrl     string   `json:"sourceUrl"`
+	Status        string   `json:"status"`
+}
+
+func (m Modules) Create(ctx context.Context, orgName string, input CreateModuleInput) (*types.Module, error) {
+	rawPayload, _ := json.Marshal(input)
 	res, err := m.Client.Do(ctx, http.MethodPost, m.basePath(orgName), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return response.Verify(res)
+
+	return response.ReadJsonPtr[types.Module](res)
+}
+
+type UpdateModuleInput struct {
+	IsPublic  *bool   `json:"isPublic,omitempty"`
+	SourceUrl *string `json:"sourceUrl,omitempty"`
+	Status    *string `json:"status,omitempty"`
+}
+
+func (m Modules) Update(ctx context.Context, orgName string, moduleName string, input UpdateModuleInput) (*types.Module, error) {
+	rawPayload, _ := json.Marshal(input)
+	res, err := m.Client.Do(ctx, http.MethodPut, m.path(orgName, moduleName), nil, nil, json.RawMessage(rawPayload))
+	if err != nil {
+		return nil, err
+	}
+
+	return response.ReadJsonPtr[types.Module](res)
 }
