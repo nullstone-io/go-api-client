@@ -2,7 +2,6 @@ package types
 
 import (
 	"fmt"
-	"net/url"
 )
 
 type Secret struct {
@@ -47,23 +46,9 @@ func (i SecretIdentity) Id() string {
 
 type SecretLocation struct {
 	// AWS-specific
-	AwsRegion    string `json:"awsRegion,omitempty"`
-	AwsAccountId string `json:"awsAccountId,omitempty"`
+	AwsRegion    string `json:"awsRegion,omitempty" url:"aws_region,omitempty"`
+	AwsAccountId string `json:"awsAccountId,omitempty" url:"aws_account_id,omitempty"`
 
 	// GCP-specific
-	GcpProjectId string `json:"gcpProjectId,omitempty"`
-}
-
-func (l SecretLocation) UrlValues() url.Values {
-	v := url.Values{}
-	if l.AwsRegion != "" {
-		v.Set("awsRegion", l.AwsRegion)
-	}
-	if l.AwsAccountId != "" {
-		v.Set("awsAccountId", l.AwsAccountId)
-	}
-	if l.GcpProjectId != "" {
-		v.Set("gcpProjectId", l.GcpProjectId)
-	}
-	return v
+	GcpProjectId string `json:"gcpProjectId,omitempty" url:"gcp_project_id,omitempty"`
 }

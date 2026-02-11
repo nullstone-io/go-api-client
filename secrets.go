@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/google/go-querystring/query"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 )
@@ -24,7 +25,11 @@ func (s Secrets) secretPath(stackId, envId int64, secretNameOrId string) string 
 }
 
 func (s Secrets) List(ctx context.Context, stackId, envId int64, location types.SecretLocation) ([]types.Secret, error) {
-	res, err := s.Client.Do(ctx, http.MethodGet, s.basePath(stackId, envId), location.UrlValues(), nil, nil)
+	q, err := query.Values(location)
+	if err != nil {
+		return nil, fmt.Errorf("error encoding request query: %w", err)
+	}
+	res, err := s.Client.Do(ctx, http.MethodGet, s.basePath(stackId, envId), q, nil, nil)
 	if err != nil {
 		return nil, err
 	}
