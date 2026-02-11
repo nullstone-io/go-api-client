@@ -12,32 +12,24 @@ type Secret struct {
 }
 
 const (
-	SecretIdentityPlatformAws = "aws"
-	SecretIdentityPlatformGcp = "gcp"
+	SecretLocationPlatformAws = "aws"
+	SecretLocationPlatformGcp = "gcp"
 )
 
 // SecretIdentity contains all metadata to uniquely identify a secret in platform's secrets manager
 // AWS => `arn:aws:secretsmanager:{region}:{accountId}:secret:{secretName}`
 // GCP => `projects/{projectId}/secrets/{secretName}`
 type SecretIdentity struct {
-	// Platform identifies the secrets manager being used
-	Platform string `json:"platform"`
-
+	SecretLocation `json:",inline"`
+	
 	Name string `json:"name"`
-
-	// AWS-specific
-	AwsRegion    string `json:"awsRegion,omitempty"`
-	AwsAccountId string `json:"awsAccountId,omitempty"`
-
-	// GCP-specific
-	GcpProjectId string `json:"gcpProjectId,omitempty"`
 }
 
 func (i SecretIdentity) Id() string {
 	switch i.Platform {
-	case SecretIdentityPlatformAws:
+	case SecretLocationPlatformAws:
 		return fmt.Sprintf("arn:aws:secretsmanager:%s:%s:secret:%s", i.AwsRegion, i.AwsAccountId, i.Name)
-	case SecretIdentityPlatformGcp:
+	case SecretLocationPlatformGcp:
 		return fmt.Sprintf("projects/%s/secrets/%s", i.GcpProjectId, i.Name)
 	default:
 		return i.Name
@@ -45,6 +37,9 @@ func (i SecretIdentity) Id() string {
 }
 
 type SecretLocation struct {
+	// Platform identifies the secrets manager being used
+	Platform string `json:"platform"`
+
 	// AWS-specific
 	AwsRegion    string `json:"awsRegion,omitempty" url:"aws_region,omitempty"`
 	AwsAccountId string `json:"awsAccountId,omitempty" url:"aws_account_id,omitempty"`
