@@ -22,6 +22,7 @@ type EnvInfraStatus string
 
 const (
 	EnvInfraStatusLive      EnvInfraStatus = "live"
+	EnvInfraStatusUpdating  EnvInfraStatus = "updating"
 	EnvInfraStatusLaunching EnvInfraStatus = "launching"
 	EnvInfraStatusDegraded  EnvInfraStatus = "degraded"
 	EnvInfraStatusStopping  EnvInfraStatus = "stopping"
