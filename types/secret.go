@@ -2,6 +2,7 @@ package types
 
 import (
 	"fmt"
+	"strings"
 )
 
 type Secret struct {
@@ -16,12 +17,55 @@ const (
 	SecretLocationPlatformGcp = "gcp"
 )
 
+func ParseSecretIdentity(input string) SecretIdentity {
+	if strings.HasPrefix(input, "arn:aws:") {
+		tokens := strings.Split(input, ":")
+		if len(tokens) == 7 && tokens[2] == "secretsmanager" {
+			return SecretIdentity{
+				SecretLocation: SecretLocation{
+					Platform:     SecretLocationPlatformAws,
+					AwsRegion:    tokens[3],
+					AwsAccountId: tokens[4],
+				},
+				Name: tokens[6],
+			}
+		}
+	} else if strings.HasPrefix(input, "projects/") {
+		tokens := strings.Split(input, "/")
+		switch len(tokens) {
+		case 4:
+			if tokens[2] == "secrets" {
+				return SecretIdentity{
+					SecretLocation: SecretLocation{
+						Platform:     SecretLocationPlatformGcp,
+						GcpProjectId: tokens[1],
+					},
+					Name: tokens[3],
+				}
+			}
+		case 6:
+			fallthrough
+		case 8:
+			if tokens[4] == "secrets" {
+				return SecretIdentity{
+					SecretLocation: SecretLocation{
+						Platform:     SecretLocationPlatformGcp,
+						GcpProjectId: tokens[1],
+					},
+					Name: tokens[5],
+				}
+			}
+		}
+	}
+	return SecretIdentity{Name: input}
+}
+
 // SecretIdentity contains all metadata to uniquely identify a secret in platform's secrets manager
 // AWS => `arn:aws:secretsmanager:{region}:{accountId}:secret:{secretName}`
 // GCP => `projects/{projectId}/secrets/{secretName}`
 type SecretIdentity struct {
 	SecretLocation `json:",inline"`
-	
+
 	Name string `json:"name"`
 }
 
