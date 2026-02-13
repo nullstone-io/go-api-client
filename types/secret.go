@@ -82,7 +82,7 @@ func (i SecretIdentity) Id() string {
 
 type SecretLocation struct {
 	// Platform identifies the secrets manager being used
-	Platform string `json:"platform"`
+	Platform string `json:"platform" url:"platform,omitempty"`
 
 	// AWS-specific
 	AwsRegion    string `json:"awsRegion,omitempty" url:"aws_region,omitempty"`
