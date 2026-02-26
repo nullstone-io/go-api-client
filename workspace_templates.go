@@ -40,9 +40,16 @@ func (wt WorkspaceTemplates) Get(ctx context.Context, stackId, blockId int64) (*
 	return response.ReadJsonPtr[types.WorkspaceTemplate](res)
 }
 
+type UpdateTemplateInput struct {
+	Module                *string `json:"module,omitempty"`
+	ModuleConstraint      *string `json:"moduleConstraint,omitempty"`
+	DomainName            *string `json:"domainName,omitempty"`
+	SubdomainNameTemplate *string `json:"subdomainNameTemplate,omitempty"`
+}
+
 // Update - PUT /orgs/:orgName/stacks/:stack_id/blocks/:id/workspace_template
-func (wt WorkspaceTemplates) Update(ctx context.Context, stackId, blockId int64, config types.WorkspaceTemplateConfig) (*types.WorkspaceTemplate, error) {
-	rawPayload, _ := json.Marshal(config)
+func (wt WorkspaceTemplates) Update(ctx context.Context, stackId, blockId int64, input UpdateTemplateInput) (*types.WorkspaceTemplate, error) {
+	rawPayload, _ := json.Marshal(input)
 	res, err := wt.Client.Do(ctx, http.MethodPut, wt.basePath(stackId, blockId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
