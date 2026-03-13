@@ -26,6 +26,9 @@ type OutputCredentials struct {
 	// Gcp contains gcp credentials
 	Gcp *OutputCredentialsGcp `json:"gcp,omitempty"`
 
+	// Azure contains azure credentials
+	Azure *OutputCredentialsAzure `json:"azure,omitempty"`
+
 	// Data contains additional credential information
 	Data map[string]string `json:"data"`
 }
@@ -66,4 +69,16 @@ type OutputCredentialsGcp struct {
 
 	// Expiry is the optional expiration time of the access token.
 	Expiry time.Time `json:"expiry"`
+}
+
+type OutputCredentialsAzure struct {
+	// Token is the access token
+	Token string `json:"token"`
+
+	// ExpiresOn indicates when the token expires
+	ExpiresOn time.Time `json:"expiresOn"`
+
+	// RefreshOn is a suggested time to refresh the token.
+	// Clients should ignore this value when it's zero.
+	RefreshOn time.Time `json:"refreshOn"`
 }
