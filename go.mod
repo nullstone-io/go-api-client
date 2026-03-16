@@ -1,6 +1,6 @@
 module gopkg.in/nullstone-io/go-api-client.v0
 
-go 1.24.0
+go 1.25.0
 
 require (
 	github.com/cristalhq/jwt/v3 v3.1.0
@@ -13,7 +13,7 @@ require (
 	github.com/nullstone-io/module v0.2.10
 	github.com/stretchr/testify v1.11.1
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.64.0
-	golang.org/x/mod v0.32.0
+	golang.org/x/mod v0.34.0
 )
 
 require (
