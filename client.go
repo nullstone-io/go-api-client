@@ -182,6 +182,19 @@ func (c *Client) EnvEvents() EnvEvents {
 }
 func (c *Client) NullstoneAgent() NullstoneAgent { return NullstoneAgent{Client: c} }
 func (c *Client) Secrets() Secrets               { return Secrets{Client: c} }
+func (c *Client) ProviderCredentialTests() ProviderCredentialTests {
+	return ProviderCredentialTests{Client: c}
+}
+func (c *Client) CostProviderTests() CostProviderTests {
+	return CostProviderTests{Client: c}
+}
+func (c *Client) AutomationCredentials() AutomationCredentials {
+	return AutomationCredentials{Client: c}
+}
+func (c *Client) EngineCredentials() EngineCredentials {
+	return EngineCredentials{Client: c}
+}
+func (c *Client) Oidc() Oidc { return Oidc{Client: c} }
 
 func (c *Client) Do(ctx context.Context, method string, relativePath string, query url.Values, headers map[string]string, body interface{}) (*http.Response, error) {
 	var bodyReader io.Reader
