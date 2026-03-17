@@ -11,13 +11,19 @@ const (
 const (
 	CredentialsTypeAwsAssumeRole      = "aws-assume-role"
 	CredentialsTypeAwsGetSessionToken = "aws-get-session-token"
+	CredentialsTypeGcpOauthToken      = "gcp-oauth-token"
+	CredentialsTypeAzureAccessToken   = "azure-access-token"
 )
 
 type OutputCredentials struct {
 	// Provider refers to the cloud provider (e.g. aws, gcp)
 	Provider string `json:"provider"`
 
-	// CredentialsType
+	// CredentialsType; one of:
+	// - CredentialsTypeAwsAssumeRole
+	// - CredentialsTypeAwsGetSessionToken
+	// - CredentialsTypeGcpOauthToken
+	// - CredentialsTypeAzureAccessToken
 	CredentialsType string `json:"credentialsType"`
 
 	// Aws contains aws credentials
