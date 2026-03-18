@@ -13,6 +13,7 @@ const (
 	CredentialsTypeAwsGetSessionToken = "aws-get-session-token"
 	CredentialsTypeGcpOauthToken      = "gcp-oauth-token"
 	CredentialsTypeAzureAccessToken   = "azure-access-token"
+	CredentialsTypeAzureOidcToken     = "azure-oidc-token"
 )
 
 type OutputCredentials struct {
@@ -78,13 +79,20 @@ type OutputCredentialsGcp struct {
 }
 
 type OutputCredentialsAzure struct {
+	// OidcToken is a Nullstone OIDC token that can be exchanged for an Azure access token
+	// Only present for CredentialsTypeAzureOidcToken
+	OidcToken string `json:"oidcToken,omitempty"`
+
 	// Token is the access token
+	// Only present for CredentialsTypeAzureAccessToken
 	Token string `json:"token"`
 
 	// ExpiresOn indicates when the token expires
+	// Only present for CredentialsTypeAzureAccessToken
 	ExpiresOn time.Time `json:"expiresOn"`
 
 	// RefreshOn is a suggested time to refresh the token.
 	// Clients should ignore this value when it's zero.
+	// Only present for CredentialsTypeAzureAccessToken
 	RefreshOn time.Time `json:"refreshOn"`
 }
