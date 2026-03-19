@@ -19,10 +19,10 @@ func (s AutomationCredentials) path(stackId, blockId, envId int64) string {
 }
 
 type AcquireAutomationCredentialsInput struct {
-	ProviderType   string   `json:"providerType"`
-	Purpose        string   `json:"purpose"`
-	OutputNames    []string `json:"outputNames"`
-	GcpOauthScopes []string `json:"gcpOauthScopes,omitempty"`
+	ProviderType string   `json:"providerType"`
+	Purpose      string   `json:"purpose"`
+	OutputNames  []string `json:"outputNames"`
+	OauthScopes  []string `json:"oauthScopes,omitempty"`
 }
 
 // Acquire - POST /orgs/:orgName/stacks/:stackId/blocks/:blockId/envs/:envId/automation_credentials
