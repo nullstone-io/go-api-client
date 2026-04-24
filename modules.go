@@ -5,6 +5,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"net/url"
+	"strings"
 
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
@@ -24,6 +26,58 @@ func (m Modules) path(orgName, moduleName string) string {
 
 func (m Modules) List(ctx context.Context, orgName string) ([]types.Module, error) {
 	res, err := m.Client.Do(ctx, http.MethodGet, m.basePath(orgName), nil, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	return response.ReadJsonVal[[]types.Module](res)
+}
+
+type FindModulesInput struct {
+	Category    *string             `json:"category,omitempty"`
+	Subcategory *string             `json:"subcategory,omitempty"`
+	Provider    *string             `json:"provider,omitempty"`
+	Platform    *string             `json:"platform,omitempty"`
+	Subplatform *string             `json:"subplatform,omitempty"`
+	Name        *string             `json:"name,omitempty"`
+	Contributor []types.Contributor `json:"contributors,omitempty"`
+}
+
+// Find - GET /orgs/:orgName/modules/find
+// Searches the entire module registry visible to the caller.
+// When Contributor is empty, defaults to [nullstone-official, my-org].
+func (m Modules) Find(ctx context.Context, orgName string, input FindModulesInput) ([]types.Module, error) {
+	contributors := input.Contributor
+	if len(contributors) == 0 {
+		contributors = []types.Contributor{types.ContributorNullstoneOfficial, types.ContributorMyOrg}
+	}
+
+	q := url.Values{}
+	if input.Category != nil {
+		q.Set("category", *input.Category)
+	}
+	if input.Subcategory != nil {
+		q.Set("subcategory", *input.Subcategory)
+	}
+	if input.Provider != nil {
+		q.Set("provider", *input.Provider)
+	}
+	if input.Platform != nil {
+		q.Set("platform", *input.Platform)
+	}
+	if input.Subplatform != nil {
+		q.Set("subplatform", *input.Subplatform)
+	}
+	if input.Name != nil {
+		q.Set("name", *input.Name)
+	}
+	parts := make([]string, 0, len(contributors))
+	for _, c := range contributors {
+		parts = append(parts, string(c))
+	}
+	q.Set("contributors", strings.Join(parts, ","))
+
+	relativePath := fmt.Sprintf("orgs/%s/modules/find", orgName)
+	res, err := m.Client.Do(ctx, http.MethodGet, relativePath, q, nil, nil)
 	if err != nil {
 		return nil, err
 	}
