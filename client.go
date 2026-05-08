@@ -140,6 +140,9 @@ func (c *Client) WorkspaceVariables() WorkspaceVariables {
 func (c *Client) IntentWorkflows() IntentWorkflows {
 	return IntentWorkflows{Client: c}
 }
+func (c *Client) IacSyncs() IacSyncs {
+	return IacSyncs{Client: c}
+}
 func (c *Client) WorkspaceWorkflows() WorkspaceWorkflows { return WorkspaceWorkflows{Client: c} }
 func (c *Client) Runs() Runs {
 	return Runs{Client: c}
