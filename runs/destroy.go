@@ -21,5 +21,5 @@ func Destroy(ctx context.Context, cfg api.Config, stackId, appId, envId int64, c
 	if approve {
 		isApproved = &approve
 	}
-	return Create(ctx, cfg, *workspace, commitSha, isApproved, latestUpdateAt, true, deps)
+	return Create(ctx, cfg, *workspace, commitSha, isApproved, latestUpdateAt, true, deps, nil, "")
 }

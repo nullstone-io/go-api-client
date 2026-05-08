@@ -19,5 +19,5 @@ func Launch(ctx context.Context, cfg api.Config, stackId, appId, envId int64, co
 	if approve {
 		isApproved = &approve
 	}
-	return Create(ctx, cfg, *workspace, commitSha, isApproved, latestUpdateAt, false, "")
+	return Create(ctx, cfg, *workspace, commitSha, isApproved, latestUpdateAt, false, "", nil, "")
 }
