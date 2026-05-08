@@ -64,6 +64,11 @@ type CreateRunInput struct {
 	IsApproved     *bool     `json:"isApproved"`
 	LatestUpdateAt time.Time `json:"latestUpdateAt"`
 
+	// AppVersion forces a specific app version to be used during the apply.
+	// Only valid for application blocks; causes a Deploy record to be created with this version
+	// without triggering a build or the enigma deploy workflow.
+	AppVersion *string `json:"appVersion,omitempty"`
+
 	// Deprecated
 	Version *int64 `json:"version"`
 }
