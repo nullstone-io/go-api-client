@@ -18,10 +18,14 @@ type Runs struct {
 }
 
 // RunCreateResult contains the result of Runs Create
-// The result can be one of types.Run or types.IntentWorkflow
+// The result can be one of types.Run, types.IntentWorkflow, or a skipped response.
+// When the server short-circuits (e.g. when CreateRunInput.If is not satisfied),
+// Skipped is true and SkipReason explains why; Run and IntentWorkflow are nil.
 type RunCreateResult struct {
 	Run            *types.Run
 	IntentWorkflow *types.IntentWorkflow
+	Skipped        bool
+	SkipReason     string
 }
 
 func (r Runs) basePath(stackId int64, workspaceUid uuid.UUID) string {
@@ -69,6 +73,11 @@ type CreateRunInput struct {
 	// without triggering a build or the enigma deploy workflow.
 	AppVersion *string `json:"appVersion,omitempty"`
 
+	// If is an optional condition the server evaluates before creating the run.
+	// Empty string means "always create".
+	// "any-changes" means "only create when there are unapplied workspace changes".
+	If string `json:"if"`
+
 	// Deprecated
 	Version *int64 `json:"version"`
 }
@@ -91,6 +100,16 @@ func (r Runs) Create(ctx context.Context, stackId int64, workspaceUid uuid.UUID,
 	if raw, err := io.ReadAll(res.Body); err != nil {
 		return nil, fmt.Errorf("error reading response body: %w", err)
 	} else {
+		// Try skipped envelope first ({"skipped": true, "reason": "..."})
+		var skipEnv struct {
+			Skipped bool   `json:"skipped"`
+			Reason  string `json:"reason"`
+		}
+		if err := json.Unmarshal(raw, &skipEnv); err == nil && skipEnv.Skipped {
+			result.Skipped = true
+			result.SkipReason = skipEnv.Reason
+			return result, nil
+		}
 		// Try to parse into IntentWorkflow; if it doesn't match, parse into Deploy
 		if err := json.Unmarshal(raw, &result.IntentWorkflow); err != nil || result.IntentWorkflow.Intent == "" {
 			result.IntentWorkflow = nil
