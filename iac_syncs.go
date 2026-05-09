@@ -21,14 +21,17 @@ type IacSyncs struct {
 //
 // CommitInfo is best-effort metadata read from the user's local git repo; the server treats
 // it as advisory and tolerates an empty value.
+//
+// YamlConfigFiles, when non-empty, switches the sync to detached mode (NUL-49): the
+// supplied IaC file contents are used directly and the workflow skips its GitHub fetch.
+// Map keys are repo-relative paths (e.g. ".nullstone/dev.yml"); values are the file
+// contents. The server validates keys (no `..`, no absolute paths) and total payload
+// size before accepting the request.
 type TriggerIacSyncPayload struct {
-	AutoPlan   bool             `json:"autoPlan"`
-	AutoApply  bool             `json:"autoApply"`
-	CommitInfo types.CommitInfo `json:"commitInfo"`
-
-	// TODO(detached-mode, NUL-49): add optional YamlConfigFiles map[string]string here so
-	// callers can submit IaC contents directly instead of forcing the workflow to fetch
-	// from GitHub. Mirror the field on the server. See iac-sync-detached-mode.md.
+	AutoPlan        bool              `json:"autoPlan"`
+	AutoApply       bool              `json:"autoApply"`
+	CommitInfo      types.CommitInfo  `json:"commitInfo"`
+	YamlConfigFiles map[string]string `json:"yamlConfigFiles,omitempty"`
 }
 
 func (s IacSyncs) basePath(stackId, envId int64) string {
