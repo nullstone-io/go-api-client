@@ -11,4 +11,5 @@ type ModuleVersion struct {
 	Version   string          `json:"version"`
 	Manifest  config.Manifest `json:"manifest"`
 	ToolName  string          `json:"toolName"`
+	Checksum  string          `json:"checksum"`
 }
