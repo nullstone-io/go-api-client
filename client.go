@@ -128,6 +128,9 @@ func (c *Client) WorkspaceConfigFiles() WorkspaceConfigFiles {
 func (c *Client) WorkspaceOutputs() WorkspaceOutputs {
 	return WorkspaceOutputs{Client: c}
 }
+func (c *Client) StateVersions() StateVersions {
+	return StateVersions{Client: c}
+}
 func (c *Client) WorkspaceOutputCredentials() WorkspaceOutputCredentials {
 	return WorkspaceOutputCredentials{Client: c}
 }
