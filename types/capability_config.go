@@ -58,8 +58,9 @@ func (c CapabilityConfig) Equal(b CapabilityConfig) bool {
 }
 
 type CapabilityConfigMeta struct {
-	Subcategory SubcategoryName `json:"subcategory"`
-	Platform    string          `json:"platform"`
-	Subplatform string          `json:"subplatform"`
-	OutputNames []string        `json:"outputNames"`
+	Subcategory   SubcategoryName `json:"subcategory"`
+	Platform      string          `json:"platform"`
+	Subplatform   string          `json:"subplatform"`
+	OutputNames   []string        `json:"outputNames"`
+	NeedsAppInfra bool            `json:"needsAppInfra"`
 }
