@@ -4,12 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"gopkg.in/nullstone-io/go-api-client.v0/response"
-	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"io"
 	"net/http"
 	"net/url"
 	"time"
+
+	"gopkg.in/nullstone-io/go-api-client.v0/response"
+	"gopkg.in/nullstone-io/go-api-client.v0/types"
 )
 
 const (
@@ -42,6 +43,12 @@ type DeployCreatePayload struct {
 	Version        string `json:"version"`
 	Reference      string `json:"reference"`
 	AutomationTool string `json:"automationTool"`
+
+	// EnvVars are additional environment variables to set on the app's infra resources for this deploy.
+	// They are applied to the deployment target (ECS task definition, k8s Deployment, etc.) for this deploy only;
+	// a subsequent IaC run remains the source of truth and will overwrite them.
+	// Values may interpolate other EnvVars and standard env vars, but not secrets using `{{ VAR }}`.
+	EnvVars map[string]string `json:"envVars,omitempty"`
 }
 
 // DeployCreateResult contains the result of Deploys Create
