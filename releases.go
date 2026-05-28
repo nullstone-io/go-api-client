@@ -16,33 +16,37 @@ type Releases struct {
 
 // ReleaseCreatePayload is the payload for creating a release.
 //
-// A release runs infra-update (apply) and/or deploy through a single server-side workflow.
-// The version/commit fields mirror DeployCreatePayload; the engine resolves the app version
-// and decides the path (apply+deploy when infra changed, deploy-only otherwise).
+// A release runs infra-update (apply) and/or deploy for one or more apps through a single
+// server-side workflow. The engine builds a dependency tree rooted at the requested apps,
+// applies any infra changes, and deploys the resolved version for each requested app.
 type ReleaseCreatePayload struct {
-	FromSource     bool   `json:"fromSource"`
-	CommitSha      string `json:"commitSha"`
-	Version        string `json:"version"`
-	Reference      string `json:"reference"`
-	AutomationTool string `json:"automationTool"`
-
-	// EnvVars are additional environment variables to set on the app's infra resources for this release.
-	EnvVars map[string]string `json:"envVars,omitempty"`
+	// Apps are the apps to release. At least one is required.
+	Apps []ReleaseApp `json:"apps"`
 
 	// IsApproved approves the infra-update when the release runs an apply. Honored only for stack architects.
 	IsApproved *bool `json:"isApproved,omitempty"`
 }
 
-func (r Releases) basePath(stackId, appId, envId int64) string {
-	return fmt.Sprintf("orgs/%s/stacks/%d/apps/%d/envs/%d/releases", r.Client.Config.OrgName, stackId, appId, envId)
+// ReleaseApp identifies a single app to release and its per-app deploy inputs.
+type ReleaseApp struct {
+	AppId          int64  `json:"appId"`
+	FromSource     bool   `json:"fromSource"`
+	CommitSha      string `json:"commitSha"`
+	Version        string `json:"version"`
+	Reference      string `json:"reference"`
+	AutomationTool string `json:"automationTool"`
+	// EnvVars are additional environment variables to set on the app's infra resources for this release.
+	EnvVars map[string]string `json:"envVars,omitempty"`
+}
+
+func (r Releases) basePath(stackId, envId int64) string {
+	return fmt.Sprintf("orgs/%s/stacks/%d/envs/%d/releases", r.Client.Config.OrgName, stackId, envId)
 }
 
 // Create starts an app-release intent workflow and returns it.
-// The endpoint always starts a workflow; a "nothing to release" outcome surfaces as
-// the returned IntentWorkflow terminating with status types.IntentWorkflowStatusNoOp.
-func (r Releases) Create(ctx context.Context, stackId, appId, envId int64, payload ReleaseCreatePayload) (*types.IntentWorkflow, error) {
+func (r Releases) Create(ctx context.Context, stackId, envId int64, payload ReleaseCreatePayload) (*types.IntentWorkflow, error) {
 	rawPayload, _ := json.Marshal(payload)
-	res, err := r.Client.Do(ctx, http.MethodPost, r.basePath(stackId, appId, envId), nil, nil, json.RawMessage(rawPayload))
+	res, err := r.Client.Do(ctx, http.MethodPost, r.basePath(stackId, envId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
