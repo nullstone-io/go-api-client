@@ -13,6 +13,7 @@ const (
 	IntentWorkflowIntentBlockDown  IntentWorkflowIntent = "block-down"
 	IntentWorkflowIntentBlockApply IntentWorkflowIntent = "block-apply"
 	IntentWorkflowIntentAppDeploy  IntentWorkflowIntent = "app-deploy"
+	IntentWorkflowIntentAppRelease IntentWorkflowIntent = "app-release"
 	IntentWorkflowIntentRepoSync   IntentWorkflowIntent = "repo-sync"
 )
 
@@ -29,6 +30,8 @@ const (
 	IntentWorkflowStatusFailed IntentWorkflowStatus = "failed"
 	// IntentWorkflowStatusCancelled indicates the workflow was cancelled
 	IntentWorkflowStatusCancelled IntentWorkflowStatus = "cancelled"
+	// IntentWorkflowStatusNoOp indicates the workflow completed without doing any work (e.g. nothing to release)
+	IntentWorkflowStatusNoOp IntentWorkflowStatus = "no-op"
 )
 
 type IntentWorkflow struct {
