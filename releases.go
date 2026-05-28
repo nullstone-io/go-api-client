@@ -23,18 +23,20 @@ type ReleaseCreatePayload struct {
 	// Apps are the apps to release. At least one is required.
 	Apps []ReleaseApp `json:"apps"`
 
+	// AutomationTool refers to the tool that triggered this release (release-global; empty = manual).
+	AutomationTool string `json:"automationTool"`
+
 	// IsApproved approves the infra-update when the release runs an apply. Honored only for stack architects.
 	IsApproved *bool `json:"isApproved,omitempty"`
 }
 
 // ReleaseApp identifies a single app to release and its per-app deploy inputs.
 type ReleaseApp struct {
-	AppId          int64  `json:"appId"`
-	FromSource     bool   `json:"fromSource"`
-	CommitSha      string `json:"commitSha"`
-	Version        string `json:"version"`
-	Reference      string `json:"reference"`
-	AutomationTool string `json:"automationTool"`
+	AppId      int64  `json:"appId"`
+	FromSource bool   `json:"fromSource"`
+	CommitSha  string `json:"commitSha"`
+	Version    string `json:"version"`
+	Reference  string `json:"reference"`
 	// EnvVars are additional environment variables to set on the app's infra resources for this release.
 	EnvVars map[string]string `json:"envVars,omitempty"`
 }
