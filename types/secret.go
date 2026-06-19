@@ -2,8 +2,40 @@ package types
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 )
+
+// secretRefRegex matches an env-var value that references a managed secret,
+// e.g. `{{ secret(arn:aws:secretsmanager:...) }}`. The captured group is the
+// secret id. This mirrors the regex used by terraform-provider-ns to interpolate
+// env vars at deploy time.
+var secretRefRegex = regexp.MustCompile(`{{\s*secret\((.+)\)\s*}}`)
+
+// ParseSecretRef detects an env-var value of the form `{{ secret(<id>) }}`. When
+// it matches, the captured id is parsed into a SecretIdentity and returned with
+// ok=true; otherwise it returns (nil, false).
+func ParseSecretRef(value string) (*SecretIdentity, bool) {
+	matches := secretRefRegex.FindStringSubmatch(value)
+	if len(matches) < 2 {
+		return nil, false
+	}
+	identity := ParseSecretIdentity(matches[1])
+	return &identity, true
+}
+
+// ApplyDefaultLocation supplies the env's resolved location for an identity that
+// has no platform. GCP secret refs are commonly written as a bare name
+// (e.g. `{{ secret(my-secret) }}`), so ParseSecretIdentity cannot recover the
+// platform or project from the string alone — the caller fills it from the env here.
+// A fully-qualified id (any non-empty Platform) is left untouched: ParseSecretIdentity
+// only sets a platform when the location is already complete, so there is nothing to
+// fill, and we must not graft another platform's fields onto it.
+func (i *SecretIdentity) ApplyDefaultLocation(def SecretLocation) {
+	if i.Platform == "" {
+		i.SecretLocation = def
+	}
+}
 
 type Secret struct {
 	Identity SecretIdentity `json:"identity"`
