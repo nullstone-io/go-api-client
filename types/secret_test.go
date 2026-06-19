@@ -263,6 +263,152 @@ func TestParseSecretIdentity(t *testing.T) {
 	}
 }
 
+func TestParseSecretRef(t *testing.T) {
+	tests := []struct {
+		name         string
+		input        string
+		expectedOk   bool
+		expectedName string
+		expectedPlat string
+	}{
+		{
+			name:         "AWS secret ref",
+			input:        "{{ secret(arn:aws:secretsmanager:us-east-1:123456789012:secret:db-url) }}",
+			expectedOk:   true,
+			expectedName: "db-url",
+			expectedPlat: SecretLocationPlatformAws,
+		},
+		{
+			name:         "GCP secret ref",
+			input:        "{{ secret(projects/my-project/secrets/api-token) }}",
+			expectedOk:   true,
+			expectedName: "api-token",
+			expectedPlat: SecretLocationPlatformGcp,
+		},
+		{
+			name:         "Azure secret ref",
+			input:        "{{ secret(https://my-vault.vault.azure.net/secrets/api-key) }}",
+			expectedOk:   true,
+			expectedName: "api-key",
+			expectedPlat: SecretLocationPlatformAzure,
+		},
+		{
+			name:         "no surrounding whitespace",
+			input:        "{{secret(arn:aws:secretsmanager:us-east-1:123456789012:secret:db-url)}}",
+			expectedOk:   true,
+			expectedName: "db-url",
+			expectedPlat: SecretLocationPlatformAws,
+		},
+		{
+			name:         "unparseable id falls back to name-only identity",
+			input:        "{{ secret(legacy-secret-name) }}",
+			expectedOk:   true,
+			expectedName: "legacy-secret-name",
+			expectedPlat: "",
+		},
+		{
+			name:       "plain value is not a ref",
+			input:      "plain-value",
+			expectedOk: false,
+		},
+		{
+			name:       "raw sensitive value is not a ref",
+			input:      "super-secret-password",
+			expectedOk: false,
+		},
+		{
+			name:       "empty value is not a ref",
+			input:      "",
+			expectedOk: false,
+		},
+		{
+			name:       "malformed ref (no closing braces) is not a ref",
+			input:      "{{ secret(arn:aws:...)",
+			expectedOk: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			identity, ok := ParseSecretRef(tt.input)
+			if ok != tt.expectedOk {
+				t.Fatalf("ParseSecretRef(%q) ok = %v, want %v", tt.input, ok, tt.expectedOk)
+			}
+			if !tt.expectedOk {
+				if identity != nil {
+					t.Errorf("ParseSecretRef(%q) identity = %+v, want nil", tt.input, identity)
+				}
+				return
+			}
+			if identity == nil {
+				t.Fatalf("ParseSecretRef(%q) identity = nil, want non-nil", tt.input)
+			}
+			if identity.Name != tt.expectedName {
+				t.Errorf("ParseSecretRef(%q) name = %q, want %q", tt.input, identity.Name, tt.expectedName)
+			}
+			if identity.Platform != tt.expectedPlat {
+				t.Errorf("ParseSecretRef(%q) platform = %q, want %q", tt.input, identity.Platform, tt.expectedPlat)
+			}
+		})
+	}
+}
+
+func TestSecretIdentityApplyDefaultLocation(t *testing.T) {
+	tests := []struct {
+		name     string
+		identity SecretIdentity
+		def      SecretLocation
+		expected SecretIdentity
+	}{
+		{
+			name:     "bare GCP name gets platform and project from env",
+			identity: SecretIdentity{Name: "my-secret"},
+			def:      SecretLocation{Platform: SecretLocationPlatformGcp, GcpProjectId: "my-project"},
+			expected: SecretIdentity{
+				SecretLocation: SecretLocation{Platform: SecretLocationPlatformGcp, GcpProjectId: "my-project"},
+				Name:           "my-secret",
+			},
+		},
+		{
+			name:     "bare name in AWS env gets region and account",
+			identity: SecretIdentity{Name: "db-url"},
+			def:      SecretLocation{Platform: SecretLocationPlatformAws, AwsRegion: "us-east-1", AwsAccountId: "123456789012"},
+			expected: SecretIdentity{
+				SecretLocation: SecretLocation{Platform: SecretLocationPlatformAws, AwsRegion: "us-east-1", AwsAccountId: "123456789012"},
+				Name:           "db-url",
+			},
+		},
+		{
+			name: "fully-qualified AWS ARN is preserved over a different default",
+			identity: SecretIdentity{
+				SecretLocation: SecretLocation{Platform: SecretLocationPlatformAws, AwsRegion: "us-east-1", AwsAccountId: "111111111111"},
+				Name:           "db-url",
+			},
+			def: SecretLocation{Platform: SecretLocationPlatformGcp, GcpProjectId: "other-project"},
+			expected: SecretIdentity{
+				SecretLocation: SecretLocation{Platform: SecretLocationPlatformAws, AwsRegion: "us-east-1", AwsAccountId: "111111111111"},
+				Name:           "db-url",
+			},
+		},
+		{
+			name:     "empty default leaves a bare name unqualified",
+			identity: SecretIdentity{Name: "legacy"},
+			def:      SecretLocation{},
+			expected: SecretIdentity{Name: "legacy"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.identity
+			got.ApplyDefaultLocation(tt.def)
+			if got != tt.expected {
+				t.Errorf("ApplyDefaultLocation() = %+v, want %+v", got, tt.expected)
+			}
+		})
+	}
+}
+
 func TestSecretIdentityId(t *testing.T) {
 	tests := []struct {
 		name     string
