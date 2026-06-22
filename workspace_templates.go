@@ -41,10 +41,11 @@ func (wt WorkspaceTemplates) Get(ctx context.Context, stackId, blockId int64) (*
 }
 
 type UpdateTemplateInput struct {
-	Module                *string `json:"module,omitempty"`
-	ModuleConstraint      *string `json:"moduleConstraint,omitempty"`
-	DomainName            *string `json:"domainName,omitempty"`
-	SubdomainNameTemplate *string `json:"subdomainNameTemplate,omitempty"`
+	Module                *string                      `json:"module,omitempty"`
+	ModuleConstraint      *string                      `json:"moduleConstraint,omitempty"`
+	DomainName            *string                      `json:"domainName,omitempty"`
+	SubdomainNameTemplate *string                      `json:"subdomainNameTemplate,omitempty"`
+	Metadata              *UpdateTemplateMetadataInput `json:"metadata,omitempty"`
 }
 
 // Update - PUT /orgs/:orgName/stacks/:stack_id/blocks/:id/workspace_template

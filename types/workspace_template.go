@@ -21,6 +21,12 @@ type WorkspaceTemplateConfig struct {
 
 	// SubdomainNameTemplate provides a template for creating a subdomain name on a Subdomain Workspace
 	SubdomainNameTemplate string `json:"subdomainNameTemplate"`
+
+	// Metadata carries extensible governance/descriptive metadata about the
+	// block (e.g. data classification). This is the canonical, block-level,
+	// environment-invariant declaration that IaC writes and the UI edits; it
+	// seeds WorkspaceConfig.Metadata when a workspace is instantiated.
+	Metadata WorkspaceMetadata `json:"metadata"`
 }
 
 type WorkspaceCapabilityTemplateConfig struct {
