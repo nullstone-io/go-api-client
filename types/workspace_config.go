@@ -26,6 +26,11 @@ type WorkspaceConfig struct {
 	Capabilities   CapabilityConfigs    `json:"capabilities"`
 	Extra          ExtraWorkspaceConfig `json:"extra"`
 
+	// Metadata carries extensible governance/descriptive metadata about the
+	// workspace (e.g. data classification). On WorkspaceConfig this is the
+	// per-workspace materialized value, seeded from the block template.
+	Metadata WorkspaceMetadata `json:"metadata"`
+
 	// Dependencies represents a list of workspace references that are necessary for this run
 	// This is saved to the run config so that a user can quickly access a list of dependencies
 	//   It *should not* be used by the nullfire engine to pull in dependencies

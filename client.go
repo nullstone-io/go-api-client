@@ -122,6 +122,9 @@ func (c *Client) WorkspaceChanges() WorkspaceChanges {
 func (c *Client) WorkspaceModule() WorkspaceModule {
 	return WorkspaceModule{Client: c}
 }
+func (c *Client) WorkspaceMetadata() WorkspaceMetadata {
+	return WorkspaceMetadata{Client: c}
+}
 func (c *Client) WorkspaceConfigs() WorkspaceConfigs {
 	return WorkspaceConfigs{Client: c}
 }
