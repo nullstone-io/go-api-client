@@ -104,39 +104,84 @@ func isVariableValueEqual(varType string, val1, val2 any) bool {
 		return val1 == val2
 	case "bool":
 		return val1 == val2
-	default:
-		return reflect.DeepEqual(val1, val2)
 	case "number":
 		return numericToFloat(val1) == numericToFloat(val2)
+	default:
+		return deepValueEqual(val1, val2)
 	}
 }
 
+// deepValueEqual compares two arbitrary values (objects, maps, lists, etc.) for equality.
+// Unlike reflect.DeepEqual, it treats numeric values as equal regardless of their concrete
+// type, so float64(60) == int(60). Values decoded from JSON (e.g. the effective config from
+// the API) are float64, while values parsed from IaC may be int; without this, identical
+// configs for object/map/list variables would appear as spurious changes.
+func deepValueEqual(val1, val2 any) bool {
+	if f1, ok := tryNumericToFloat(val1); ok {
+		f2, ok2 := tryNumericToFloat(val2)
+		return ok2 && f1 == f2
+	}
+	switch v1 := val1.(type) {
+	case map[string]any:
+		v2, ok := val2.(map[string]any)
+		if !ok || len(v1) != len(v2) {
+			return false
+		}
+		for k, a := range v1 {
+			b, ok := v2[k]
+			if !ok || !deepValueEqual(a, b) {
+				return false
+			}
+		}
+		return true
+	case []any:
+		v2, ok := val2.([]any)
+		if !ok || len(v1) != len(v2) {
+			return false
+		}
+		for i := range v1 {
+			if !deepValueEqual(v1[i], v2[i]) {
+				return false
+			}
+		}
+		return true
+	}
+	return reflect.DeepEqual(val1, val2)
+}
+
 func numericToFloat(v any) float64 {
-	switch val := v.(type) {
-	case int:
-		return float64(val)
-	case int8:
-		return float64(val)
-	case int16:
-		return float64(val)
-	case int32:
-		return float64(val)
-	case int64:
-		return float64(val)
-	case uint:
-		return float64(val)
-	case uint8:
-		return float64(val)
-	case uint16:
-		return float64(val)
-	case uint32:
-		return float64(val)
-	case uint64:
-		return float64(val)
-	case float32:
-		return float64(val)
-	case float64:
-		return val
+	if f, ok := tryNumericToFloat(v); ok {
+		return f
 	}
 	return math.NaN()
+}
+
+func tryNumericToFloat(v any) (float64, bool) {
+	switch val := v.(type) {
+	case int:
+		return float64(val), true
+	case int8:
+		return float64(val), true
+	case int16:
+		return float64(val), true
+	case int32:
+		return float64(val), true
+	case int64:
+		return float64(val), true
+	case uint:
+		return float64(val), true
+	case uint8:
+		return float64(val), true
+	case uint16:
+		return float64(val), true
+	case uint32:
+		return float64(val), true
+	case uint64:
+		return float64(val), true
+	case float32:
+		return float64(val), true
+	case float64:
+		return val, true
+	}
+	return 0, false
 }
