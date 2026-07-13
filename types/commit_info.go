@@ -12,9 +12,11 @@ const (
 )
 
 const (
-	CommitInfoTypeBranch = "branch"
-	CommitInfoTypePr     = "pr"
-	CommitInfoTypePush   = "push"
+	CommitInfoTypeBranch  = "branch"
+	CommitInfoTypePr      = "pr"
+	CommitInfoTypePush    = "push"
+	CommitInfoTypeTag     = "tag"
+	CommitInfoTypeRelease = "release"
 )
 
 type CommitInfo struct {
@@ -40,6 +42,10 @@ type CommitInfo struct {
 	RepoUrl string `json:"repoUrl"`
 
 	BranchName string `json:"branchName"`
+
+	// TagName is the name of the git tag that triggered this commit info
+	// Populated when Type is CommitInfoTypeTag (tag-created push) or CommitInfoTypeRelease (release published)
+	TagName string `json:"tagName"`
 
 	CommitSha string `json:"commitSha"`
 	// CommitUrl is the HTML URL to browse this commit

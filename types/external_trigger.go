@@ -9,6 +9,8 @@ const (
 	ExternalTriggerEventUser                  = "user"
 	ExternalTriggerEventAutomation            = "automation"
 	ExternalTriggerEventVcsPush               = "vcs-push"
+	ExternalTriggerEventVcsTagCreated         = "vcs-tag-created"
+	ExternalTriggerEventVcsReleaseCreated     = "vcs-release-created"
 	ExternalTriggerEventVcsPullRequestOpened  = "vcs-pull-request-opened"
 	ExternalTriggerEventVcsPullRequestLabeled = "vcs-pull-request-labeled"
 	ExternalTriggerEventGitopsEnable          = "gitops-enable"
