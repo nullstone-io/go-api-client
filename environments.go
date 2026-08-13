@@ -105,11 +105,31 @@ func (s Environments) Create(ctx context.Context, stackId int64, env *types.Envi
 	return response.ReadJsonPtr[types.Environment](res)
 }
 
+// UpdateEnvironmentMetadataInput is a partial update of an environment's
+// descriptive metadata. Every field is a pointer so a caller can update a single
+// field without clearing the others.
+type UpdateEnvironmentMetadataInput struct {
+	// Description updates the environment description: nil leaves it untouched,
+	// an empty string clears it, any other value sets it.
+	Description *string `json:"description,omitempty"`
+}
+
+// ApplyTo merges the provided fields onto existing metadata, leaving untouched
+// any field whose pointer is nil.
+func (i UpdateEnvironmentMetadataInput) ApplyTo(existing types.EnvironmentMetadata) types.EnvironmentMetadata {
+	if i.Description != nil {
+		existing.Description = *i.Description
+	}
+	return existing
+}
+
 type UpdateEnvironmentInput struct {
 	Name           *string               `json:"name,omitempty"`
 	IsProd         *bool                 `json:"isProd,omitempty"`
 	PipelineOrder  *int                  `json:"pipelineOrder,omitempty"`
 	ProviderConfig *types.ProviderConfig `json:"providerConfig,omitempty"`
+	// Metadata is a partial update; omitting it leaves the stored metadata unchanged.
+	Metadata *UpdateEnvironmentMetadataInput `json:"metadata,omitempty"`
 }
 
 // Update - PUT/PATCH /orgs/:orgName/stacks/:stack_id/envs/:id
