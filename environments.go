@@ -94,9 +94,28 @@ func (s Environments) Get(ctx context.Context, stackId, envId int64, includeArch
 	return &env, nil
 }
 
+// CreateEnvironmentInput is the payload for creating an environment. It carries only
+// the fields the API accepts on create -- orgName and stackId come from the path, and
+// everything else on types.Environment is server-assigned, so passing a whole
+// types.Environment invited callers to set fields that were silently ignored.
+type CreateEnvironmentInput struct {
+	Name           string                `json:"name"`
+	Type           types.EnvironmentType `json:"type"`
+	IsProd         bool                  `json:"isProd,omitempty"`
+	PipelineOrder  *int                  `json:"pipelineOrder,omitempty"`
+	ProviderConfig *types.ProviderConfig `json:"providerConfig,omitempty"`
+	// CreatedBy overrides the authenticated user as the creator. Empty leaves it to the API.
+	CreatedBy string `json:"createdBy,omitempty"`
+	// Metadata seeds the environment's descriptive metadata. Omitted leaves it empty.
+	Metadata *types.EnvironmentMetadata `json:"metadata,omitempty"`
+	// Tags seeds the environment's tags. Whole-map assignment is safe here because
+	// there is nothing to clobber yet; after create, tag writes go through UpdateTags.
+	Tags map[string]string `json:"tags,omitempty"`
+}
+
 // Create - POST /orgs/:orgName/stacks/:stack_id/envs
-func (s Environments) Create(ctx context.Context, stackId int64, env *types.Environment) (*types.Environment, error) {
-	rawPayload, _ := json.Marshal(env)
+func (s Environments) Create(ctx context.Context, stackId int64, input CreateEnvironmentInput) (*types.Environment, error) {
+	rawPayload, _ := json.Marshal(input)
 	res, err := s.Client.Do(ctx, http.MethodPost, s.basePath(stackId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
