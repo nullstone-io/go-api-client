@@ -60,6 +60,7 @@ func (s Environments) GlobalList(ctx context.Context, envTypes []types.Environme
 }
 
 // List - GET /orgs/:orgName/stacks/:stackId/envs
+// Returns active environments only.
 func (s Environments) List(ctx context.Context, stackId int64) ([]*types.Environment, error) {
 	res, err := s.Client.Do(ctx, http.MethodGet, s.basePath(stackId), nil, nil, nil)
 	if err != nil {

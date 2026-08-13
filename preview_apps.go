@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -72,6 +73,22 @@ func (p PreviewApps) Find(ctx context.Context, stackId int64, input FindPreviewA
 // Same as Find for callers that know the stack by name instead of id (e.g. CI reacting to a PR trigger).
 func (p PreviewApps) FindByStackName(ctx context.Context, stackName string, input FindPreviewAppsInput) ([]types.PreviewApp, error) {
 	res, err := p.Client.Do(ctx, http.MethodGet, p.stackByNamePath(stackName), input.query(), nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return response.ReadJsonVal[[]types.PreviewApp](res)
+}
+
+// Replace - PUT /orgs/{orgName}/stacks/{stackId}/envs/{envId}/preview_apps
+// This has replace semantics: the env's preview app set becomes exactly previewApps,
+// and any app not in the list is removed from the env. In a preview env "enabled"
+// means "present in this set", so adding or removing an app is a membership change,
+// not a field write. Callers wanting to change one app must List first and send the
+// full mutated list back.
+func (p PreviewApps) Replace(ctx context.Context, stackId, envId int64, previewApps []types.PreviewApp) ([]types.PreviewApp, error) {
+	rawPayload, _ := json.Marshal(previewApps)
+	res, err := p.Client.Do(ctx, http.MethodPut, p.basePath(stackId, envId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
