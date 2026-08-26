@@ -35,6 +35,7 @@ func (m Modules) List(ctx context.Context, orgName string) ([]types.Module, erro
 type FindModulesInput struct {
 	Category    *string             `json:"category,omitempty"`
 	Subcategory *string             `json:"subcategory,omitempty"`
+	AppType     *string             `json:"appType,omitempty"`
 	Provider    *string             `json:"provider,omitempty"`
 	Platform    *string             `json:"platform,omitempty"`
 	Subplatform *string             `json:"subplatform,omitempty"`
@@ -57,6 +58,9 @@ func (m Modules) Find(ctx context.Context, orgName string, input FindModulesInpu
 	}
 	if input.Subcategory != nil {
 		q.Set("subcategory", *input.Subcategory)
+	}
+	if input.AppType != nil {
+		q.Set("app_type", *input.AppType)
 	}
 	if input.Provider != nil {
 		q.Set("provider", *input.Provider)
@@ -99,6 +103,7 @@ type CreateModuleInput struct {
 	IsPublic      bool     `json:"isPublic"`
 	Category      string   `json:"category"`
 	Subcategory   string   `json:"subcategory"`
+	AppType       string   `json:"appType"`
 	ProviderTypes []string `json:"providerTypes"`
 	Platform      string   `json:"platform"`
 	Subplatform   string   `json:"subplatform"`
@@ -122,6 +127,7 @@ type UpdateModuleInput struct {
 	IsPublic  *bool   `json:"isPublic,omitempty"`
 	SourceUrl *string `json:"sourceUrl,omitempty"`
 	Status    *string `json:"status,omitempty"`
+	AppType   *string `json:"appType,omitempty"`
 }
 
 func (m Modules) Update(ctx context.Context, orgName string, moduleName string, input UpdateModuleInput) (*types.Module, error) {

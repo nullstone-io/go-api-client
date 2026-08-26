@@ -11,6 +11,7 @@ type Module struct {
 	IsPublic      bool            `json:"isPublic"`
 	Category      CategoryName    `json:"category"`
 	Subcategory   SubcategoryName `json:"subcategory"`
+	AppType       AppTypeName     `json:"appType"`
 	ProviderTypes ProviderTypes   `json:"providerTypes"`
 	Platform      string          `json:"platform"`
 	Subplatform   string          `json:"subplatform"`

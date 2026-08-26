@@ -7,6 +7,7 @@ type ModuleManifest struct {
 	Description   string   `yaml:"description" json:"description"`
 	Category      string   `yaml:"category" json:"category"`
 	Subcategory   string   `yaml:"subcategory" json:"subcategory"`
+	AppType       string   `yaml:"app_type,omitempty" json:"appType"`
 	ProviderTypes []string `yaml:"provider_types" json:"providerTypes"`
 	Platform      string   `yaml:"platform" json:"platform"`
 	Subplatform   string   `yaml:"subplatform" json:"subplatform"`
