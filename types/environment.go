@@ -43,6 +43,13 @@ type Environment struct {
 	Status           EnvStatus       `json:"status"`
 	IsProd           bool            `json:"isProd"`
 	LatestActivityAt time.Time       `json:"latestActivityAt"`
+
+	// Metadata is platform-defined descriptive metadata (see EnvironmentMetadata).
+	Metadata EnvironmentMetadata `json:"metadata"`
+	// Tags is an open, user-defined keyspace for labelling environments. Unlike
+	// Metadata, callers may set any key; tags are what environment queries filter on.
+	// A key present with an empty value is distinct from an absent key.
+	Tags map[string]string `json:"tags"`
 }
 
 type EnvironmentWithStack struct {
