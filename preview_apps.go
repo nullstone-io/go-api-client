@@ -19,8 +19,12 @@ func (p PreviewApps) basePath(stackId, envId int64) string {
 	return fmt.Sprintf("/orgs/%s/stacks/%d/envs/%d/preview_apps", p.Client.Config.OrgName, stackId, envId)
 }
 
-func (p PreviewApps) orgPath() string {
-	return fmt.Sprintf("/orgs/%s/preview_apps", p.Client.Config.OrgName)
+func (p PreviewApps) stackPath(stackId int64) string {
+	return fmt.Sprintf("/orgs/%s/stacks/%d/preview_apps", p.Client.Config.OrgName, stackId)
+}
+
+func (p PreviewApps) stackByNamePath(stackName string) string {
+	return fmt.Sprintf("/orgs/%s/stacks_by_name/%s/preview_apps", p.Client.Config.OrgName, stackName)
 }
 
 // List - GET /orgs/{orgName}/stacks/{stackId}/envs/{envId}/preview_apps
@@ -41,10 +45,7 @@ type FindPreviewAppsInput struct {
 	PullRequest *int64
 }
 
-// Find - GET /orgs/{orgName}/preview_apps
-// Searches preview apps across every stack and environment in the org.
-// This is used to locate a preview environment when only the repo and pull request are known.
-func (p PreviewApps) Find(ctx context.Context, input FindPreviewAppsInput) ([]types.PreviewApp, error) {
+func (input FindPreviewAppsInput) query() url.Values {
 	q := url.Values{}
 	if input.Repo != "" {
 		q.Set("repo", input.Repo)
@@ -52,8 +53,25 @@ func (p PreviewApps) Find(ctx context.Context, input FindPreviewAppsInput) ([]ty
 	if input.PullRequest != nil {
 		q.Set("pull_request", strconv.FormatInt(*input.PullRequest, 10))
 	}
+	return q
+}
 
-	res, err := p.Client.Do(ctx, http.MethodGet, p.orgPath(), q, nil, nil)
+// Find - GET /orgs/{orgName}/stacks/{stackId}/preview_apps
+// Searches preview apps across every environment in the stack.
+// This is used to locate a preview environment when only the repo and pull request are known.
+func (p PreviewApps) Find(ctx context.Context, stackId int64, input FindPreviewAppsInput) ([]types.PreviewApp, error) {
+	res, err := p.Client.Do(ctx, http.MethodGet, p.stackPath(stackId), input.query(), nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	return response.ReadJsonVal[[]types.PreviewApp](res)
+}
+
+// FindByStackName - GET /orgs/{orgName}/stacks_by_name/{stackName}/preview_apps
+// Same as Find for callers that know the stack by name instead of id (e.g. CI reacting to a PR trigger).
+func (p PreviewApps) FindByStackName(ctx context.Context, stackName string, input FindPreviewAppsInput) ([]types.PreviewApp, error) {
+	res, err := p.Client.Do(ctx, http.MethodGet, p.stackByNamePath(stackName), input.query(), nil, nil)
 	if err != nil {
 		return nil, err
 	}
