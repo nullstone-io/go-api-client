@@ -29,7 +29,14 @@ func (ww WorkspaceWorkflows) activitiesPath(stackId, blockId, envId, workspaceWo
 	return fmt.Sprintf("/orgs/%s/stacks/%d/blocks/%d/envs/%d/workspace_workflow_activities/%d", ww.Client.Config.OrgName, stackId, blockId, envId, workspaceWorkflowId)
 }
 
-func (ww WorkspaceWorkflows) List(ctx context.Context, stackId, blockId, envId int64, page, perPage int) ([]types.WorkspaceWorkflow, error) {
+// WorkspaceWorkflowsResult is the paginated result returned when listing workspace workflows
+type WorkspaceWorkflowsResult struct {
+	Workflows []types.WorkspaceWorkflow `json:"workflows"`
+	Total     int                       `json:"total"`
+}
+
+// List returns a page of workspace workflows (newest first) and the total number of workflows in the workspace
+func (ww WorkspaceWorkflows) List(ctx context.Context, stackId, blockId, envId int64, page, perPage int) ([]types.WorkspaceWorkflow, int, error) {
 	q := url.Values{}
 	if page > 0 {
 		q.Set("page", strconv.Itoa(page))
@@ -39,9 +46,13 @@ func (ww WorkspaceWorkflows) List(ctx context.Context, stackId, blockId, envId i
 	}
 	res, err := ww.Client.Do(ctx, http.MethodGet, ww.basePath(stackId, blockId, envId), q, nil, nil)
 	if err != nil {
-		return nil, err
+		return nil, 0, err
 	}
-	return response.ReadJsonVal[[]types.WorkspaceWorkflow](res)
+	result, err := response.ReadJsonVal[WorkspaceWorkflowsResult](res)
+	if err != nil {
+		return nil, 0, err
+	}
+	return result.Workflows, result.Total, nil
 }
 
 func (ww WorkspaceWorkflows) Get(ctx context.Context, stackId, blockId, envId, workspaceWorkflowId int64) (*types.WorkspaceWorkflow, error) {
