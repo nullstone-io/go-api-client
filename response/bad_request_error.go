@@ -5,17 +5,24 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sort"
 )
 
 type BadRequestError struct {
 	ApiError
-	Details map[string]string `json:"details"`
+	Details ErrorDetails `json:"details"`
 }
 
 func (e BadRequestError) Error() string {
 	buf := bytes.NewBufferString(e.BaseErrorString())
-	for _, value := range e.Details {
-		fmt.Fprintf(buf, "\n  - %s", value)
+	// sorted so the same response always produces the same error string
+	keys := make([]string, 0, len(e.Details))
+	for key := range e.Details {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	for _, key := range keys {
+		fmt.Fprintf(buf, "\n  - %s", e.Details[key])
 	}
 	return buf.String()
 }
