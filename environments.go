@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -63,6 +64,71 @@ func (s Environments) GlobalList(ctx context.Context, envTypes []types.Environme
 // Returns active environments only.
 func (s Environments) List(ctx context.Context, stackId int64) ([]*types.Environment, error) {
 	res, err := s.Client.Do(ctx, http.MethodGet, s.basePath(stackId), nil, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	var envs []*types.Environment
+	if err := response.ReadJson(res, &envs); response.IsNotFoundError(err) {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return envs, nil
+}
+
+// FindEnvironmentsInput narrows Find. Filters AND together; a zero value matches every
+// active environment in the stack, which is what List returns.
+type FindEnvironmentsInput struct {
+	// Types matches any one of these environment types (OR).
+	Types []types.EnvironmentType
+	// Status selects active (the default) or archived environments.
+	Status types.EnvStatus
+	// IsProd matches on the prod flag; nil matches either.
+	IsProd *bool
+	// Search matches the name case-insensitively: as a whole-name pattern when it contains
+	// * (any run of characters) or ? (one character), otherwise as a substring.
+	Search string
+	// Tags requires every key: a non-empty value must equal the environment's tag; an empty
+	// value matches environments where the key is absent or present as "" — the way to find
+	// environments nobody has tagged yet.
+	Tags map[string]string
+}
+
+func (input FindEnvironmentsInput) query() url.Values {
+	q := url.Values{}
+	if len(input.Types) > 0 {
+		envTypeStrings := make([]string, 0, len(input.Types))
+		for _, envType := range input.Types {
+			envTypeStrings = append(envTypeStrings, string(envType))
+		}
+		q.Set("type", strings.Join(envTypeStrings, ","))
+	}
+	if input.Status != "" {
+		q.Set("status", string(input.Status))
+	}
+	if input.IsProd != nil {
+		q.Set("is_prod", strconv.FormatBool(*input.IsProd))
+	}
+	if input.Search != "" {
+		q.Set("search", input.Search)
+	}
+	// sorted so the same filters always produce the same URL
+	keys := make([]string, 0, len(input.Tags))
+	for key := range input.Tags {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	for _, key := range keys {
+		q.Add("tag", key+"="+input.Tags[key])
+	}
+	return q
+}
+
+// Find - GET /orgs/:orgName/stacks/:stackId/envs?type=&status=&is_prod=&search=&tag=KEY=VALUE
+// Filtering happens server-side; List is Find with no filters.
+func (s Environments) Find(ctx context.Context, stackId int64, input FindEnvironmentsInput) ([]*types.Environment, error) {
+	res, err := s.Client.Do(ctx, http.MethodGet, s.basePath(stackId), input.query(), nil, nil)
 	if err != nil {
 		return nil, err
 	}
