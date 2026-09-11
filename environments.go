@@ -93,6 +93,9 @@ type FindEnvironmentsInput struct {
 	// value matches environments where the key is absent or present as "" — the way to find
 	// environments nobody has tagged yet.
 	Tags map[string]string
+	// HasTags requires every key to be present with any value (including "") — the
+	// complement of an empty Tags value.
+	HasTags []string
 }
 
 func (input FindEnvironmentsInput) query() url.Values {
@@ -121,6 +124,11 @@ func (input FindEnvironmentsInput) query() url.Values {
 	sort.Strings(keys)
 	for _, key := range keys {
 		q.Add("tag", key+"="+input.Tags[key])
+	}
+	hasKeys := append([]string{}, input.HasTags...)
+	sort.Strings(hasKeys)
+	for _, key := range hasKeys {
+		q.Add("tag", key)
 	}
 	return q
 }
