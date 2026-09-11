@@ -28,6 +28,9 @@ const (
 	IntentWorkflowStatusCompleted IntentWorkflowStatus = "completed"
 	// IntentWorkflowStatusFailed indicates the workflow failed to complete
 	IntentWorkflowStatusFailed IntentWorkflowStatus = "failed"
+	// IntentWorkflowStatusCancelling indicates a user requested cancellation and the engine is stopping every workspace workflow
+	// This is not terminal; the only status that may follow is IntentWorkflowStatusCancelled
+	IntentWorkflowStatusCancelling IntentWorkflowStatus = "cancelling"
 	// IntentWorkflowStatusCancelled indicates the workflow was cancelled
 	IntentWorkflowStatusCancelled IntentWorkflowStatus = "cancelled"
 	// IntentWorkflowStatusNoOp indicates the workflow completed without doing any work (e.g. nothing to release)

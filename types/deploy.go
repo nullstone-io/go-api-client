@@ -18,7 +18,10 @@ const (
 	DeployStatusRunning      = "running"
 	DeployStatusCompleted    = "completed"
 	DeployStatusFailed       = "failed"
-	DeployStatusCancelled    = "cancelled"
+	// DeployStatusCancelling indicates a user requested cancellation and the engine is stopping the deploy
+	// The only status that may follow is DeployStatusCancelled
+	DeployStatusCancelling = "cancelling"
+	DeployStatusCancelled  = "cancelled"
 )
 
 const (

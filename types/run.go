@@ -19,8 +19,11 @@ const (
 	RunStatusCompleted     = "completed"
 	RunStatusNeedsApproval = "needs-approval"
 	RunStatusFailed        = "failed"
-	RunStatusCancelled     = "cancelled"
-	RunStatusDisapproved   = "disapproved"
+	// RunStatusCancelling indicates a user requested cancellation and the engine is stopping the run
+	// The only status that may follow is RunStatusCancelled
+	RunStatusCancelling  = "cancelling"
+	RunStatusCancelled   = "cancelled"
+	RunStatusDisapproved = "disapproved"
 )
 
 func IsTerminalRunStatus(runStatus string) bool {

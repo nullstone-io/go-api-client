@@ -8,7 +8,10 @@ const (
 	BuildStatusRunning      = "running"
 	BuildStatusCompleted    = "completed"
 	BuildStatusFailed       = "failed"
-	BuildStatusCancelled    = "cancelled"
+	// BuildStatusCancelling indicates a user requested cancellation and the engine is stopping the build
+	// The only status that may follow is BuildStatusCancelled
+	BuildStatusCancelling = "cancelling"
+	BuildStatusCancelled  = "cancelled"
 )
 
 type Build struct {

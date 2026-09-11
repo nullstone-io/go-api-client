@@ -24,9 +24,22 @@ const (
 	WorkspaceWorkflowStatusCompleted WorkspaceWorkflowStatus = "completed"
 	// WorkspaceWorkflowStatusFailed indicates the workflow failed to complete
 	WorkspaceWorkflowStatusFailed WorkspaceWorkflowStatus = "failed"
+	// WorkspaceWorkflowStatusCancelling indicates a user requested cancellation and the engine is stopping the workflow
+	// This is not terminal; the only status that may follow is WorkspaceWorkflowStatusCancelled
+	WorkspaceWorkflowStatusCancelling WorkspaceWorkflowStatus = "cancelling"
 	// WorkspaceWorkflowStatusCancelled indicates the workflow was cancelled
 	WorkspaceWorkflowStatusCancelled WorkspaceWorkflowStatus = "cancelled"
 )
+
+// ActiveWorkspaceWorkflowStatuses lists every non-terminal status, i.e. workflows that can still be cancelled
+var ActiveWorkspaceWorkflowStatuses = []WorkspaceWorkflowStatus{
+	WorkspaceWorkflowStatusInit,
+	WorkspaceWorkflowStatusQueued,
+	WorkspaceWorkflowStatusAwaiting,
+	WorkspaceWorkflowStatusNeedsApproval,
+	WorkspaceWorkflowStatusRunning,
+	WorkspaceWorkflowStatusCancelling,
+}
 
 func IsTerminalWorkspaceWorkflow(status WorkspaceWorkflowStatus) bool {
 	switch status {
