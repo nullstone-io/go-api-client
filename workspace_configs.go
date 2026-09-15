@@ -49,7 +49,7 @@ func (w WorkspaceConfigs) GetLatest(ctx context.Context, stackId, blockId, envId
 // GetEffective - GET /orgs/:orgName/stacks/:stackId/blocks/:blockId/envs/:envId/configs/effective
 // Effective represents the latest workspace config with unapplied changes
 func (w WorkspaceConfigs) GetEffective(ctx context.Context, stackId, blockId, envId int64) (*types.WorkspaceConfig, error) {
-	res, err := w.Client.Do(ctx, http.MethodGet, w.currentPath(stackId, blockId, envId), nil, nil, nil)
+	res, err := w.Client.Do(ctx, http.MethodGet, w.effectivePath(stackId, blockId, envId), nil, nil, nil)
 	if err != nil {
 		return nil, err
 	}
