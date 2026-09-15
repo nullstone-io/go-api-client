@@ -19,8 +19,10 @@ type IacSyncs struct {
 // AutoPlan queues an infra-update Run on workspaces with detected IaC changes (skipping
 // not-provisioned workspaces). AutoApply implies AutoPlan and auto-approves the Runs.
 //
-// CommitInfo is best-effort metadata read from the user's local git repo; the server treats
-// it as advisory and tolerates an empty value.
+// CommitInfo.Repository (owner and name) is required: it is the repository the sync runs
+// for, which block and event ownership are checked against, and the server rejects the
+// request (400) without it. The CLI reads it from the git origin remote or --repo. The rest
+// of CommitInfo is advisory metadata read from the local git repo and may be empty.
 //
 // YamlConfigFiles, when non-empty, switches the sync to detached mode (NUL-49): the
 // supplied IaC file contents are used directly and the workflow skips its GitHub fetch.
