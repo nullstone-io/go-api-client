@@ -124,3 +124,24 @@ func (s Blocks) Destroy(ctx context.Context, stackId, blockId int64) (bool, erro
 	}
 	return true, nil
 }
+
+func (s Blocks) owningRepoPath(stackId, blockId int64) string {
+	return fmt.Sprintf("orgs/%s/stacks/%d/blocks/%d/owning_repo", s.Client.Config.OrgName, stackId, blockId)
+}
+
+// SetOwningRepo - PUT /orgs/:orgName/stacks/:stack_id/blocks/:id/owning_repo
+// Sets which repository (owner/name) owns the block for IaC sync, or clears it with "".
+// IaC sync normally maintains this; the endpoint exists so a stack owner/architect can repair
+// stale ownership (e.g. the owning repo was disconnected before a sync released the block).
+// Returns nil, nil when the block does not exist.
+func (s Blocks) SetOwningRepo(ctx context.Context, stackId, blockId int64, owningRepo string) (*types.Block, error) {
+	payload := struct {
+		OwningRepo string `json:"owningRepo"`
+	}{OwningRepo: owningRepo}
+	rawPayload, _ := json.Marshal(payload)
+	res, err := s.Client.Do(ctx, http.MethodPut, s.owningRepoPath(stackId, blockId), nil, nil, json.RawMessage(rawPayload))
+	if err != nil {
+		return nil, err
+	}
+	return response.ReadJsonPtr[types.Block](res)
+}

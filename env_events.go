@@ -75,3 +75,25 @@ func (s EnvEvents) Delete(ctx context.Context, stackId, envId int64, eventUid uu
 	}
 	return true, nil
 }
+
+func (s EnvEvents) owningRepoPath(stackId, envId int64, eventUid uuid.UUID) string {
+	return fmt.Sprintf("/orgs/%s/stacks/%d/envs/%d/events/%s/owning_repo", s.Client.Config.OrgName, stackId, envId, eventUid)
+}
+
+// SetOwningRepoUrl - PUT /org/:orgName/stacks/:stackId/envs/:envId/events/:eventUid/owning_repo
+// Sets the repository url that owns the event for IaC sync, or clears it with "".
+// Update always blanks this field; the endpoint exists so a stack owner/architect can repair
+// stale ownership. Note that a sync does not adopt an unowned event of the same name, so
+// handing an event to a new repository means setting its url, not clearing it.
+// Returns nil, nil when the event does not exist.
+func (s EnvEvents) SetOwningRepoUrl(ctx context.Context, stackId, envId int64, eventUid uuid.UUID, owningRepoUrl string) (*types.EnvEvent, error) {
+	payload := struct {
+		OwningRepoUrl string `json:"owningRepoUrl"`
+	}{OwningRepoUrl: owningRepoUrl}
+	rawPayload, _ := json.Marshal(payload)
+	res, err := s.Client.Do(ctx, http.MethodPut, s.owningRepoPath(stackId, envId, eventUid), nil, nil, json.RawMessage(rawPayload))
+	if err != nil {
+		return nil, err
+	}
+	return response.ReadJsonPtr[types.EnvEvent](res)
+}
