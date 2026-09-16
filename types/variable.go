@@ -2,7 +2,6 @@ package types
 
 import (
 	"github.com/nullstone-io/module/config"
-	"math"
 	"reflect"
 )
 
@@ -105,7 +104,14 @@ func isVariableValueEqual(varType string, val1, val2 any) bool {
 	case "bool":
 		return val1 == val2
 	case "number":
-		return numericToFloat(val1) == numericToFloat(val2)
+		if f1, ok1 := tryNumericToFloat(val1); ok1 {
+			f2, ok2 := tryNumericToFloat(val2)
+			return ok2 && f1 == f2
+		}
+		// A non-numeric value (e.g. a string that was stored on a number variable) never equals a
+		// number, but it must still equal itself. Going through NaN would make it unequal to
+		// everything, including an identical value, producing a change that can never be resolved.
+		return reflect.DeepEqual(val1, val2)
 	default:
 		return deepValueEqual(val1, val2)
 	}
@@ -147,13 +153,6 @@ func deepValueEqual(val1, val2 any) bool {
 		return true
 	}
 	return reflect.DeepEqual(val1, val2)
-}
-
-func numericToFloat(v any) float64 {
-	if f, ok := tryNumericToFloat(v); ok {
-		return f
-	}
-	return math.NaN()
 }
 
 func tryNumericToFloat(v any) (float64, bool) {

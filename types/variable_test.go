@@ -43,6 +43,31 @@ func TestVariable_ValueEquals(t *testing.T) {
 			b:    Variable{Variable: varDef, Value: 512},
 			want: true,
 		},
+		"float64 equals int": {
+			a:    Variable{Variable: varDef, Value: float64(512)},
+			b:    Variable{Variable: varDef, Value: 512},
+			want: true,
+		},
+		"string stored on number var does not equal number": {
+			a:    Variable{Variable: varDef, Value: "512"},
+			b:    Variable{Variable: varDef, Value: 512},
+			want: false,
+		},
+		"number does not equal string stored on number var": {
+			a:    Variable{Variable: varDef, Value: float64(512)},
+			b:    Variable{Variable: varDef, Value: "512"},
+			want: false,
+		},
+		"string stored on number var equals identical string": {
+			a:    Variable{Variable: varDef, Value: "512"},
+			b:    Variable{Variable: varDef, Value: "512"},
+			want: true,
+		},
+		"string stored on number var does not equal different string": {
+			a:    Variable{Variable: varDef, Value: "512"},
+			b:    Variable{Variable: varDef, Value: "1024"},
+			want: false,
+		},
 	}
 
 	for testName, test := range tests {
@@ -74,8 +99,8 @@ func TestVariable_ValueEquals_Object(t *testing.T) {
 			want: true,
 		},
 		"nested object: differing number": {
-			a: Variable{Variable: varDef, Value: map[string]any{"timeout_sec": float64(600)}},
-			b: Variable{Variable: varDef, Value: map[string]any{"timeout_sec": 300}},
+			a:    Variable{Variable: varDef, Value: map[string]any{"timeout_sec": float64(600)}},
+			b:    Variable{Variable: varDef, Value: map[string]any{"timeout_sec": 300}},
 			want: false,
 		},
 		"list: float64 equals int": {
