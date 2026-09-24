@@ -37,6 +37,17 @@ func (s IntentWorkflows) Get(ctx context.Context, stackId, intentWorkflowId int6
 	return response.ReadJsonPtr[types.IntentWorkflow](res)
 }
 
+// Cancel requests cancellation of an in-flight intent workflow (e.g. an env up), which cancels every
+// workspace workflow it contains. Cancelling a workflow that is already terminal is a no-op.
+// Returns nil if the workflow does not exist.
+func (s IntentWorkflows) Cancel(ctx context.Context, stackId, intentWorkflowId int64) (*types.IntentWorkflow, error) {
+	res, err := s.Client.Do(ctx, http.MethodPost, s.path(stackId, intentWorkflowId)+"/cancel", nil, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	return response.ReadJsonPtr[types.IntentWorkflow](res)
+}
+
 func (s IntentWorkflows) WatchGet(ctx context.Context, stackId, intentWorkflowId int64, retryFn ws.StreamerRetryFunc) (*types.IntentWorkflow, <-chan types.StreamObject[types.IntentWorkflowUpdate], error) {
 	endpoint, headers, err := s.Client.Config.ConstructWsEndpoint(ctx, s.path(stackId, intentWorkflowId))
 	if err != nil {

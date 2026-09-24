@@ -55,6 +55,48 @@ func (ww WorkspaceWorkflows) List(ctx context.Context, stackId, blockId, envId i
 	return result.Workflows, result.Total, nil
 }
 
+type QueryWorkspaceWorkflowsInput struct {
+	Page    int
+	PerPage int
+	// Statuses limits the result to workflows in any of these statuses; empty means all statuses
+	Statuses []types.WorkspaceWorkflowStatus
+}
+
+// Query is List with an optional status filter
+func (ww WorkspaceWorkflows) Query(ctx context.Context, stackId, blockId, envId int64, input QueryWorkspaceWorkflowsInput) ([]types.WorkspaceWorkflow, int, error) {
+	q := url.Values{}
+	if input.Page > 0 {
+		q.Set("page", strconv.Itoa(input.Page))
+	}
+	if input.PerPage > 0 {
+		q.Set("perPage", strconv.Itoa(input.PerPage))
+	}
+	for _, status := range input.Statuses {
+		q.Add("status", string(status))
+	}
+	res, err := ww.Client.Do(ctx, http.MethodGet, ww.basePath(stackId, blockId, envId), q, nil, nil)
+	if err != nil {
+		return nil, 0, err
+	}
+	result, err := response.ReadJsonVal[WorkspaceWorkflowsResult](res)
+	if err != nil {
+		return nil, 0, err
+	}
+	return result.Workflows, result.Total, nil
+}
+
+// Cancel requests cancellation of an in-flight workspace workflow.
+// The workflow transitions to "cancelling" immediately and to "cancelled" once the engine has stopped
+// every run, build, and deploy that belongs to it. Cancelling a workflow that is already terminal is a no-op.
+// Returns nil if the workflow does not exist.
+func (ww WorkspaceWorkflows) Cancel(ctx context.Context, stackId, blockId, envId, workspaceWorkflowId int64) (*types.WorkspaceWorkflow, error) {
+	res, err := ww.Client.Do(ctx, http.MethodPost, ww.path(stackId, blockId, envId, workspaceWorkflowId)+"/cancel", nil, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	return response.ReadJsonPtr[types.WorkspaceWorkflow](res)
+}
+
 func (ww WorkspaceWorkflows) Get(ctx context.Context, stackId, blockId, envId, workspaceWorkflowId int64) (*types.WorkspaceWorkflow, error) {
 	res, err := ww.Client.Do(ctx, http.MethodGet, ww.path(stackId, blockId, envId, workspaceWorkflowId), nil, nil, nil)
 	if err != nil {

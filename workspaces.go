@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	"fmt"
+	"github.com/google/uuid"
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 	"net/http"
@@ -43,4 +44,18 @@ func (w Workspaces) Get(ctx context.Context, stackId, blockId, envId int64) (*ty
 		return nil, err
 	}
 	return &workspace, nil
+}
+
+// ForceUnlockState - POST /orgs/:orgName/stacks/:stackId/workspaces/:workspaceUid/actions/force-unlock
+//
+// Releases the Terraform state lock on a workspace regardless of who holds it. The engine uses this
+// after a Terraform process had to be killed and could not release the lock itself; the UI uses it
+// for a stuck lock. Requires an org runner or a stack architect/owner.
+func (w Workspaces) ForceUnlockState(ctx context.Context, stackId int64, workspaceUid uuid.UUID) error {
+	path := fmt.Sprintf("%s/%s/actions/force-unlock", w.basePath(stackId), workspaceUid)
+	res, err := w.Client.Do(ctx, http.MethodPost, path, nil, nil, nil)
+	if err != nil {
+		return err
+	}
+	return response.Verify(res)
 }
