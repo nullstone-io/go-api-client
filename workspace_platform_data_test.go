@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/nullstone-io/module/platformdata"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"gopkg.in/nullstone-io/go-api-client.v0"
@@ -32,10 +33,10 @@ func TestWorkspacePlatformData_Get(t *testing.T) {
   "data": {
     "variables": {
       "DATABASE_HOST": {"template": "{{ NULLSTONE_ENV }}-db", "value": "dev-db"},
-      "NULLSTONE_VERSION": {"value": "1.2.3"}
-    },
-    "secret_keys": ["DATABASE_PASSWORD"],
-    "secret_refs": {"DATABASE_PASSWORD": "arn:aws:secretsmanager:us-east-1:123:secret:db"}
+      "NULLSTONE_VERSION": {"value": "1.2.3"},
+      "DATABASE_PASSWORD": {"sensitive": true, "ref": {"type": "secret", "id": "arn:aws:secretsmanager:us-east-1:123:secret:db"}},
+      "POD_IP": {"ref": {"type": "k8s_field", "field_path": "status.podIP"}}
+    }
   },
   "sources": {"DATABASE_HOST": "apply", "NULLSTONE_VERSION": "deploy"}
 }`
@@ -72,8 +73,11 @@ func TestWorkspacePlatformData_Get(t *testing.T) {
 			wantEnv: &platformdataEnv{
 				variables:  map[string]string{"DATABASE_HOST": "dev-db", "NULLSTONE_VERSION": "1.2.3"},
 				templates:  map[string]string{"DATABASE_HOST": "{{ NULLSTONE_ENV }}-db"},
-				secretKeys: []string{"DATABASE_PASSWORD"},
-				secretRefs: map[string]string{"DATABASE_PASSWORD": "arn:aws:secretsmanager:us-east-1:123:secret:db"},
+				sensitive:  []string{"DATABASE_PASSWORD"},
+				refs: map[string]platformdata.EnvV1Ref{
+					"DATABASE_PASSWORD": {Type: platformdata.RefTypeSecret, Id: "arn:aws:secretsmanager:us-east-1:123:secret:db"},
+					"POD_IP":            {Type: platformdata.RefTypeK8sField, FieldPath: "status.podIP"},
+				},
 			},
 			wantNilErr: true,
 		},
@@ -143,8 +147,14 @@ func TestWorkspacePlatformData_Get(t *testing.T) {
 			for key, template := range test.wantEnv.templates {
 				assert.Equal(t, template, env.Variables[key].Template, "variables[%s].template", key)
 			}
-			assert.Equal(t, test.wantEnv.secretKeys, env.SecretKeys)
-			assert.Equal(t, test.wantEnv.secretRefs, env.SecretRefs)
+			for _, key := range test.wantEnv.sensitive {
+				assert.True(t, env.Variables[key].IsSensitive(), "variables[%s] sensitive", key)
+				assert.Empty(t, env.Variables[key].Value, "variables[%s] must not carry a value", key)
+			}
+			for key, ref := range test.wantEnv.refs {
+				require.NotNil(t, env.Variables[key].Ref, "variables[%s].ref", key)
+				assert.Equal(t, ref, *env.Variables[key].Ref, "variables[%s].ref", key)
+			}
 		})
 	}
 }
@@ -244,8 +254,8 @@ func TestWorkspacePlatformData_PutOverlay(t *testing.T) {
 type platformdataEnv struct {
 	variables  map[string]string
 	templates  map[string]string
-	secretKeys []string
-	secretRefs map[string]string
+	sensitive  []string
+	refs       map[string]platformdata.EnvV1Ref
 }
 
 func isUnauthorizedError(err error) bool {
