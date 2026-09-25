@@ -1,6 +1,6 @@
 module gopkg.in/nullstone-io/go-api-client.v0
 
-go 1.26.0
+go 1.26.5
 
 require (
 	github.com/cristalhq/jwt/v3 v3.1.0
@@ -40,3 +40,5 @@ require (
 	golang.org/x/tools v0.48.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
+
+replace github.com/nullstone-io/module => ../module
