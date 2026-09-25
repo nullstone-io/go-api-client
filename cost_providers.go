@@ -41,8 +41,8 @@ func (s CostProviders) Get(ctx context.Context, id int64) (*types.CostProvider, 
 }
 
 // Create - POST /orgs/:orgName/cost_providers
-func (s CostProviders) Create(ctx context.Context, providerId int64) (*types.CostProvider, error) {
-	rawPayload, _ := json.Marshal(map[string]any{"providerId": providerId})
+func (s CostProviders) Create(ctx context.Context, input types.CostProviderInput) (*types.CostProvider, error) {
+	rawPayload, _ := json.Marshal(input)
 	res, err := s.Client.Do(ctx, http.MethodPost, s.basePath(), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err

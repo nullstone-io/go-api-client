@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"gopkg.in/nullstone-io/go-api-client.v0/response"
+	"gopkg.in/nullstone-io/go-api-client.v0/types"
 )
 
 type CostProviderTests struct {
@@ -31,8 +32,8 @@ func (s CostProviderTests) TestExisting(ctx context.Context, costProviderId int6
 }
 
 // TestNew - POST /orgs/:orgName/cost_provider_tests
-func (s CostProviderTests) TestNew(ctx context.Context, providerId int64) error {
-	rawPayload, _ := json.Marshal(map[string]any{"providerId": providerId})
+func (s CostProviderTests) TestNew(ctx context.Context, input types.CostProviderInput) error {
+	rawPayload, _ := json.Marshal(input)
 	res, err := s.Client.Do(ctx, http.MethodPost, s.testNewPath(), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return err
