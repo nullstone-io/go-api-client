@@ -10,7 +10,7 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/gorilla/websocket v1.5.3
 	github.com/jinzhu/copier v0.4.0
-	github.com/nullstone-io/module v0.2.11
+	github.com/nullstone-io/module v0.2.12-0.20260926033331-5ad1a0a541e4
 	github.com/stretchr/testify v1.11.1
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.69.0
 	golang.org/x/mod v0.38.0
@@ -40,5 +40,3 @@ require (
 	golang.org/x/tools v0.48.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
-
-replace github.com/nullstone-io/module => ../module
