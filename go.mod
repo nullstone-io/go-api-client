@@ -10,7 +10,7 @@ require (
 	github.com/gorilla/mux v1.8.1
 	github.com/gorilla/websocket v1.5.3
 	github.com/jinzhu/copier v0.4.0
-	github.com/nullstone-io/module v0.2.12-0.20260926123020-3fcf64028e92
+	github.com/nullstone-io/module v0.3.0
 	github.com/stretchr/testify v1.11.1
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.69.0
 	golang.org/x/mod v0.38.0
