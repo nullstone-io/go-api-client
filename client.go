@@ -131,6 +131,9 @@ func (c *Client) WorkspaceOutputs() WorkspaceOutputs {
 func (c *Client) WorkspacePlatformData() WorkspacePlatformData {
 	return WorkspacePlatformData{Client: c}
 }
+func (c *Client) WorkspaceMappings() WorkspaceMappings {
+	return WorkspaceMappings{Client: c}
+}
 func (c *Client) StateVersions() StateVersions {
 	return StateVersions{Client: c}
 }
