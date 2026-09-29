@@ -10,15 +10,15 @@ import (
 // (stack/block/env) it stores state for. Platform data is scoped to a stack through it.
 // A mapping is written once and never modified.
 type WorkspaceMapping struct {
-	// ArcanaWorkspaceUid is the uid of the workspace in the state store
-	ArcanaWorkspaceUid uuid.UUID `json:"arcanaWorkspaceUid"`
-	// NullfireWorkspaceUid is the uid of the Nullstone workspace (types.Workspace.Uid)
-	NullfireWorkspaceUid uuid.UUID `json:"nullfireWorkspaceUid"`
-	OrgName              string    `json:"orgName"`
-	StackId              int64     `json:"stackId"`
-	BlockId              int64     `json:"blockId"`
-	EnvId                int64     `json:"envId"`
-	CreatedAt            time.Time `json:"createdAt"`
+	// StateWorkspaceUid is the uid of the workspace that stores the Terraform state
+	StateWorkspaceUid uuid.UUID `json:"stateWorkspaceUid"`
+	// WorkspaceUid is the uid of the Nullstone workspace (types.Workspace.Uid)
+	WorkspaceUid uuid.UUID `json:"workspaceUid"`
+	OrgName      string    `json:"orgName"`
+	StackId      int64     `json:"stackId"`
+	BlockId      int64     `json:"blockId"`
+	EnvId        int64     `json:"envId"`
+	CreatedAt    time.Time `json:"createdAt"`
 }
 
 // WorkspaceMappingInput is the body of PUT .../workspaces/:workspaceUid/mapping
