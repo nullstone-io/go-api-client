@@ -29,12 +29,25 @@ type IacSyncs struct {
 // Map keys are repo-relative paths (e.g. ".nullstone/dev.yml"); values are the file
 // contents. The server validates keys (no `..`, no absolute paths) and total payload
 // size before accepting the request.
+//
+// AutomationTool names the CI tool running the sync (AutomationToolGithubActions, ...), the
+// same vocabulary as DeployCreatePayload.AutomationTool; empty means a person ran it. The
+// server records an automation-tool sync with trigger event "automation" and the tool as
+// the trigger source, and a sync with no tool as a manual ("user") sync. An environment
+// whose governance disables manual IaC sync rejects the latter with 403 and error type
+// ErrorTypeManualIacSyncDisabled (see types.EnvironmentGovernance).
 type TriggerIacSyncPayload struct {
 	AutoPlan        bool              `json:"autoPlan"`
 	AutoApply       bool              `json:"autoApply"`
 	CommitInfo      types.CommitInfo  `json:"commitInfo"`
 	YamlConfigFiles map[string]string `json:"yamlConfigFiles,omitempty"`
+	AutomationTool  string            `json:"automationTool,omitempty"`
 }
+
+// ErrorTypeManualIacSyncDisabled is the `type` of the 403 error returned when a manual
+// (non-CI) IaC sync targets an environment with EnvironmentGovernance.DisableManualIacSync
+// set. Clients match on it to print the server's message as the whole explanation.
+const ErrorTypeManualIacSyncDisabled = "problems/manual-iac-sync-disabled"
 
 func (s IacSyncs) basePath(stackId, envId int64) string {
 	return fmt.Sprintf("/orgs/%s/stacks/%d/envs/%d/iac_syncs", s.Client.Config.OrgName, stackId, envId)
