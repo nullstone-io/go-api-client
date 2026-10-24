@@ -50,6 +50,8 @@ type Environment struct {
 	// Metadata, callers may set any key; tags are what environment queries filter on.
 	// A key present with an empty value is distinct from an absent key.
 	Tags map[string]string `json:"tags"`
+	// Governance holds the environment's change-control policies (see EnvironmentGovernance).
+	Governance EnvironmentGovernance `json:"governance"`
 }
 
 type EnvironmentWithStack struct {
