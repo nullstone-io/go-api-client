@@ -14,6 +14,35 @@ const (
 	BuildPackageModeSiteAssets = "site-assets"
 )
 
+// DefaultBuildConfig produces the build configuration used when neither a workspace
+// nor its block template defines one. The package mode follows the module:
+// zip subplatform => zip, static-site subcategory => site-assets, otherwise dockerfile.
+// A nil module yields the dockerfile default.
+func DefaultBuildConfig(module *Module) BuildConfig {
+	packageMode := BuildPackageModeDockerfile
+	if module != nil {
+		if module.Subplatform == "zip" {
+			packageMode = BuildPackageModeZip
+		} else if module.Subcategory == SubcategoryAppStaticSite {
+			packageMode = BuildPackageModeSiteAssets
+		}
+	}
+	return BuildConfig{
+		Builder:          BuilderNullstone,
+		PackageMode:      packageMode,
+		Dockerfile:       "Dockerfile",
+		DockerContext:    ".",
+		BuildDir:         "./",
+		InstallDepsCmd:   "npm ci",
+		BuildCmd:         "npm run build",
+		PublishDir:       "./dist",
+		WorkflowFilename: ".github/workflows/build.yml",
+		InitiateWorkflow: true,
+		PerformPush:      false,
+		WorkflowInputs:   map[string]string{},
+	}
+}
+
 type BuildConfig struct {
 	// Builder defines which build engine to use (currently Nullstone or Github Actions)
 	Builder string `json:"builder"`

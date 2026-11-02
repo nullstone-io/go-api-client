@@ -104,6 +104,9 @@ func (c *Client) Workspaces() Workspaces {
 	return Workspaces{Client: c}
 }
 func (c *Client) WorkspaceTemplates() WorkspaceTemplates { return WorkspaceTemplates{Client: c} }
+func (c *Client) WorkspaceBuildConfigs() WorkspaceBuildConfigs {
+	return WorkspaceBuildConfigs{Client: c}
+}
 func (c *Client) WorkspaceDetails() WorkspaceDetails {
 	return WorkspaceDetails{Client: c}
 }
