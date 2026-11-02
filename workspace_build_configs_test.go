@@ -15,10 +15,11 @@ import (
 )
 
 const workspaceBuildConfigBody = `{
+  "orgName": "nullstone",
+  "stackId": 42,
+  "blockId": 7,
+  "envId": 9,
   "workspaceUid": "6f1a2b3c-4d5e-4f60-8a9b-0c1d2e3f4a5b",
-  "version": 3,
-  "updatedAt": "2026-11-02T10:00:00Z",
-  "updatedBy": "brad",
   "config": {"builder": "nullstone", "packageMode": "dockerfile", "dockerfile": "web/Dockerfile", "dockerContext": "."}
 }`
 
@@ -89,9 +90,10 @@ func TestWorkspaceBuildConfigs_Get(t *testing.T) {
 			}
 			require.NotNil(t, got)
 			assert.Equal(t, uuid.MustParse("6f1a2b3c-4d5e-4f60-8a9b-0c1d2e3f4a5b"), got.WorkspaceUid)
-			assert.Equal(t, int64(3), got.Version)
-			assert.Equal(t, "brad", got.UpdatedBy)
-			assert.Equal(t, 2026, got.UpdatedAt.Year())
+			assert.Equal(t, "nullstone", got.OrgName)
+			assert.Equal(t, int64(42), got.StackId)
+			assert.Equal(t, int64(7), got.BlockId)
+			assert.Equal(t, int64(9), got.EnvId)
 			assert.Equal(t, *test.wantConf, got.Config)
 		})
 	}
@@ -127,6 +129,7 @@ func TestWorkspaceBuildConfigs_Update(t *testing.T) {
 	assert.Equal(t, "application/json", gotContentType)
 	assert.JSONEq(t, wantBody, string(gotBody))
 	require.NotNil(t, got)
-	assert.Equal(t, int64(3), got.Version)
+	assert.Equal(t, uuid.MustParse("6f1a2b3c-4d5e-4f60-8a9b-0c1d2e3f4a5b"), got.WorkspaceUid)
+	assert.Equal(t, int64(9), got.EnvId)
 	assert.Equal(t, input, got.Config)
 }
