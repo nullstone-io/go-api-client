@@ -27,6 +27,13 @@ type WorkspaceTemplateConfig struct {
 	// environment-invariant declaration that IaC writes and the UI edits; it
 	// seeds WorkspaceConfig.Metadata when a workspace is instantiated.
 	Metadata WorkspaceMetadata `json:"metadata"`
+
+	// Build is the block-level default build configuration for an Application block.
+	// It seeds the per-workspace build config when an app workspace is first read and
+	// is deliberately *not* part of WorkspaceConfig: build config takes effect on the
+	// next build without an infra run. nil means "no block default"; consumers fall
+	// back to DefaultBuildConfig(module).
+	Build *BuildConfig `json:"build,omitempty"`
 }
 
 type WorkspaceCapabilityTemplateConfig struct {

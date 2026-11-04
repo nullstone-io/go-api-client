@@ -46,6 +46,9 @@ type UpdateTemplateInput struct {
 	DomainName            *string                      `json:"domainName,omitempty"`
 	SubdomainNameTemplate *string                      `json:"subdomainNameTemplate,omitempty"`
 	Metadata              *UpdateTemplateMetadataInput `json:"metadata,omitempty"`
+	// Build replaces the block's default build configuration when non-nil.
+	// Unlike Metadata, this is a whole-value replacement, not a field-level merge.
+	Build *types.BuildConfig `json:"build,omitempty"`
 }
 
 // Update - PUT /orgs/:orgName/stacks/:stack_id/blocks/:id/workspace_template
