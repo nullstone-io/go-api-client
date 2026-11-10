@@ -19,7 +19,8 @@ type BlockAutomationDefaults struct {
 	AutoLaunch bool `json:"autoLaunch"`
 	// AutoDeploy means a push to the workspace's tracked branch (or PR) builds and deploys the app.
 	AutoDeploy bool `json:"autoDeploy"`
-	// DefaultBranch seeds TrackedBranch for new pipeline-env workspaces of an app.
+	// DefaultBranch seeds TrackedBranch for new pipeline-env workspaces of an app, unless another
+	// application of the same repository already follows something in that env.
 	DefaultBranch string `json:"defaultBranch"`
 
 	Repo               string `json:"repo"`
@@ -31,18 +32,21 @@ type BlockAutomationDefaults struct {
 // It applies to every block type and every env type; a row exists for a workspace once it has
 // been read or written, seeded from the block's BlockAutomationDefaults.
 //
-// TrackedBranch is set only for Application workspaces in pipeline envs. Preview env workspaces
-// leave it empty because the preview app record owns the pull request or branch being tracked.
+// TrackedBranch and PullRequestId are what an Application workspace follows: a branch or a pull
+// request, never both. Every application of one repository follows the same one in an env, so they
+// are read-only here and written per repository through WorkspaceAutomations.SetSource.
 type WorkspaceAutomation struct {
 	OrgName string `json:"orgName"`
 	StackId int64  `json:"stackId"`
 	BlockId int64  `json:"blockId"`
 	EnvId   int64  `json:"envId"`
 
-	IsEnabled     bool   `json:"isEnabled"`
-	AutoLaunch    bool   `json:"autoLaunch"`
-	AutoDeploy    bool   `json:"autoDeploy"`
-	TrackedBranch string `json:"trackedBranch"`
+	IsEnabled  bool `json:"isEnabled"`
+	AutoLaunch bool `json:"autoLaunch"`
+	AutoDeploy bool `json:"autoDeploy"`
 
-	GitopsConnectionId *int64 `json:"gitopsConnectionId"`
+	// TrackedBranch is the branch the workspace follows; empty when it follows a pull request or nothing.
+	TrackedBranch string `json:"trackedBranch"`
+	// PullRequestId is the pull request the workspace follows; nil when it follows a branch or nothing.
+	PullRequestId *int64 `json:"pullRequestId"`
 }
