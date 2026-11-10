@@ -16,6 +16,10 @@ type PreviewApp struct {
 	// PullRequestId is nil when BranchName is not nil
 	PullRequestId *int64 `json:"pullRequestId"`
 
-	Config      *PreviewPRConfig `json:"config"`
-	PullRequest *PullRequest     `json:"pullRequest"`
+	Config *PreviewPRConfig `json:"config"`
+	// Automation is the workspace automation record for this app in the preview env.
+	// It is the successor of Config: the flags come from workspace automation (seeded from the
+	// legacy config until the backfill) while Config stays until the legacy endpoints are removed.
+	Automation  *WorkspaceAutomation `json:"automation,omitempty"`
+	PullRequest *PullRequest         `json:"pullRequest"`
 }
