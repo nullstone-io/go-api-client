@@ -21,6 +21,10 @@ func (w WorkspaceAutomations) defaultsPath(stackId, blockId int64) string {
 	return fmt.Sprintf("/orgs/%s/stacks/%d/blocks/%d/automation", w.Client.Config.OrgName, stackId, blockId)
 }
 
+func (w WorkspaceAutomations) stackDefaultsPath(stackId int64) string {
+	return fmt.Sprintf("/orgs/%s/stacks/%d/automation_defaults", w.Client.Config.OrgName, stackId)
+}
+
 func (w WorkspaceAutomations) workspacePath(stackId, blockId, envId int64) string {
 	return fmt.Sprintf("/orgs/%s/stacks/%d/blocks/%d/envs/%d/automation", w.Client.Config.OrgName, stackId, blockId, envId)
 }
@@ -69,6 +73,16 @@ func (w WorkspaceAutomations) GetDefaults(ctx context.Context, stackId, blockId 
 		return nil, err
 	}
 	return response.ReadJsonPtr[types.BlockAutomationDefaults](res)
+}
+
+// ListDefaults - GET /orgs/:orgName/stacks/:stackId/automation_defaults
+// Returns the automation defaults of every block in the stack, ordered by block id, seeding any that do not exist yet.
+func (w WorkspaceAutomations) ListDefaults(ctx context.Context, stackId int64) ([]types.BlockAutomationDefaults, error) {
+	res, err := w.Client.Do(ctx, http.MethodGet, w.stackDefaultsPath(stackId), nil, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	return response.ReadJsonVal[[]types.BlockAutomationDefaults](res)
 }
 
 // UpdateDefaults - PUT /orgs/:orgName/stacks/:stackId/blocks/:blockId/automation
