@@ -99,6 +99,19 @@ func TestWorkspaceAutomations_GetDefaults(t *testing.T) {
 	}
 }
 
+func TestWorkspaceAutomations_ListDefaults(t *testing.T) {
+	client, rec := recordingClient(t, http.StatusOK, `[`+blockAutomationDefaultsBody+`]`)
+
+	got, err := client.WorkspaceAutomations().ListDefaults(context.Background(), 42)
+
+	require.NoError(t, err)
+	assert.Equal(t, http.MethodGet, rec.method)
+	assert.Equal(t, "/orgs/nullstone/stacks/42/automation_defaults", rec.path)
+	require.Len(t, got, 1)
+	assert.Equal(t, int64(7), got[0].BlockId)
+	assert.Equal(t, "main", got[0].DefaultBranch)
+}
+
 func TestWorkspaceAutomations_UpdateDefaults(t *testing.T) {
 	client, rec := recordingClient(t, http.StatusOK, blockAutomationDefaultsBody)
 	input := api.UpdateBlockAutomationDefaultsInput{IsEnabled: true, AutoLaunch: false, AutoDeploy: true, DefaultBranch: "main"}
