@@ -9,12 +9,18 @@ type PreviewApp struct {
 	ContextKey string `json:"contextKey"`
 	Repo       string `json:"repo"`
 	RepoUrl    string `json:"repoUrl"`
+	// TriggerType is what this app follows in its preview env: pull_request, branch, tag or release.
+	// The server derives it from BranchName/PullRequestId when either is set.
+	TriggerType string `json:"triggerType"`
 	// BranchName configures this workspace to sync on push events to this branch
-	// BranchName is nil when PullRequestId is not nil
+	// BranchName is set only when TriggerType is branch
 	BranchName *string `json:"branchName"`
 	// PullRequestId configures this workspace to sync on synchronized events to this PR
-	// PullRequestId is nil when BranchName is not nil
+	// PullRequestId is set only when TriggerType is pull_request
 	PullRequestId *int64 `json:"pullRequestId"`
+	// TagFilter is a newline-separated list of tag filter patterns; it is only meaningful when TriggerType is tag.
+	// An empty filter matches every tag.
+	TagFilter string `json:"tagFilter"`
 
 	Config *PreviewPRConfig `json:"config"`
 	// Automation is the workspace automation record for this app in the preview env.
