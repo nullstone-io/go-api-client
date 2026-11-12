@@ -15,8 +15,6 @@ type BlockAutomationDefaults struct {
 	// IsEnabled means "this block participates in an env": it is provisioned on env launch and
 	// IaC sync, and it is selected by default when a preview env is created.
 	IsEnabled bool `json:"isEnabled"`
-	// AutoLaunch means the env launches automatically after it is created (preview envs today).
-	AutoLaunch bool `json:"autoLaunch"`
 	// AutoDeploy means a push to the workspace's tracked branch (or PR) builds and deploys the app.
 	AutoDeploy bool `json:"autoDeploy"`
 	// DefaultBranch seeds TrackedBranch for new pipeline-env workspaces of an app, unless another
@@ -42,7 +40,6 @@ type WorkspaceAutomation struct {
 	EnvId   int64  `json:"envId"`
 
 	IsEnabled  bool `json:"isEnabled"`
-	AutoLaunch bool `json:"autoLaunch"`
 	AutoDeploy bool `json:"autoDeploy"`
 
 	// TrackedBranch is the branch the workspace follows; empty when it follows a pull request or nothing.
