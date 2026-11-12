@@ -20,7 +20,6 @@ const blockAutomationDefaultsBody = `{
   "blockId": 7,
   "isEnabled": true,
   "autoDeploy": true,
-  "defaultBranch": "main",
   "repo": "nullstone/widgets",
   "repoUrl": "https://github.com/nullstone/widgets",
   "gitopsConnectionId": 3
@@ -32,9 +31,7 @@ const workspaceAutomationBody = `{
   "blockId": 7,
   "envId": 9,
   "isEnabled": true,
-  "autoDeploy": false,
-  "trackedBranch": "release",
-  "pullRequestId": null
+  "autoDeploy": false
 }`
 
 type recordedRequest struct {
@@ -90,7 +87,7 @@ func TestWorkspaceAutomations_GetDefaults(t *testing.T) {
 			gitopsId := int64(3)
 			assert.Equal(t, types.BlockAutomationDefaults{
 				OrgName: "nullstone", StackId: 42, BlockId: 7,
-				IsEnabled: true, AutoDeploy: true, DefaultBranch: "main",
+				IsEnabled: true, AutoDeploy: true,
 				Repo: "nullstone/widgets", RepoUrl: "https://github.com/nullstone/widgets", GitopsConnectionId: &gitopsId,
 			}, *got)
 		})
@@ -107,12 +104,12 @@ func TestWorkspaceAutomations_ListDefaults(t *testing.T) {
 	assert.Equal(t, "/orgs/nullstone/stacks/42/automation_defaults", rec.path)
 	require.Len(t, got, 1)
 	assert.Equal(t, int64(7), got[0].BlockId)
-	assert.Equal(t, "main", got[0].DefaultBranch)
+	assert.True(t, got[0].AutoDeploy)
 }
 
 func TestWorkspaceAutomations_UpdateDefaults(t *testing.T) {
 	client, rec := recordingClient(t, http.StatusOK, blockAutomationDefaultsBody)
-	input := api.UpdateBlockAutomationDefaultsInput{IsEnabled: true, AutoDeploy: true, DefaultBranch: "main"}
+	input := api.UpdateBlockAutomationDefaultsInput{IsEnabled: true, AutoDeploy: true}
 
 	got, err := client.WorkspaceAutomations().UpdateDefaults(context.Background(), 42, 7, input)
 
@@ -120,9 +117,9 @@ func TestWorkspaceAutomations_UpdateDefaults(t *testing.T) {
 	assert.Equal(t, http.MethodPut, rec.method)
 	assert.Equal(t, "/orgs/nullstone/stacks/42/blocks/7/automation", rec.path)
 	assert.Equal(t, "application/json", rec.contentType)
-	assert.JSONEq(t, `{"isEnabled": true, "autoDeploy": true, "defaultBranch": "main"}`, string(rec.body))
+	assert.JSONEq(t, `{"isEnabled": true, "autoDeploy": true}`, string(rec.body))
 	require.NotNil(t, got)
-	assert.Equal(t, "main", got.DefaultBranch)
+	assert.True(t, got.AutoDeploy)
 }
 
 func TestWorkspaceAutomations_Get(t *testing.T) {
@@ -151,7 +148,7 @@ func TestWorkspaceAutomations_Get(t *testing.T) {
 			require.NotNil(t, got)
 			assert.Equal(t, types.WorkspaceAutomation{
 				OrgName: "nullstone", StackId: 42, BlockId: 7, EnvId: 9,
-				IsEnabled: true, AutoDeploy: false, TrackedBranch: "release",
+				IsEnabled: true, AutoDeploy: false,
 			}, *got)
 		})
 	}
@@ -169,7 +166,7 @@ func TestWorkspaceAutomations_Update(t *testing.T) {
 	// blockId is omitted when zero so the single-workspace body carries only the flags
 	assert.JSONEq(t, `{"isEnabled": true, "autoDeploy": false}`, string(rec.body))
 	require.NotNil(t, got)
-	assert.Equal(t, "release", got.TrackedBranch)
+	assert.True(t, got.IsEnabled)
 }
 
 func TestWorkspaceAutomations_ListByEnv(t *testing.T) {
@@ -202,38 +199,4 @@ func TestWorkspaceAutomations_ReplaceByEnv(t *testing.T) {
 ]`, string(rec.body))
 	require.Len(t, got, 1)
 	assert.Equal(t, int64(9), got[0].EnvId)
-}
-
-func TestWorkspaceAutomations_SetSource(t *testing.T) {
-	prId := int64(88)
-	tests := []struct {
-		name     string
-		input    api.SetAutomationSourceInput
-		wantBody string
-	}{
-		{
-			name:     "branch",
-			input:    api.SetAutomationSourceInput{RepoUrl: "https://github.com/nullstone/widgets", TrackedBranch: "release"},
-			wantBody: `{"repoUrl": "https://github.com/nullstone/widgets", "trackedBranch": "release", "pullRequestId": null}`,
-		},
-		{
-			name:     "pull request",
-			input:    api.SetAutomationSourceInput{RepoUrl: "https://github.com/nullstone/widgets", PullRequestId: &prId},
-			wantBody: `{"repoUrl": "https://github.com/nullstone/widgets", "trackedBranch": "", "pullRequestId": 88}`,
-		},
-	}
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			client, rec := recordingClient(t, http.StatusOK, `[`+workspaceAutomationBody+`]`)
-
-			got, err := client.WorkspaceAutomations().SetSource(context.Background(), 42, 9, test.input)
-
-			require.NoError(t, err)
-			assert.Equal(t, http.MethodPut, rec.method)
-			assert.Equal(t, "/orgs/nullstone/stacks/42/envs/9/automations/source", rec.path)
-			assert.JSONEq(t, test.wantBody, string(rec.body))
-			require.Len(t, got, 1)
-			assert.Equal(t, "release", got[0].TrackedBranch)
-		})
-	}
 }
