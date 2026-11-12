@@ -41,7 +41,6 @@ func (w WorkspaceAutomations) sourcePath(stackId, envId int64) string {
 // Repo and RepoUrl are not writable here: they follow the block's repository.
 type UpdateBlockAutomationDefaultsInput struct {
 	IsEnabled     bool   `json:"isEnabled"`
-	AutoLaunch    bool   `json:"autoLaunch"`
 	AutoDeploy    bool   `json:"autoDeploy"`
 	DefaultBranch string `json:"defaultBranch"`
 }
@@ -53,7 +52,6 @@ type UpdateBlockAutomationDefaultsInput struct {
 type UpdateWorkspaceAutomationInput struct {
 	BlockId    int64 `json:"blockId,omitempty"`
 	IsEnabled  bool  `json:"isEnabled"`
-	AutoLaunch bool  `json:"autoLaunch"`
 	AutoDeploy bool  `json:"autoDeploy"`
 }
 
