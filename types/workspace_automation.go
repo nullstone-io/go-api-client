@@ -28,7 +28,8 @@ type BlockAutomationDefaults struct {
 // been read or written, seeded from the block's BlockAutomationDefaults.
 //
 // What fires an app's auto-deploy is not here: it is the env's GitOps connection config for the app's
-// repository (its trigger). Preview envs follow their preview app's pull request or branch.
+// repository (its trigger, see GitopsConnectionConfig), for pipeline and preview envs alike. A preview env has a
+// row for every block, written when the env is created; a block with no row there is not part of the env.
 type WorkspaceAutomation struct {
 	OrgName string `json:"orgName"`
 	StackId int64  `json:"stackId"`
