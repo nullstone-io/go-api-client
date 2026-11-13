@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -12,6 +11,12 @@ import (
 	"gopkg.in/nullstone-io/go-api-client.v0/types"
 )
 
+// PreviewApps reads the apps of preview envs in the legacy preview app shape.
+//
+// Preview apps are no longer stored. A preview env is set up like any other env: its WorkspaceAutomations say
+// which blocks take part, and its EnvGitopsConfigs say what it follows from each repository. These endpoints
+// derive the old shape from those. There is no write: change which apps take part with
+// WorkspaceAutomations().ReplaceByEnv and what the env follows with EnvGitopsConfigs().Replace.
 type PreviewApps struct {
 	Client *Client
 }
@@ -73,22 +78,6 @@ func (p PreviewApps) Find(ctx context.Context, stackId int64, input FindPreviewA
 // Same as Find for callers that know the stack by name instead of id (e.g. CI reacting to a PR trigger).
 func (p PreviewApps) FindByStackName(ctx context.Context, stackName string, input FindPreviewAppsInput) ([]types.PreviewApp, error) {
 	res, err := p.Client.Do(ctx, http.MethodGet, p.stackByNamePath(stackName), input.query(), nil, nil)
-	if err != nil {
-		return nil, err
-	}
-
-	return response.ReadJsonVal[[]types.PreviewApp](res)
-}
-
-// Replace - PUT /orgs/{orgName}/stacks/{stackId}/envs/{envId}/preview_apps
-// This has replace semantics: the env's preview app set becomes exactly previewApps,
-// and any app not in the list is removed from the env. In a preview env "enabled"
-// means "present in this set", so adding or removing an app is a membership change,
-// not a field write. Callers wanting to change one app must List first and send the
-// full mutated list back.
-func (p PreviewApps) Replace(ctx context.Context, stackId, envId int64, previewApps []types.PreviewApp) ([]types.PreviewApp, error) {
-	rawPayload, _ := json.Marshal(previewApps)
-	res, err := p.Client.Do(ctx, http.MethodPut, p.basePath(stackId, envId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}

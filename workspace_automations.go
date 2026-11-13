@@ -33,34 +33,20 @@ func (w WorkspaceAutomations) envPath(stackId, envId int64) string {
 	return fmt.Sprintf("/orgs/%s/stacks/%d/envs/%d/automations", w.Client.Config.OrgName, stackId, envId)
 }
 
-func (w WorkspaceAutomations) sourcePath(stackId, envId int64) string {
-	return fmt.Sprintf("/orgs/%s/stacks/%d/envs/%d/automations/source", w.Client.Config.OrgName, stackId, envId)
-}
-
 // UpdateBlockAutomationDefaultsInput replaces the writable fields of a block's automation defaults.
 // Repo and RepoUrl are not writable here: they follow the block's repository.
 type UpdateBlockAutomationDefaultsInput struct {
-	IsEnabled     bool   `json:"isEnabled"`
-	AutoDeploy    bool   `json:"autoDeploy"`
-	DefaultBranch string `json:"defaultBranch"`
+	IsEnabled  bool `json:"isEnabled"`
+	AutoDeploy bool `json:"autoDeploy"`
 }
 
 // UpdateWorkspaceAutomationInput replaces the writable fields of one workspace's automation.
 // BlockId is only read by ReplaceByEnv, where each entry names its block; the single-workspace
 // Update takes the block from the path and ignores it.
-// The branch or pull request a workspace follows is not writable here: see SetSource.
 type UpdateWorkspaceAutomationInput struct {
 	BlockId    int64 `json:"blockId,omitempty"`
 	IsEnabled  bool  `json:"isEnabled"`
 	AutoDeploy bool  `json:"autoDeploy"`
-}
-
-// SetAutomationSourceInput names what every application of one repository follows in an env:
-// a branch or a pull request, exactly one of the two.
-type SetAutomationSourceInput struct {
-	RepoUrl       string `json:"repoUrl"`
-	TrackedBranch string `json:"trackedBranch"`
-	PullRequestId *int64 `json:"pullRequestId"`
 }
 
 // GetDefaults - GET /orgs/:orgName/stacks/:stackId/blocks/:blockId/automation
@@ -130,18 +116,6 @@ func (w WorkspaceAutomations) ListByEnv(ctx context.Context, stackId, envId int6
 func (w WorkspaceAutomations) ReplaceByEnv(ctx context.Context, stackId, envId int64, input []UpdateWorkspaceAutomationInput) ([]types.WorkspaceAutomation, error) {
 	rawPayload, _ := json.Marshal(input)
 	res, err := w.Client.Do(ctx, http.MethodPut, w.envPath(stackId, envId), nil, nil, json.RawMessage(rawPayload))
-	if err != nil {
-		return nil, err
-	}
-	return response.ReadJsonVal[[]types.WorkspaceAutomation](res)
-}
-
-// SetSource - PUT /orgs/:orgName/stacks/:stackId/envs/:envId/automations/source
-// Sets the branch or pull request that every application of input.RepoUrl follows in the env.
-// The response is the full list for the env, as ListByEnv returns it.
-func (w WorkspaceAutomations) SetSource(ctx context.Context, stackId, envId int64, input SetAutomationSourceInput) ([]types.WorkspaceAutomation, error) {
-	rawPayload, _ := json.Marshal(input)
-	res, err := w.Client.Do(ctx, http.MethodPut, w.sourcePath(stackId, envId), nil, nil, json.RawMessage(rawPayload))
 	if err != nil {
 		return nil, err
 	}
