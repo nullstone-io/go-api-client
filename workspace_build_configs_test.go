@@ -133,3 +133,27 @@ func TestWorkspaceBuildConfigs_Update(t *testing.T) {
 	assert.Equal(t, int64(9), got.EnvId)
 	assert.Equal(t, input, got.Config)
 }
+
+func TestWorkspaceBuildConfigs_Get_Source(t *testing.T) {
+	body := `{
+  "orgName": "nullstone",
+  "stackId": 42,
+  "blockId": 7,
+  "envId": 9,
+  "workspaceUid": "6f1a2b3c-4d5e-4f60-8a9b-0c1d2e3f4a5b",
+  "config": {"builder": "nullstone", "packageMode": "dockerfile"},
+  "source": {"repo": "nullstone/widgets", "repoUrl": "https://github.com/nullstone/widgets", "file": ".nullstone/prod.yml"}
+}`
+	client := mocks.Client(t, "nullstone", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		_, _ = w.Write([]byte(body))
+	}))
+
+	got, err := client.WorkspaceBuildConfigs().Get(context.Background(), 42, 7, 9)
+
+	require.NoError(t, err)
+	require.NotNil(t, got)
+	assert.Equal(t, &types.BuildConfigSource{
+		Repo: "nullstone/widgets", RepoUrl: "https://github.com/nullstone/widgets", File: ".nullstone/prod.yml",
+	}, got.Source)
+}
