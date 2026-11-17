@@ -34,6 +34,9 @@ type WorkspaceTemplateConfig struct {
 	// next build without an infra run. nil means "no block default"; consumers fall
 	// back to DefaultBuildConfig(module).
 	Build *BuildConfig `json:"build,omitempty"`
+
+	// BuildSource names the IaC file that last wrote Build; nil when Build was last written through the UI or API
+	BuildSource *BuildConfigSource `json:"buildSource,omitempty"`
 }
 
 type WorkspaceCapabilityTemplateConfig struct {

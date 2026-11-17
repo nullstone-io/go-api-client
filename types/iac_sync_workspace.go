@@ -12,4 +12,7 @@ type IacSyncWorkspace struct {
 	WorkspaceWorkflowId *int64            `json:"workspaceWorkflowId"`
 	IacSync             IacSync           `json:"iacSync"`
 	WorkspaceChanges    []WorkspaceChange `json:"workspaceChanges"`
+	// BuildChanges lists the build config settings this sync wrote for the workspace.
+	// They are informational: a build config applies to the next build with no infra run.
+	BuildChanges []BuildConfigChange `json:"buildChanges"`
 }

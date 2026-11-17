@@ -17,4 +17,6 @@ type WorkspaceBuildConfig struct {
 	EnvId        int64       `json:"envId"`
 	WorkspaceUid uuid.UUID   `json:"workspaceUid"`
 	Config       BuildConfig `json:"config"`
+	// Source names the IaC file that last wrote Config; nil when it was last written through the UI or API
+	Source *BuildConfigSource `json:"source"`
 }
