@@ -1,5 +1,7 @@
 package types
 
+import "strings"
+
 const (
 	BuilderManual        = "manual"
 	BuilderNullstone     = "nullstone"
@@ -52,6 +54,9 @@ type BuildConfig struct {
 	PackageMode string `json:"packageMode"`
 
 	// Docker configurations
+	// DockerContext is the directory the image is built from, relative to the repository root ("." by default).
+	// Dockerfile is relative to DockerContext ("Dockerfile" by default), as in docker compose;
+	// DockerfilePath resolves it against the repository root.
 	Dockerfile    string `json:"dockerfile,omitempty"`
 	DockerContext string `json:"dockerContext,omitempty"`
 
@@ -71,4 +76,22 @@ type BuildConfig struct {
 
 	// Environment variables injected at build-time
 	BuildEnvVars map[string]string `json:"buildEnvVars,omitempty"`
+}
+
+// DockerContextPath is the docker build context relative to the repository root, cleaned;
+// an empty DockerContext is the repository root (".").
+func (b BuildConfig) DockerContextPath() string {
+	return CleanRepoPath(b.DockerContext)
+}
+
+// DockerfilePath is the Dockerfile relative to the repository root: Dockerfile resolved against
+// DockerContext, the way docker compose reads `dockerfile` against `context`.
+// An empty Dockerfile is "Dockerfile". With the defaults (DockerContext ".", Dockerfile "Dockerfile")
+// the result is "Dockerfile".
+func (b BuildConfig) DockerfilePath() string {
+	dockerfile := b.Dockerfile
+	if strings.TrimSpace(dockerfile) == "" {
+		dockerfile = "Dockerfile"
+	}
+	return JoinRepoPath(b.DockerContextPath(), dockerfile)
 }
