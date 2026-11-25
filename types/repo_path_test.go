@@ -46,6 +46,25 @@ func TestJoinRepoPath(t *testing.T) {
 	}
 }
 
+func TestIsRelativePath(t *testing.T) {
+	tests := map[string]bool{
+		"":                     false,
+		"   ":                  false,
+		".":                    true,
+		"Dockerfile":           true,
+		"../Dockerfile":        true,
+		"api/../../Dockerfile": true,
+		"/Dockerfile":          false,
+		`C:\repo\Dockerfile`:   false,
+		"https://x/Dockerfile": false,
+	}
+	for value, want := range tests {
+		t.Run(value, func(t *testing.T) {
+			assert.Equal(t, want, IsRelativePath(value))
+		})
+	}
+}
+
 func TestIsRepoRelativePath(t *testing.T) {
 	tests := map[string]bool{
 		"":                     false,

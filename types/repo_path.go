@@ -23,19 +23,28 @@ func JoinRepoPath(segments ...string) string {
 	return CleanRepoPath(path.Join(cleaned...))
 }
 
-// IsRepoRelativePath reports whether value names a location inside the repository: it is not empty,
-// not an absolute path, not a drive letter or a url, and does not climb above the repository root.
-// It is the rule every build config path (dockerfile, docker_context, build_dir, publish_dir, ...)
-// must follow, whether it arrives through IaC, the API or the UI.
-func IsRepoRelativePath(value string) bool {
+// IsRelativePath reports whether value is a relative path: not empty, not an absolute path, not a drive
+// letter or a url. It may climb with "..": a dockerfile is relative to its docker context and may sit
+// beside it (docker_context `web`, dockerfile `../Dockerfile`), so it is checked as a whole with
+// IsRepoRelativePath once the context is known (BuildConfig.DockerfilePath).
+func IsRelativePath(value string) bool {
 	if strings.TrimSpace(value) == "" {
 		return false
 	}
 	slashed := strings.ReplaceAll(value, `\`, "/")
-	if strings.HasPrefix(slashed, "/") || strings.Contains(slashed, ":") {
-		// an absolute path, a drive letter or a url
+	// an absolute path, a drive letter or a url
+	return !strings.HasPrefix(slashed, "/") && !strings.Contains(slashed, ":")
+}
+
+// IsRepoRelativePath reports whether value names a location inside the repository: it is a relative
+// path (IsRelativePath) that does not climb above the repository root.
+// It is the rule every path resolved from the repository root (docker_context, build_dir, publish_dir,
+// workflow_filename, and the dockerfile once resolved against its context) must follow, whether it
+// arrives through IaC, the API or the UI.
+func IsRepoRelativePath(value string) bool {
+	if !IsRelativePath(value) {
 		return false
 	}
-	cleaned := path.Clean(slashed)
+	cleaned := CleanRepoPath(value)
 	return cleaned != ".." && !strings.HasPrefix(cleaned, "../")
 }
